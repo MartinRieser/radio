@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
@@ -29,6 +30,8 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -308,27 +311,46 @@ private fun CategoryPills(
     historyCount: Int,
     onSelectCategory: (String) -> Unit
 ) {
-    val categories = listOf(
+    val genres = listOf(
+        "pop" to "Pop & Hits",
+        "rock" to "Rock & Metal",
+        "electronic" to "Electronic & Dance",
+        "chillout" to "Chillout & Ambient",
+        "jazz" to "Jazz & Blues",
+        "classical" to "Klassik & Mosaik",
+        "hiphop" to "Hip-Hop & Rap",
+        "alternative" to "Alternative & Indie",
+        "news" to "Nachrichten & Talk",
+        "country" to "Country & Folk",
+        "reggae" to "Reggae & Dub",
+        "80s" to "80er & Oldies",
+        "latin" to "Latin & Salsa",
+        "lounge" to "Lounge & Easy Listening"
+    )
+
+    val fixedCategories = listOf(
         "featured" to "Featured",
         "adfree" to "🛡️ Werbefrei",
         "favorites" to "❤️ Favoriten ($favCount)",
         "history" to "🕒 Verlauf ($historyCount)",
-        "topclick" to "Trending",
-        "chillout" to "Chillout",
-        "pop" to "Pop",
-        "rock" to "Rock",
-        "jazz" to "Jazz",
-        "electronic" to "Electronic"
+        "topclick" to "Trending"
     )
+
+    var genreMenuExpanded by remember { mutableStateOf(false) }
+
+    val selectedGenrePair = genres.find { it.first == activeCategory }
+    val isGenreActive = (selectedGenrePair != null)
+    val genreButtonText = if (selectedGenrePair != null) "🎵 ${selectedGenrePair.second}" else "🎵 Genre wählen"
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(categories) { (id, label) ->
+        items(fixedCategories) { (id, label) ->
             val isSelected = (activeCategory == id)
             val pillColor = when {
                 isSelected -> AccentPrimary
@@ -360,6 +382,71 @@ private fun CategoryPills(
                 )
             }
         }
+
+        // Genre Dropdown Selector Button
+        item {
+            Box {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            if (isGenreActive) AccentPrimary.copy(alpha = 0.2f)
+                            else BgSurfaceCard
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (isGenreActive) AccentPrimary else BorderSubtle,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .clickable { genreMenuExpanded = true }
+                        .padding(horizontal = 14.dp, vertical = 7.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = genreButtonText,
+                            color = if (isGenreActive) TextPrimary else AccentPrimary,
+                            fontSize = 13.sp,
+                            fontWeight = if (isGenreActive) FontWeight.Bold else FontWeight.Medium
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Genre Dropdown",
+                            tint = if (isGenreActive) AccentPrimary else TextMuted,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = genreMenuExpanded,
+                    onDismissRequest = { genreMenuExpanded = false },
+                    modifier = Modifier
+                        .background(BgSurfaceCard)
+                        .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
+                ) {
+                    genres.forEach { (genreId, genreName) ->
+                        val isCurrentGenre = (activeCategory == genreId)
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = genreName,
+                                    color = if (isCurrentGenre) AccentPrimary else TextPrimary,
+                                    fontSize = 14.sp,
+                                    fontWeight = if (isCurrentGenre) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            onClick = {
+                                genreMenuExpanded = false
+                                onSelectCategory(genreId)
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -369,13 +456,31 @@ private fun SectionHeader(
     count: Int,
     onClearHistory: () -> Unit
 ) {
+    val genresMap = mapOf(
+        "pop" to "Pop & Hits",
+        "rock" to "Rock & Metal",
+        "electronic" to "Electronic & Dance",
+        "chillout" to "Chillout & Ambient",
+        "jazz" to "Jazz & Blues",
+        "classical" to "Klassik & Mosaik",
+        "hiphop" to "Hip-Hop & Rap",
+        "alternative" to "Alternative & Indie",
+        "news" to "Nachrichten & Talk",
+        "country" to "Country & Folk",
+        "reggae" to "Reggae & Dub",
+        "80s" to "80er & Oldies",
+        "latin" to "Latin & Salsa",
+        "lounge" to "Lounge & Easy Listening"
+    )
+
     val title = when (activeCategory) {
         "featured" -> "Featured Sender"
         "adfree" -> "Werbefreie Sender"
         "favorites" -> "Gespeicherte Favoriten"
         "history" -> "Zuletzt gespielt (Verlauf)"
         "topclick" -> "Trending Streams"
-        else -> "${activeCategory.replaceFirstChar { it.uppercase() }} Sender"
+        else -> genresMap[activeCategory]?.let { "Genre: $it" }
+            ?: "${activeCategory.replaceFirstChar { it.uppercase() }} Sender"
     }
 
     Row(
