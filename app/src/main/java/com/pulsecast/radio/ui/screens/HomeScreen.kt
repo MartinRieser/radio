@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -304,6 +306,7 @@ private fun SearchBar(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CategoryPills(
     activeCategory: String,
@@ -342,15 +345,78 @@ private fun CategoryPills(
     val isGenreActive = (selectedGenrePair != null)
     val genreButtonText = if (selectedGenrePair != null) "🎵 ${selectedGenrePair.second}" else "🎵 Genre wählen"
 
-    LazyRow(
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(fixedCategories) { (id, label) ->
+        // Genre Dropdown Selector Button (Placed Prominently First)
+        Box {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(
+                        if (isGenreActive) AccentPrimary.copy(alpha = 0.2f)
+                        else BgSurfaceCard
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = if (isGenreActive) AccentPrimary else BorderSubtle,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .clickable { genreMenuExpanded = true }
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = genreButtonText,
+                        color = if (isGenreActive) TextPrimary else AccentPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = if (isGenreActive) FontWeight.Bold else FontWeight.Medium
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Genre Dropdown",
+                        tint = if (isGenreActive) AccentPrimary else TextMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            DropdownMenu(
+                expanded = genreMenuExpanded,
+                onDismissRequest = { genreMenuExpanded = false },
+                modifier = Modifier
+                    .background(BgSurfaceCard)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
+            ) {
+                genres.forEach { (genreId, genreName) ->
+                    val isCurrentGenre = (activeCategory == genreId)
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = genreName,
+                                color = if (isCurrentGenre) AccentPrimary else TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = if (isCurrentGenre) FontWeight.Bold else FontWeight.Normal
+                            )
+                        },
+                        onClick = {
+                            genreMenuExpanded = false
+                            onSelectCategory(genreId)
+                        }
+                    )
+                }
+            }
+        }
+
+        // Quick Category Pills
+        fixedCategories.forEach { (id, label) ->
             val isSelected = (activeCategory == id)
             val pillColor = when {
                 isSelected -> AccentPrimary
@@ -372,79 +438,14 @@ private fun CategoryPills(
                         shape = RoundedCornerShape(20.dp)
                     )
                     .clickable { onSelectCategory(id) }
-                    .padding(horizontal = 14.dp, vertical = 7.dp)
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Text(
                     text = label,
                     color = if (isSelected) TextPrimary else pillColor,
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                 )
-            }
-        }
-
-        // Genre Dropdown Selector Button
-        item {
-            Box {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(
-                            if (isGenreActive) AccentPrimary.copy(alpha = 0.2f)
-                            else BgSurfaceCard
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = if (isGenreActive) AccentPrimary else BorderSubtle,
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .clickable { genreMenuExpanded = true }
-                        .padding(horizontal = 14.dp, vertical = 7.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = genreButtonText,
-                            color = if (isGenreActive) TextPrimary else AccentPrimary,
-                            fontSize = 13.sp,
-                            fontWeight = if (isGenreActive) FontWeight.Bold else FontWeight.Medium
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Genre Dropdown",
-                            tint = if (isGenreActive) AccentPrimary else TextMuted,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-
-                DropdownMenu(
-                    expanded = genreMenuExpanded,
-                    onDismissRequest = { genreMenuExpanded = false },
-                    modifier = Modifier
-                        .background(BgSurfaceCard)
-                        .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
-                ) {
-                    genres.forEach { (genreId, genreName) ->
-                        val isCurrentGenre = (activeCategory == genreId)
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = genreName,
-                                    color = if (isCurrentGenre) AccentPrimary else TextPrimary,
-                                    fontSize = 14.sp,
-                                    fontWeight = if (isCurrentGenre) FontWeight.Bold else FontWeight.Normal
-                                )
-                            },
-                            onClick = {
-                                genreMenuExpanded = false
-                                onSelectCategory(genreId)
-                            }
-                        )
-                    }
-                }
             }
         }
     }
