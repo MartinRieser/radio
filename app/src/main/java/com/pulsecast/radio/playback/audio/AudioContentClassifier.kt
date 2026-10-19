@@ -156,16 +156,16 @@ class AudioContentClassifier {
         zcrVariance /= windowSize
 
         var acousticSpeechScore = 0.0f
-        if (lowEnergyRate >= 0.35f) acousticSpeechScore += 0.45f
-        else if (lowEnergyRate >= 0.25f) acousticSpeechScore += 0.25f
+        if (lowEnergyRate >= 0.30f) acousticSpeechScore += 0.50f
+        else if (lowEnergyRate >= 0.20f) acousticSpeechScore += 0.30f
 
-        if (zcrVariance > 0.008f) acousticSpeechScore += 0.35f
-        else if (zcrVariance > 0.004f) acousticSpeechScore += 0.15f
+        if (zcrVariance > 0.005f) acousticSpeechScore += 0.40f
+        else if (zcrVariance > 0.002f) acousticSpeechScore += 0.20f
 
+        // Only apply song pattern discount if acoustic speech score is low
         var metadataAdScore = 0.0f
-        if (isSongPattern) {
-            // Song metadata strongly reduces speech probability
-            metadataAdScore = -0.40f
+        if (isSongPattern && acousticSpeechScore < 0.35f) {
+            metadataAdScore = -0.15f
         }
 
         // --- 3. Minute-of-Hour Temporal Prior ---
@@ -173,21 +173,21 @@ class AudioContentClassifier {
         var timePrior = 0.0f
         if (currentMinute in 57..59 || currentMinute in 0..4) {
             // Top of the hour: prime commercial and news window
-            timePrior = 0.25f
+            timePrior = 0.20f
         } else if (currentMinute in 29..32) {
             // Half hour news window
-            timePrior = 0.15f
+            timePrior = 0.10f
         }
 
-        // Combine scores
-        var totalSpeech = (acousticSpeechScore * 0.5f) + (metadataAdScore * 0.35f) + (timePrior * 0.15f)
+        // Acoustic audio waveform is the primary source of truth (75% weight)
+        var totalSpeech = (acousticSpeechScore * 0.75f) + (metadataAdScore * 0.10f) + (timePrior * 0.15f)
         totalSpeech = totalSpeech.coerceIn(0.0f, 1.0f)
 
         speechConfidence = totalSpeech
         musicConfidence = 1.0f - totalSpeech
 
         val wasSpeech = isSpeechDetected
-        isSpeechDetected = speechConfidence >= 0.55f
+        isSpeechDetected = speechConfidence >= 0.40f
 
         detectionReason = when {
             hasAdKeyword -> "Werbung / News (Metadaten)"
