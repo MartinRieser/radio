@@ -30,6 +30,9 @@ class AudioContentClassifier {
     private var lastSign = 0
     private var zeroCrossings = 0
 
+    // Temporal smoothing & state hysteresis (anti-flicker)
+    private var smoothedSpeechScore: Float = 0.1f
+
     @Volatile
     var speechConfidence: Float = 0.1f
         private set
@@ -47,8 +50,20 @@ class AudioContentClassifier {
         private set
 
     fun setStationContext(trackTitle: String, isAdFree: Boolean) {
+        val titleChanged = this.currentTrackTitle != trackTitle
         this.currentTrackTitle = trackTitle
         this.isAdFreeStation = isAdFree
+        if (titleChanged) {
+            val title = trackTitle.lowercase().trim()
+            val adKeywords = listOf("werbung", "commercial", "ad", "ads", "spot", "nachrichten", "news", "verkehr", "traffic", "stau", "blitzer", "wetter", "weather", "jingle", "gewinnspiel", "station id")
+            val hasAdKeyword = adKeywords.any { title.contains("\\b$it\\b".toRegex()) || title == it }
+            val isSongPattern = title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")
+
+            if (!hasAdKeyword && isSongPattern) {
+                // Instantly reset speech score when a clear song title is broadcast
+                smoothedSpeechScore = 0.1f
+            }
+        }
         evaluateClassification()
     }
 
@@ -117,6 +132,7 @@ class AudioContentClassifier {
         val isSongPattern = title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")
 
         if (hasAdKeyword) {
+            smoothedSpeechScore = 0.95f
             speechConfidence = 0.95f
             musicConfidence = 0.05f
             isSpeechDetected = true
@@ -128,8 +144,9 @@ class AudioContentClassifier {
         val avgRms = subFrameRms.average().toFloat()
         if (avgRms < 0.005f) {
             // Near silence / stream pause -> don't trigger speech false-positive
-            speechConfidence = 0.1f
-            musicConfidence = 0.8f
+            smoothedSpeechScore = (0.8f * smoothedSpeechScore) + (0.2f * 0.1f)
+            speechConfidence = smoothedSpeechScore
+            musicConfidence = 1.0f - speechConfidence
             isSpeechDetected = false
             detectionReason = if (isSongPattern) "Musik ($currentTrackTitle)" else "Stille / Pause"
             return
@@ -154,7 +171,6 @@ class AudioContentClassifier {
         zcrVariance /= windowSize
 
         // RMS Coefficient of Variation (CV = StdDev / Mean RMS)
-        // Detects rapid syllabic voice fluctuations even when background music is present
         var rmsVarianceSum = 0f
         for (rms in subFrameRms) {
             val diff = rms - avgRms
@@ -163,26 +179,24 @@ class AudioContentClassifier {
         val rmsStdDev = sqrt(rmsVarianceSum / windowSize)
         val rmsCoeffVar = if (avgRms > 0.001f) (rmsStdDev / avgRms) else 0f
 
+        // Robust Feature Combination (Prevents Drum/Beat False Positives)
+        // Speech (with or without background music) requires BOTH syllabic RMS variation AND consonant zero-crossing dynamics
+        val hasSpeechEnvelope = (rmsCoeffVar >= 0.28f) || (lowEnergyRate >= 0.28f) || (rmsCoeffVar >= 0.22f && lowEnergyRate >= 0.20f)
+        val hasSpeechConsonants = (zcrVariance >= 0.0035f) || (avgZcr >= 0.16f && zcrVariance >= 0.002f)
+
         var acousticSpeechScore = 0.0f
-
-        // 1. Syllabic pauses in pure speech OR energy fluctuations of speech over background music
-        if (rmsCoeffVar >= 0.22f || lowEnergyRate >= 0.28f) {
-            acousticSpeechScore += 0.55f // High speech / voiceover probability
-        } else if (rmsCoeffVar >= 0.15f || lowEnergyRate >= 0.18f) {
-            acousticSpeechScore += 0.35f // Moderate speech over music
+        if (hasSpeechEnvelope && hasSpeechConsonants) {
+            acousticSpeechScore = 0.85f // Clear speech (with or without music bed)
+        } else if (hasSpeechEnvelope) {
+            acousticSpeechScore = 0.35f // Moderate modulation (e.g. dynamic track or intro)
+        } else if (hasSpeechConsonants) {
+            acousticSpeechScore = 0.25f
         }
 
-        // 2. Fricative Consonants & Speech ZCR Dynamics
-        if (zcrVariance > 0.004f || avgZcr > 0.16f) {
-            acousticSpeechScore += 0.40f
-        } else if (zcrVariance > 0.002f || avgZcr > 0.10f) {
-            acousticSpeechScore += 0.20f
-        }
-
-        // Only apply song pattern discount if acoustic speech score is very low
+        // Only apply song pattern discount if acoustic speech score is low
         var metadataAdScore = 0.0f
-        if (isSongPattern && acousticSpeechScore < 0.30f) {
-            metadataAdScore = -0.15f
+        if (isSongPattern && acousticSpeechScore < 0.35f) {
+            metadataAdScore = -0.20f
         }
 
         // --- 3. Minute-of-Hour Temporal Prior ---
@@ -196,15 +210,22 @@ class AudioContentClassifier {
             timePrior = 0.10f
         }
 
-        // Acoustic audio waveform is the primary source of truth (75% weight)
-        var totalSpeech = (acousticSpeechScore * 0.75f) + (metadataAdScore * 0.10f) + (timePrior * 0.15f)
-        totalSpeech = totalSpeech.coerceIn(0.0f, 1.0f)
+        var rawSpeech = (acousticSpeechScore * 0.70f) + (metadataAdScore * 0.15f) + (timePrior * 0.15f)
+        rawSpeech = rawSpeech.coerceIn(0.0f, 1.0f)
 
-        speechConfidence = totalSpeech
-        musicConfidence = 1.0f - totalSpeech
+        // Exponential Moving Average (EMA) smoothing to eliminate single-frame UI flickering
+        smoothedSpeechScore = (0.75f * smoothedSpeechScore) + (0.25f * rawSpeech)
 
-        val wasSpeech = isSpeechDetected
-        isSpeechDetected = speechConfidence >= 0.40f
+        speechConfidence = smoothedSpeechScore
+        musicConfidence = 1.0f - smoothedSpeechScore
+
+        // Hysteresis State Machine (Anti-Flicker):
+        // Turns ON when score >= 0.52f, stays ON until score drops below 0.35f
+        isSpeechDetected = if (isSpeechDetected) {
+            smoothedSpeechScore >= 0.35f
+        } else {
+            smoothedSpeechScore >= 0.52f
+        }
 
         detectionReason = when {
             hasAdKeyword -> "Werbung / News (Metadaten)"
@@ -223,6 +244,7 @@ class AudioContentClassifier {
         sampleCount = 0
         lastSign = 0
         zeroCrossings = 0
+        smoothedSpeechScore = 0.1f
         speechConfidence = 0.1f
         musicConfidence = 0.9f
         isSpeechDetected = false
