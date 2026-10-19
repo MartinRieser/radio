@@ -35,13 +35,13 @@ object CuratedStations {
             Station(
                 stationuuid = "067388ea-bff2-41b5-869a-766b2f7b4a47",
                 name = "Radio Swiss Pop",
-                urlResolved = "https://stream.srg-ssr.ch/m/rsp/mp3_128",
+                urlResolved = "https://stream.srg-ssr.ch/srgssr/rsp/mp3/128",
                 country = "Switzerland",
                 countrycode = "CH",
                 tags = "pop, hits, english, soft-pop",
                 codec = "MP3",
                 bitrate = 128,
-                favicon = "https://www.radioswisspop.ch/dist/images/touch-icon-192x192.png",
+                favicon = "https://www.radioswisspop.ch/social-media/rsp-web.png",
                 votes = 2400
             ),
             Station(
@@ -53,7 +53,7 @@ object CuratedStations {
                 tags = "pop, hits, bavaria, adult contemporary",
                 codec = "MP3",
                 bitrate = 128,
-                favicon = "https://www.br.de/static/br_de/images/touch-icons/bayern3-touch-icon-180x180.png",
+                favicon = "https://api.ardmediathek.de/image-service/images/urn:ard:image:52fd25fc45de7c6a?w=512",
                 votes = 2150
             ),
             Station(
@@ -65,7 +65,7 @@ object CuratedStations {
                 tags = "pop, rock, hits, comedy, info",
                 codec = "MP3",
                 bitrate = 128,
-                favicon = "https://www.swr3.de/static/swr3/assets/icons/apple-touch-icon.png",
+                favicon = "https://www.swr3.de/favicon.ico",
                 votes = 2200
             ),
             Station(

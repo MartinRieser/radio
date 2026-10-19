@@ -123,9 +123,15 @@ class PlaybackController(
             .setArtworkUri(station.favicon?.let { Uri.parse(it) })
             .build()
 
+        val parsedUri = Uri.parse(streamUrl)
         val mediaItem = MediaItem.Builder()
-            .setUri(streamUrl)
+            .setUri(parsedUri)
             .setMediaId(station.stationuuid ?: streamUrl)
+            .setRequestMetadata(
+                MediaItem.RequestMetadata.Builder()
+                    .setMediaUri(parsedUri)
+                    .build()
+            )
             .setMediaMetadata(mediaMetadata)
             .build()
 

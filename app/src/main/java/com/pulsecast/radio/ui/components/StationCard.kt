@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -98,15 +99,19 @@ fun StationCard(
                     .background(Color(0xFF0F1523)),
                 contentAlignment = Alignment.Center
             ) {
+                val fallbackPainter = rememberVectorPainter(Icons.Default.Radio)
                 if (!station.favicon.isNullOrBlank()) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(station.favicon)
+                            .setHeader("User-Agent", "Mozilla/5.0")
                             .crossfade(true)
                             .build(),
                         contentDescription = station.name,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(52.dp)
+                        modifier = Modifier.size(52.dp),
+                        error = fallbackPainter,
+                        fallback = fallbackPainter
                     )
                 } else {
                     Icon(

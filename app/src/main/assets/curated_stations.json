@@ -8,7 +8,7 @@
     "tags": "pop, hits, chart, news, austria",
     "codec": "MP3",
     "bitrate": 192,
-    "favicon": "https://oe3.orf.at/apple-touch-icon.png",
+    "favicon": "https://tubestatic.orf.at/mojo/1_3/storyserver//tube/common/images/apple-icons/oe3.png",
     "votes": 3500,
     "geo_lat": 48.2082,
     "geo_long": 16.3738
@@ -30,13 +30,13 @@
   {
     "stationuuid": "067388ea-bff2-41b5-869a-766b2f7b4a47",
     "name": "Radio Swiss Pop",
-    "url_resolved": "https://stream.srg-ssr.ch/m/rsp/mp3_128",
+    "url_resolved": "https://stream.srg-ssr.ch/srgssr/rsp/mp3/128",
     "country": "Switzerland",
     "countrycode": "CH",
     "tags": "pop, hits, english, soft-pop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://www.radioswisspop.ch/dist/images/touch-icon-192x192.png",
+    "favicon": "https://www.radioswisspop.ch/social-media/rsp-web.png",
     "votes": 2400,
     "geo_lat": 46.948,
     "geo_long": 7.4474
@@ -50,7 +50,7 @@
     "tags": "pop, hits, bavaria, adult contemporary",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://www.br.de/static/br_de/images/touch-icons/bayern3-touch-icon-180x180.png",
+    "favicon": "https://api.ardmediathek.de/image-service/images/urn:ard:image:52fd25fc45de7c6a?w=512",
     "votes": 2150,
     "geo_lat": 48.1351,
     "geo_long": 11.582
@@ -64,7 +64,7 @@
     "tags": "pop, rock, hits, comedy, info",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://www.swr3.de/static/swr3/assets/icons/apple-touch-icon.png",
+    "favicon": "https://www.swr3.de/favicon.ico",
     "votes": 2200,
     "geo_lat": 48.7606,
     "geo_long": 8.24
@@ -78,7 +78,7 @@
     "tags": "pop, chart, dance, hiphop, youth",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://www1.wdr.de/radio/1live/apple-touch-icon.png",
+    "favicon": "https://www1.wdr.de/radio/1live/resources-v5.122.3/img/favicon/apple-touch-icon.png",
     "votes": 2050,
     "geo_lat": 50.9375,
     "geo_long": 6.9603
@@ -142,13 +142,13 @@
   {
     "stationuuid": "34edbcea-ce81-4e39-81ab-71e74745d544",
     "name": "Radio Swiss Classic",
-    "url_resolved": "https://stream.srg-ssr.ch/m/rsc_de/mp3_128",
+    "url_resolved": "https://stream.srg-ssr.ch/srgssr/rsc/mp3/128",
     "country": "Switzerland",
     "countrycode": "CH",
     "tags": "classical, orchestra, symphony, relax",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://www.radioswissclassic.ch/dist/images/touch-icon-192x192.png",
+    "favicon": "https://www.radioswissclassic.ch/social-media/rsc-web.png",
     "votes": 1380,
     "geo_lat": 47.5596,
     "geo_long": 7.5886
@@ -170,13 +170,13 @@
   {
     "stationuuid": "9a368941-71a3-4bda-9186-6604d9030514",
     "name": "Radio Swiss Jazz",
-    "url_resolved": "https://stream.srg-ssr.ch/m/rsj/mp3_128",
+    "url_resolved": "https://stream.srg-ssr.ch/srgssr/rsj/mp3/128",
     "country": "Switzerland",
     "countrycode": "CH",
     "tags": "jazz, blues, soul, swing",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://www.radioswissjazz.ch/dist/images/touch-icon-192x192.png",
+    "favicon": "https://www.radioswissjazz.ch/social-media/rsj-web.png",
     "votes": 1540,
     "geo_lat": 47.3769,
     "geo_long": 8.5417

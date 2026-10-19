@@ -2,6 +2,7 @@ package com.pulsecast.radio.playback
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.net.Uri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -11,6 +12,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 import com.pulsecast.radio.MainActivity
 
 @UnstableApi
@@ -79,13 +82,26 @@ class RadioPlaybackService : MediaSessionService() {
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo,
             mediaItems: MutableList<MediaItem>
-        ): com.google.common.util.concurrent.ListenableFuture<MutableList<MediaItem>> {
+        ): ListenableFuture<MutableList<MediaItem>> {
             val updatedItems = mediaItems.map { item ->
+                val uri = item.localConfiguration?.uri
+                    ?: item.requestMetadata.mediaUri
+                    ?: runCatching { Uri.parse(item.mediaId) }.getOrNull()
+
                 item.buildUpon()
-                    .setUri(item.requestMetadata.mediaUri)
+                    .apply {
+                        if (uri != null) {
+                            setUri(uri)
+                            setRequestMetadata(
+                                item.requestMetadata.buildUpon()
+                                    .setMediaUri(uri)
+                                    .build()
+                            )
+                        }
+                    }
                     .build()
             }.toMutableList()
-            return com.google.common.util.concurrent.Futures.immediateFuture(updatedItems)
+            return Futures.immediateFuture(updatedItems)
         }
     }
 }
