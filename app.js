@@ -1227,34 +1227,35 @@
       this.mouse = new THREE.Vector2();
 
       // 2. Cinematic Celestial Lighting
-      // Primary Sun: Dramatic illumination angle with crisp day/night terminator
-      const sunLight = new THREE.DirectionalLight(0xf5f9ff, 1.35);
-      sunLight.position.set(240, 160, 210);
+      // 2. Natural Google Earth Sun & Space Lighting
+      // Primary Sun: Natural warm-white sunlight
+      const sunLight = new THREE.DirectionalLight(0xffffff, 1.25);
+      sunLight.position.set(240, 150, 210);
       this.scene.add(sunLight);
 
-      // Deep sapphire fill light from night-side for luminous space depth
-      const nightFillLight = new THREE.DirectionalLight(0x1d4ed8, 0.45);
-      nightFillLight.position.set(-200, -100, -180);
-      this.scene.add(nightFillLight);
-
-      // Soft ambient space illumination
-      const ambientLight = new THREE.AmbientLight(0x0a1122, 0.65);
+      // Deep space subtle ambient illumination
+      const ambientLight = new THREE.AmbientLight(0x182436, 0.72);
       this.scene.add(ambientLight);
 
-      // 3. Earth Globe Sphere with Specular Ocean & Textured Continents
+      // Soft blue secondary fill light
+      const nightFillLight = new THREE.DirectionalLight(0x2563eb, 0.25);
+      nightFillLight.position.set(-200, -80, -180);
+      this.scene.add(nightFillLight);
+
+      // 3. Google Earth Globe Sphere with Natural Specular Reflections
       const earthRadius = 100;
       const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
 
       const earthMat = new THREE.MeshStandardMaterial({
-        color: 0x93c5fd,
-        roughness: 0.5,
-        metalness: 0.08
+        color: 0xffffff,
+        roughness: 0.65,
+        metalness: 0.04
       });
 
       this.globeMesh = new THREE.Mesh(earthGeo, earthMat);
       this.scene.add(this.globeMesh);
 
-      // Asynchronously load and color-grade Earth into rich Midnight Satellite aesthetics
+      // Load & enhance satellite texture into authentic Google Earth realism
       const textureLoader = new THREE.TextureLoader();
       textureLoader.load('earth.jpg', (texture) => {
         try {
@@ -1269,19 +1270,19 @@
         }
       });
 
-      // 4. Double-Layer Atmospheric Fresnel Glow Corona
+      // 4. Google Earth Rayleigh Sky-Blue Atmosphere
       this.createAtmosphere(earthRadius);
 
-      // 5. Aesthetic Celestial Graticule Rings (Equator, Tropics, Prime Meridian)
-      this.createGraticules(earthRadius);
+      // 5. Realistic Google Earth Cloud Formations Layer
+      this.createCloudLayer(earthRadius);
 
-      // 6. Multi-Depth Deep Space Starfield
+      // 6. Deep Space Starfield
       this.createStarfield();
 
-      // 7. Active Beacon Ring Mesh
+      // 7. Active Beacon Ring Mesh (Anchored inside globeMesh)
       this.createBeaconRing(earthRadius);
 
-      // 8. Hover Highlight Ring Mesh
+      // 8. Hover Highlight Ring Mesh (Anchored inside globeMesh)
       this.createHoverMarker();
 
       // 9. Input and Interaction listeners
@@ -1296,7 +1297,7 @@
       }
     },
 
-    // Generates a high-contrast dark satellite texture with midnight oceans and glossy specular map
+    // Enhances earth.jpg into authentic, vibrant Google Earth satellite appearance
     createStylizedEarthTexture: function (sourceImage) {
       const canvas = document.createElement('canvas');
       canvas.width = sourceImage.width || 2048;
@@ -1322,44 +1323,35 @@
         const b = data[i + 2];
 
         const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-        // Water detection in satellite maps (blue dominant or low-luminance deep oceans)
+        // Water detection in satellite maps
         const isWater = (b > r + 6 && b >= g - 4 && lum < 145) || (lum < 28 && b >= r);
 
         if (isWater) {
-          // Deep midnight navy obsidian ocean with subtle depth shading
+          // Google Earth natural deep sapphire-azure blue oceans
           const depth = Math.min(1.0, Math.max(0.0, lum / 100));
-          data[i] = Math.round(5 + depth * 5);         // Red: 5 - 10
-          data[i + 1] = Math.round(12 + depth * 14);    // Green: 12 - 26
-          data[i + 2] = Math.round(30 + depth * 32);    // Blue: 30 - 62
+          data[i] = Math.round(8 + depth * 14);       // Red: 8 - 22
+          data[i + 1] = Math.round(38 + depth * 38);  // Green: 38 - 76
+          data[i + 2] = Math.round(85 + depth * 55);  // Rich oceanic blue: 85 - 140
 
-          // Oceans are glossy and reflective (smooth = low roughness)
-          roughData[i] = 35;
-          roughData[i + 1] = 35;
-          roughData[i + 2] = 35;
+          // Oceans are smooth and reflective (low roughness = realistic sun glint)
+          roughData[i] = 40;
+          roughData[i + 1] = 40;
+          roughData[i + 2] = 40;
           roughData[i + 3] = 255;
         } else {
-          // Landmasses & topography
+          // Landmasses: vibrant, authentic Google Earth satellite colors
           if (lum > 185 && Math.abs(r - b) < 30 && Math.abs(g - b) < 30) {
-            // Polar ice caps & snowy summits: frosty luminous cyan-white
-            data[i] = Math.round(195 + (r - 185) * 0.35);
-            data[i + 1] = Math.round(220 + (g - 185) * 0.35);
-            data[i + 2] = Math.round(242 + (b - 185) * 0.2);
+            // Polar ice caps & glaciers: brilliant pure white
+            data[i] = Math.min(255, Math.round(r * 1.06));
+            data[i + 1] = Math.min(255, Math.round(g * 1.06));
+            data[i + 2] = Math.min(255, Math.round(b * 1.08));
             roughData[i] = 110;
           } else {
-            // Land topography: high-contrast dark satellite styling
-            const greenBias = g - (r + b) / 2;
-            if (greenBias > 4) {
-              // Lush forests & grasslands: deep emerald slate
-              data[i] = Math.round(r * 0.42 + 8);
-              data[i + 1] = Math.round(g * 0.62 + 16);
-              data[i + 2] = Math.round(b * 0.42 + 12);
-            } else {
-              // Desert, canyons & mountains: subtle warm bronze
-              data[i] = Math.round(r * 0.62 + 14);
-              data[i + 1] = Math.round(g * 0.54 + 11);
-              data[i + 2] = Math.round(b * 0.42 + 9);
-            }
-            roughData[i] = 215; // Continents are matte
+            // Natural satellite landscape: lush vegetation, golden deserts, earthy mountains
+            data[i] = Math.min(255, Math.round(r * 1.08 + 2));
+            data[i + 1] = Math.min(255, Math.round(g * 1.10 + 4));
+            data[i + 2] = Math.min(255, Math.round(b * 1.04));
+            roughData[i] = 220; // Land is matte
           }
           roughData[i + 1] = roughData[i];
           roughData[i + 2] = roughData[i];
@@ -1375,10 +1367,10 @@
       return { diffuseTex, roughTex };
     },
 
-    // Dual-Layer Atmospheric Fresnel Corona
+    // Google Earth Rayleigh Sky-Blue Atmosphere
     createAtmosphere: function (radius) {
-      // 1. Outer Glowing Atmospheric Rim (BackSide additive halo)
-      const outerGeo = new THREE.SphereGeometry(radius * 1.026, 64, 64);
+      // Thin, realistic sky-blue atmosphere shell hugging the Earth limb
+      const outerGeo = new THREE.SphereGeometry(radius * 1.016, 64, 64);
       const outerMat = new THREE.ShaderMaterial({
         vertexShader: `
           varying vec3 vNormal;
@@ -1396,9 +1388,9 @@
           void main() {
             vec3 viewDir = normalize(-vPosition);
             float intensity = 1.0 - abs(dot(viewDir, vNormal));
-            float glow = pow(intensity, 2.6);
-            vec3 atmosColor = mix(vec3(0.0, 0.45, 1.0), vec3(0.0, 0.95, 1.0), glow);
-            gl_FragColor = vec4(atmosColor, glow * 0.88);
+            float glow = pow(intensity, 3.6);
+            vec3 atmosColor = vec3(0.38, 0.68, 1.0); // Natural Google Earth sky-blue haze
+            gl_FragColor = vec4(atmosColor, glow * 0.85);
           }
         `,
         blending: THREE.AdditiveBlending,
@@ -1408,88 +1400,53 @@
       });
       const outerMesh = new THREE.Mesh(outerGeo, outerMat);
       this.scene.add(outerMesh);
-
-      // 2. Inner Rim Scattering (Curvature highlight)
-      const innerGeo = new THREE.SphereGeometry(radius * 1.003, 64, 64);
-      const innerMat = new THREE.ShaderMaterial({
-        vertexShader: `
-          varying vec3 vNormal;
-          varying vec3 vPosition;
-          void main() {
-            vNormal = normalize(normalMatrix * normal);
-            vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-            vPosition = mvPos.xyz;
-            gl_Position = projectionMatrix * mvPos;
-          }
-        `,
-        fragmentShader: `
-          varying vec3 vNormal;
-          varying vec3 vPosition;
-          void main() {
-            vec3 viewDir = normalize(-vPosition);
-            float rim = 1.0 - max(dot(viewDir, vNormal), 0.0);
-            float glow = pow(rim, 3.2);
-            gl_FragColor = vec4(0.0, 0.85, 1.0, glow * 0.35);
-          }
-        `,
-        blending: THREE.AdditiveBlending,
-        side: THREE.FrontSide,
-        transparent: true,
-        depthWrite: false
-      });
-      const innerMesh = new THREE.Mesh(innerGeo, innerMat);
-      this.scene.add(innerMesh);
     },
 
-    // Aesthetic Planetary Graticule Rings
-    createGraticules: function (radius) {
-      this.graticuleGroup = new THREE.Group();
+    // Realistic Google Earth Procedural Cloud Formation Layer
+    createCloudLayer: function (radius) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
 
-      const createLatRing = (lat, col = 0x00f2fe, op = 0.15) => {
-        const phi = (lat * Math.PI) / 180;
-        const y = radius * 1.002 * Math.sin(phi);
-        const r = radius * 1.002 * Math.cos(phi);
-        const segs = 96;
-        const pts = [];
-        for (let i = 0; i <= segs; i++) {
-          const theta = (i / segs) * Math.PI * 2;
-          pts.push(new THREE.Vector3(r * Math.cos(theta), y, r * Math.sin(theta)));
-        }
-        const geo = new THREE.BufferGeometry().setFromPoints(pts);
-        const mat = new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op });
-        return new THREE.Line(geo, mat);
-      };
+      ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+      ctx.fillRect(0, 0, 1024, 512);
 
-      const createMeridianRing = (lon, col = 0x00f2fe, op = 0.15) => {
-        const segs = 96;
-        const pts = [];
-        const theta = (lon * Math.PI) / 180;
-        for (let i = 0; i <= segs; i++) {
-          const phi = (i / segs) * Math.PI * 2;
-          const y = radius * 1.002 * Math.cos(phi);
-          const r = radius * 1.002 * Math.sin(phi);
-          pts.push(new THREE.Vector3(r * Math.sin(theta), y, r * Math.cos(theta)));
-        }
-        const geo = new THREE.BufferGeometry().setFromPoints(pts);
-        const mat = new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op });
-        return new THREE.Line(geo, mat);
-      };
+      // Realistic natural atmospheric cloud clusters
+      const numClusters = 42;
+      for (let i = 0; i < numClusters; i++) {
+        const cx = Math.random() * 1024;
+        const latBias = (Math.random() - 0.5) * 420 + 256;
+        const cy = Math.max(30, Math.min(480, latBias));
+        const r = 40 + Math.random() * 85;
 
-      // Glowing Equator line
-      this.graticuleGroup.add(createLatRing(0, 0x00f2fe, 0.32));
-      // Tropic of Cancer & Capricorn
-      this.graticuleGroup.add(createLatRing(23.44, 0x00f2fe, 0.14));
-      this.graticuleGroup.add(createLatRing(-23.44, 0x00f2fe, 0.14));
-      // Arctic & Antarctic Circles
-      this.graticuleGroup.add(createLatRing(66.5, 0x00f2fe, 0.10));
-      this.graticuleGroup.add(createLatRing(-66.5, 0x00f2fe, 0.10));
-      // Prime Meridian & Orthogonal Meridians
-      this.graticuleGroup.add(createMeridianRing(0, 0x00f2fe, 0.22));
-      this.graticuleGroup.add(createMeridianRing(90, 0x00f2fe, 0.10));
-      this.graticuleGroup.add(createMeridianRing(180, 0x00f2fe, 0.10));
-      this.graticuleGroup.add(createMeridianRing(270, 0x00f2fe, 0.10));
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        const opacity = 0.08 + Math.random() * 0.18;
+        grad.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
+        grad.addColorStop(0.5, `rgba(255, 255, 255, ${opacity * 0.45})`);
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-      this.scene.add(this.graticuleGroup);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const cloudTex = new THREE.CanvasTexture(canvas);
+      cloudTex.wrapS = THREE.RepeatWrapping;
+      cloudTex.wrapT = THREE.ClampToEdgeWrapping;
+
+      const cloudGeo = new THREE.SphereGeometry(radius * 1.0035, 64, 64);
+      const cloudMat = new THREE.MeshStandardMaterial({
+        map: cloudTex,
+        transparent: true,
+        opacity: 0.7,
+        blending: THREE.NormalBlending,
+        depthWrite: false
+      });
+
+      this.cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+      this.scene.add(this.cloudMesh);
     },
 
     createStarfield: function () {
@@ -1566,29 +1523,35 @@
     },
 
     createBeaconRing: function (radius) {
-      const ringGeo = new THREE.RingGeometry(0.35, 1.2, 24);
+      // Delicate, tight micro-selection ring (scaled precisely to frame the station pinpoint)
+      const ringGeo = new THREE.RingGeometry(0.12, 0.22, 32);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x00f2fe,
+        color: 0xfbbf24, // Radiant warm amber-gold selection halo
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.85
+        opacity: 0.9,
+        depthTest: false
       });
       this.beaconMesh = new THREE.Mesh(ringGeo, ringMat);
       this.beaconMesh.visible = false;
-      this.scene.add(this.beaconMesh);
+      this.beaconMesh.renderOrder = 999;
+      this.globeMesh.add(this.beaconMesh);
     },
 
     createHoverMarker: function () {
-      const ringGeo = new THREE.RingGeometry(0.5, 0.85, 16);
+      // Delicate, tight hover indicator ring
+      const ringGeo = new THREE.RingGeometry(0.12, 0.20, 24);
       const ringMat = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.9
+        opacity: 0.85,
+        depthTest: false
       });
       this.hoverMarkerMesh = new THREE.Mesh(ringGeo, ringMat);
       this.hoverMarkerMesh.visible = false;
-      this.scene.add(this.hoverMarkerMesh);
+      this.hoverMarkerMesh.renderOrder = 998;
+      this.globeMesh.add(this.hoverMarkerMesh);
     },
 
     latLonToVec3: function (lat, lon, radius = 100.45) {
@@ -1675,10 +1638,10 @@
       const lon = parseFloat(station.geo_long);
       if (isNaN(lat) || isNaN(lon)) return;
 
-      const pos = this.latLonToVec3(lat, lon, 100.7);
+      const localPos = this.latLonToVec3(lat, lon, 100.15);
       if (this.beaconMesh) {
-        this.beaconMesh.position.copy(pos);
-        this.beaconMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        this.beaconMesh.position.copy(localPos);
+        this.beaconMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), localPos.clone().normalize());
         this.beaconMesh.visible = true;
       }
 
@@ -2023,10 +1986,10 @@
           this.mountEl.style.cursor = 'pointer';
 
           // Show subtle hover indicator ring at station location
-          const pos = intersects[0].point;
           if (this.hoverMarkerMesh) {
-            this.hoverMarkerMesh.position.copy(pos).multiplyScalar(1.002);
-            this.hoverMarkerMesh.lookAt(new THREE.Vector3(0, 0, 0));
+            const localPos = this.latLonToVec3(parseFloat(station.geo_lat), parseFloat(station.geo_long), 100.12);
+            this.hoverMarkerMesh.position.copy(localPos);
+            this.hoverMarkerMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), localPos.clone().normalize());
             this.hoverMarkerMesh.visible = true;
           }
 
@@ -2067,9 +2030,9 @@
         if (station) {
           if (reticleEl) reticleEl.classList.add('is-locked');
           if (this.hoverMarkerMesh) {
-            const pos = intersects[0].point;
-            this.hoverMarkerMesh.position.copy(pos).multiplyScalar(1.002);
-            this.hoverMarkerMesh.lookAt(new THREE.Vector3(0, 0, 0));
+            const localPos = this.latLonToVec3(parseFloat(station.geo_lat), parseFloat(station.geo_long), 100.12);
+            this.hoverMarkerMesh.position.copy(localPos);
+            this.hoverMarkerMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), localPos.clone().normalize());
             this.hoverMarkerMesh.visible = true;
           }
           this.hoveredStation = station;
@@ -2145,18 +2108,18 @@
         this.currentRot.y += (this.targetRot.y - this.currentRot.y) * 0.06;
         this.cameraDistance += (this.targetDistance - this.cameraDistance) * 0.06;
 
-        // Apply rotation to globe, graticule rings & points
+        // Apply rotation to globe & points
         this.globeMesh.rotation.x = this.currentRot.x;
         this.globeMesh.rotation.y = this.currentRot.y;
-
-        if (this.graticuleGroup) {
-          this.graticuleGroup.rotation.x = this.currentRot.x;
-          this.graticuleGroup.rotation.y = this.currentRot.y;
-        }
 
         if (this.pointsMesh) {
           this.pointsMesh.rotation.x = this.currentRot.x;
           this.pointsMesh.rotation.y = this.currentRot.y;
+        }
+
+        if (this.cloudMesh) {
+          this.cloudMesh.rotation.x = this.currentRot.x;
+          this.cloudMesh.rotation.y = this.currentRot.y + frameCount * 0.00018;
         }
 
         // Radio Garden reticle lock check (throttled)
@@ -2164,16 +2127,16 @@
           this.checkCenterReticle();
         }
 
-        // Animate beacon pulse for active station
+        // Animate subtle beacon pulse for active station (tight micro-ring)
         if (this.beaconMesh && this.beaconMesh.visible) {
-          beaconScale += 0.035;
-          beaconOpacity -= 0.02;
-          if (beaconScale > 2.2) {
-            beaconScale = 1;
-            beaconOpacity = 0.85;
+          beaconScale += 0.016;
+          beaconOpacity -= 0.015;
+          if (beaconScale > 1.35) {
+            beaconScale = 0.9;
+            beaconOpacity = 0.9;
           }
           this.beaconMesh.scale.set(beaconScale, beaconScale, 1);
-          this.beaconMesh.material.opacity = Math.max(0, beaconOpacity);
+          this.beaconMesh.material.opacity = Math.max(0.2, beaconOpacity);
         }
 
         this.camera.position.z = this.cameraDistance;
