@@ -65,9 +65,15 @@ Then visit **`http://localhost:3000`** in your browser.
 - High quality audio playback with buffer and connection status.
 - Previous / Next station navigation.
 - Volume slider with mute toggle and volume persistence.
-- **Favorites System**: Click the ❤️ heart icon to bookmark any station.
+- **Favorites System**: Click the ❤️ heart icon to bookmark any station. Instant one-click access via the **Favorites** button in the top navigation bar or keyboard shortcut `F`.
 - **Sleep Timer**: Auto-off timer (15, 30, 45, 60 minutes) for falling asleep to music.
 - **Custom Stream URL**: Paste any direct Icecast, Shoutcast, MP3, or AAC radio URL to stream directly.
+
+### 4. 🔄 Stream Links Manager (On-Demand & Automatic Updates)
+- **On-Demand Update**: Click the **"Update Links"** button in the top navigation bar (or press `U`) to synchronize and verify all stream URLs against the live Radio Browser API database.
+- **Automatic Startup Sync**: With every use of the app, PulseCast automatically performs a background check to ensure saved favorites and featured presets have fresh, working stream links.
+- **Self-Healing on Stream Error**: If an audio stream fails or an older broadcaster CDN URL expires, PulseCast automatically re-queries the API for an updated working endpoint and resumes playback seamlessly.
+- **Links Manager Dashboard**: Click the status indicator pill (`● Links: Up to date`) to view mirror status, counts of verified streams, and trigger a complete catalog synchronization.
 
 ---
 
@@ -76,3 +82,6 @@ Then visit **`http://localhost:3000`** in your browser.
 - `Alt + Right`: Next Station
 - `Alt + Left`: Previous Station
 - `M`: Toggle Mute
+- `F`: Show / Toggle My Favorite Stations
+- `U`: Update / Refresh Station Links On Demand
+- `Esc`: Close Modals / Manager Dialogs

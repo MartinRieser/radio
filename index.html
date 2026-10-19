@@ -29,8 +29,7 @@
             <span class="live-pulse-dot"></span>
           </div>
           <div class="brand-text">
-            <h1>PulseCast <span class="badge-free">FREE</span></h1>
-            <p class="tagline">Explore 40,000+ live web radio stations</p>
+            <h1>PulseCast</h1>
           </div>
         </div>
 
@@ -56,29 +55,61 @@
             </button>
           </div>
 
-          <!-- Custom URL stream button -->
-          <button id="open-custom-modal-btn" class="btn btn-secondary" title="Play any custom audio stream URL">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          <!-- Quick Show Favorites Button -->
+          <button id="show-favorites-btn" class="btn btn-secondary btn-favorites-toggle" title="Show my favorite stations (Shortcut: F)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="fav-heart-icon">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
-            <span>Custom URL</span>
+            <span>Favorites</span>
+            <span id="header-fav-count" class="badge-fav-count">0</span>
           </button>
 
           <!-- Sleep Timer Toggle -->
           <div class="dropdown-wrapper">
-            <button id="sleep-timer-btn" class="btn btn-icon" title="Sleep Timer">
+            <button id="sleep-timer-btn" class="btn btn-icon" title="Sleep Timer" aria-label="Sleep Timer">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span id="sleep-timer-badge" class="badge-timer hidden">30m</span>
             </button>
-            <div id="sleep-timer-menu" class="dropdown-menu hidden">
+            <div id="sleep-timer-menu" class="dropdown-menu dropdown-menu-right hidden">
               <div class="dropdown-title">Sleep Timer</div>
               <button class="menu-item" data-time="0">Turn Off</button>
               <button class="menu-item" data-time="15">15 minutes</button>
               <button class="menu-item" data-time="30">30 minutes</button>
               <button class="menu-item" data-time="45">45 minutes</button>
               <button class="menu-item" data-time="60">60 minutes</button>
+            </div>
+          </div>
+
+          <!-- More Options Menu (Decluttered secondary actions) -->
+          <div class="dropdown-wrapper">
+            <button id="more-menu-btn" class="btn btn-icon btn-more-menu" title="More options" aria-label="More options">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1.5"></circle>
+                <circle cx="19" cy="12" r="1.5"></circle>
+                <circle cx="5" cy="12" r="1.5"></circle>
+              </svg>
+            </button>
+            <div id="more-dropdown-menu" class="dropdown-menu dropdown-menu-right hidden">
+              <div class="dropdown-title">Tools &amp; Options</div>
+              <button id="update-links-btn" class="menu-item menu-item-action" title="Check and update radio station stream links on demand">
+                <svg class="sync-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span id="update-links-btn-text">Update Stream Links</span>
+              </button>
+              <button id="open-custom-modal-btn" class="menu-item menu-item-action" title="Play any custom audio stream URL">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                </svg>
+                <span>Play Custom URL</span>
+              </button>
+              <div class="dropdown-divider"></div>
+              <div id="links-status-badge" class="menu-item menu-item-status" title="Click to view stream links details and mirror info">
+                <span class="links-status-dot"></span>
+                <span id="links-status-text">Links: Up to date</span>
+              </div>
             </div>
           </div>
         </div>
@@ -99,7 +130,7 @@
             <input 
               type="text" 
               id="search-input" 
-              placeholder="Search stations, genres, artists, or cities (e.g. Jazz, Chillout, BBC, Swiss Pop)..." 
+              placeholder="Search stations, genres, cities (e.g. Jazz, Chillout, BBC, Swiss Pop)..." 
               autocomplete="off"
               spellcheck="false"
             >
@@ -115,17 +146,18 @@
           <div class="filters-row">
             <!-- Category Pills -->
             <div class="genre-pills-container" id="genre-pills">
-              <button class="pill active" data-genre="featured">✨ Featured</button>
-              <button class="pill" data-genre="topclick">🔥 Trending</button>
-              <button class="pill" data-genre="chillout">☕ Chillout & Lo-Fi</button>
-              <button class="pill" data-genre="pop">🎵 Pop Hits</button>
-              <button class="pill" data-genre="rock">🎸 Rock & Alternative</button>
-              <button class="pill" data-genre="jazz">🎷 Jazz & Blues</button>
-              <button class="pill" data-genre="classical">🎻 Classical</button>
-              <button class="pill" data-genre="electronic">⚡ Electronic & Club</button>
-              <button class="pill" data-genre="ambient">🌌 Ambient & Relax</button>
-              <button class="pill" data-genre="news">📰 News & Talk</button>
-              <button class="pill pill-favorites" data-genre="favorites">❤️ Favorites (<span id="fav-count">0</span>)</button>
+              <button class="pill active" data-genre="featured">Featured</button>
+              <button class="pill pill-adfree" data-genre="adfree">🛡️ Werbefrei</button>
+              <button class="pill pill-favorites" data-genre="favorites">Favorites (<span id="fav-count">0</span>)</button>
+              <button class="pill" data-genre="topclick">Trending</button>
+              <button class="pill" data-genre="chillout">Chillout</button>
+              <button class="pill" data-genre="pop">Pop</button>
+              <button class="pill" data-genre="rock">Rock</button>
+              <button class="pill" data-genre="jazz">Jazz</button>
+              <button class="pill" data-genre="classical">Classical</button>
+              <button class="pill" data-genre="electronic">Electronic</button>
+              <button class="pill" data-genre="ambient">Ambient</button>
+              <button class="pill" data-genre="news">News</button>
             </div>
 
             <!-- Secondary Filters Dropdown -->
@@ -153,7 +185,7 @@
                 <select id="sort-select" title="Sort Stations">
                   <option value="clickcount">🔥 Most Popular</option>
                   <option value="votes">⭐ Highest Voted</option>
-                  <option value="bitrate">🎧 Best Quality (Bitrate)</option>
+                  <option value="bitrate">🎧 Best Quality</option>
                   <option value="name">🔤 Alphabetical</option>
                 </select>
               </div>
@@ -166,14 +198,6 @@
           <div class="results-meta">
             <h2 id="section-title">Featured Stations</h2>
             <span id="results-count" class="results-badge">14 handpicked stations</span>
-          </div>
-          <div id="api-status-note" class="provider-pill" title="Powered by the free Open Radio Browser community API">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-            <span>Free Radio Browser API</span>
           </div>
         </section>
 
@@ -388,6 +412,7 @@
           <div class="live-timeline">
             <span class="live-dot"></span>
             <span id="playback-timer" class="live-text">OFFLINE</span>
+            <span id="player-ad-badge" class="player-ad-pill hidden" title="Pre-Roll Status"></span>
             <span class="live-divider">•</span>
             <span id="audio-bitrate-label" class="stream-codec-info">Ready to stream</span>
           </div>
@@ -453,6 +478,74 @@
           <button type="submit" class="btn btn-primary">Start Streaming</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Update Links Modal -->
+  <div id="update-links-modal" class="modal-backdrop hidden">
+    <div class="modal-card modal-links-manager">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <svg class="modal-title-icon text-accent-cyan" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <h3>Radio Station Links Manager</h3>
+        </div>
+        <button id="close-links-modal-btn" class="btn-close" aria-label="Close modal">×</button>
+      </div>
+      <p class="modal-desc">
+        Radio stations occasionally update their streaming URLs and CDN servers. Synchronize your saved favorites and featured stations with the live <strong>Radio Browser API</strong> on demand.
+      </p>
+
+      <!-- Sync Stats Grid -->
+      <div class="sync-stats-grid">
+        <div class="sync-stat-card">
+          <span class="sync-stat-label">Favorites Synced</span>
+          <span id="sync-favs-count" class="sync-stat-val">0</span>
+          <span class="sync-stat-hint">Saved in browser</span>
+        </div>
+        <div class="sync-stat-card">
+          <span class="sync-stat-label">Featured Verified</span>
+          <span id="sync-featured-count" class="sync-stat-val">19</span>
+          <span class="sync-stat-hint">Curated live feeds</span>
+        </div>
+        <div class="sync-stat-card">
+          <span class="sync-stat-label">3D Globe Radar</span>
+          <span id="sync-globe-count" class="sync-stat-val">1,500+</span>
+          <span class="sync-stat-hint">Global coordinates</span>
+        </div>
+        <div class="sync-stat-card">
+          <span class="sync-stat-label">Last Synchronized</span>
+          <span id="sync-last-time" class="sync-stat-val text-sm">Startup</span>
+          <span class="sync-stat-hint">Auto-sync on use: Active</span>
+        </div>
+      </div>
+
+      <!-- Sync Log / Details -->
+      <div class="sync-details-box">
+        <div class="sync-detail-row">
+          <span>Active API Mirror:</span>
+          <span id="sync-api-mirror" class="font-mono text-cyan">https://de1.api.radio-browser.info</span>
+        </div>
+        <div class="sync-detail-row">
+          <span>Auto-Update Policy:</span>
+          <span class="text-green">✓ Enabled automatically with every use</span>
+        </div>
+        <div class="sync-detail-row">
+          <span>Self-Healing on Stream Error:</span>
+          <span class="text-green">✓ Active (auto re-resolves dead links)</span>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button type="button" id="close-links-modal-bottom-btn" class="btn btn-secondary">Close</button>
+        <button type="button" id="trigger-update-links-btn" class="btn btn-primary">
+          <svg class="sync-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Update All Links Now</span>
+        </button>
+      </div>
     </div>
   </div>
 

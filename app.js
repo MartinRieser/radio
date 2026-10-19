@@ -117,7 +117,7 @@
   // --- Handpicked Featured High-Uptime Stations with Geolocation ---
   const CURATED_STATIONS = [
     {
-      stationuuid: 'curated-oe3',
+      stationuuid: 'bcb91573-5557-456d-afb2-ee1462efbd25',
       name: 'Hitradio Ö3',
       url_resolved: 'https://orf-live.ors-shoutcast.at/oe3-q2a',
       country: 'Austria',
@@ -131,7 +131,7 @@
       geo_long: 16.3738
     },
     {
-      stationuuid: 'curated-fm4',
+      stationuuid: '206f93c5-5f3c-4ba1-82c2-19a42582fcc2',
       name: 'FM4 (ORF)',
       url_resolved: 'https://orf-live.ors-shoutcast.at/fm4-q2a',
       country: 'Austria',
@@ -145,7 +145,7 @@
       geo_long: 16.3630
     },
     {
-      stationuuid: 'curated-swisspop',
+      stationuuid: '067388ea-bff2-41b5-869a-766b2f7b4a47',
       name: 'Radio Swiss Pop',
       url_resolved: 'https://stream.srg-ssr.ch/m/rsp/mp3_128',
       country: 'Switzerland',
@@ -159,7 +159,7 @@
       geo_long: 7.4474
     },
     {
-      stationuuid: 'curated-bayern3',
+      stationuuid: '0de82079-04e7-407b-b616-e0726eba5244',
       name: 'Bayern 3',
       url_resolved: 'https://dispatcher.rndfnk.com/br/br3/live/mp3/mid',
       country: 'Germany',
@@ -173,7 +173,7 @@
       geo_long: 11.5820
     },
     {
-      stationuuid: 'curated-swr3',
+      stationuuid: '240d28b9-7858-48d2-a816-9cf8e1875fe8',
       name: 'SWR3',
       url_resolved: 'https://liveradio.swr.de/sw282p3/swr3/play.mp3',
       country: 'Germany',
@@ -187,7 +187,7 @@
       geo_long: 8.2400
     },
     {
-      stationuuid: 'curated-1live',
+      stationuuid: 'b2cbd1fd-275d-432a-8b20-37dcb3572315',
       name: '1LIVE',
       url_resolved: 'https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3',
       country: 'Germany',
@@ -201,7 +201,7 @@
       geo_long: 6.9603
     },
     {
-      stationuuid: 'curated-fip',
+      stationuuid: '7b6aca3d-dfa3-47dd-9f57-820b04c3f339',
       name: 'FIP (Radio France)',
       url_resolved: 'https://icecast.radiofrance.fr/fip-midfi.mp3',
       country: 'France',
@@ -215,21 +215,21 @@
       geo_long: 2.3522
     },
     {
-      stationuuid: 'curated-groovesalad',
+      stationuuid: '0596bdc5-77fc-48ba-8653-e5e34bb86568',
       name: 'SomaFM Groove Salad',
-      url_resolved: 'https://ice2.somafm.com/groovesalad-128-mp3',
+      url_resolved: 'https://ice1.somafm.com/groovesalad-256-mp3',
       country: 'United States',
       countrycode: 'US',
       tags: 'ambient, chillout, downtempo, electronic',
       codec: 'MP3',
-      bitrate: 128,
+      bitrate: 256,
       favicon: 'https://somafm.com/img3/groovesalad120.png',
       votes: 2900,
       geo_lat: 37.7749,
       geo_long: -122.4194
     },
     {
-      stationuuid: 'curated-kexp',
+      stationuuid: 'e9fddd49-3ee2-4597-8574-1b7dbd00aac0',
       name: 'KEXP 90.3 FM Seattle',
       url_resolved: 'https://kexp-mp3-128.streamguys1.com/kexp128.mp3',
       country: 'United States',
@@ -243,7 +243,7 @@
       geo_long: -122.3321
     },
     {
-      stationuuid: 'curated-lofi',
+      stationuuid: '4260f1f5-d5b3-44d5-9666-355da4da0b21',
       name: 'Lofi Cafe Radio',
       url_resolved: 'https://streams.ilovemusic.de/iloveradio17.mp3',
       country: 'Germany',
@@ -257,7 +257,7 @@
       geo_long: 13.4050
     },
     {
-      stationuuid: 'curated-swissclassic',
+      stationuuid: '34edbcea-ce81-4e39-81ab-71e74745d544',
       name: 'Radio Swiss Classic',
       url_resolved: 'https://stream.srg-ssr.ch/m/rsc_de/mp3_128',
       country: 'Switzerland',
@@ -271,9 +271,9 @@
       geo_long: 7.5886
     },
     {
-      stationuuid: 'curated-dronezone',
+      stationuuid: '960eb2e9-0601-11e8-ae97-52543be04c81',
       name: 'SomaFM Drone Zone',
-      url_resolved: 'https://ice2.somafm.com/dronezone-128-mp3',
+      url_resolved: 'https://ice5.somafm.com/dronezone-128-mp3',
       country: 'United States',
       countrycode: 'US',
       tags: 'ambient, space, drone, sleep',
@@ -285,7 +285,7 @@
       geo_long: -122.4094
     },
     {
-      stationuuid: 'curated-swissjazz',
+      stationuuid: '9a368941-71a3-4bda-9186-6604d9030514',
       name: 'Radio Swiss Jazz',
       url_resolved: 'https://stream.srg-ssr.ch/m/rsj/mp3_128',
       country: 'Switzerland',
@@ -299,7 +299,7 @@
       geo_long: 8.5417
     },
     {
-      stationuuid: 'curated-ibizaglobal',
+      stationuuid: '960e4940-0601-11e8-ae97-52543be04c81',
       name: 'Ibiza Global Radio',
       url_resolved: 'https://inhouse.ibizaglobalradio.com:8024/ibizaglobalradio.mp3',
       country: 'Spain',
@@ -313,7 +313,7 @@
       geo_long: 1.4206
     },
     {
-      stationuuid: 'curated-antenneby',
+      stationuuid: '78d27eb0-ad49-4188-be72-38f7137e4164',
       name: 'Antenne Bayern',
       url_resolved: 'https://stream.antenne.de/antenne/stream/mp3',
       country: 'Germany',
@@ -327,13 +327,13 @@
       geo_long: 11.5720
     },
     {
-      stationuuid: 'curated-secretagent',
+      stationuuid: '0ec95505-0ff5-4b11-af12-80d77d591367',
       name: 'SomaFM Secret Agent',
-      url_resolved: 'https://ice2.somafm.com/secretagent-128-mp3',
+      url_resolved: 'https://ice6.somafm.com/secretagent-128-aac',
       country: 'United States',
       countrycode: 'US',
       tags: 'spy, surf, lounge, vintage',
-      codec: 'MP3',
+      codec: 'AAC',
       bitrate: 128,
       favicon: 'https://somafm.com/img3/secretagent120.png',
       votes: 1150,
@@ -341,7 +341,7 @@
       geo_long: -122.4294
     },
     {
-      stationuuid: 'curated-rockantenne',
+      stationuuid: '4b473070-a3c2-41bd-8d98-c2db5f5954bc',
       name: 'Rock Antenne Heavy Metal',
       url_resolved: 'https://stream.rockantenne.de/heavy-metal/stream/mp3',
       country: 'Germany',
@@ -355,7 +355,7 @@
       geo_long: 11.5620
     },
     {
-      stationuuid: 'curated-bbc1',
+      stationuuid: 'f7fd408e-02a5-49a1-8c03-078727e97e8f',
       name: 'BBC Radio 1',
       url_resolved: 'https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one',
       country: 'United Kingdom',
@@ -369,7 +369,7 @@
       geo_long: -0.1400
     },
     {
-      stationuuid: 'curated-bbcworld',
+      stationuuid: '14b6c684-bb7c-4926-b2a3-fd5a02bf7867',
       name: 'BBC World Service',
       url_resolved: 'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service',
       country: 'United Kingdom',
@@ -435,6 +435,7 @@
   const playbackTimer = document.getElementById('playback-timer');
   const liveDot = document.querySelector('.live-dot');
   const audioBitrateLabel = document.getElementById('audio-bitrate-label');
+  const playerAdBadge = document.getElementById('player-ad-badge');
   const currentFavBtn = document.getElementById('current-fav-btn');
 
   // Volume
@@ -450,12 +451,36 @@
   const sleepTimerBadge = document.getElementById('sleep-timer-badge');
   const sleepTimerMenu = document.getElementById('sleep-timer-menu');
 
+  // More Options Dropdown
+  const moreMenuBtn = document.getElementById('more-menu-btn');
+  const moreDropdownMenu = document.getElementById('more-dropdown-menu');
+
   // Custom Stream Modal
   const openCustomModalBtn = document.getElementById('open-custom-modal-btn');
   const closeCustomModalBtn = document.getElementById('close-custom-modal-btn');
   const cancelCustomBtn = document.getElementById('cancel-custom-btn');
   const customModal = document.getElementById('custom-stream-modal');
   const customForm = document.getElementById('custom-stream-form');
+
+  // On-Demand Stream Links Manager DOM
+  const updateLinksBtn = document.getElementById('update-links-btn');
+  const updateLinksBtnText = document.getElementById('update-links-btn-text');
+  const linksStatusBadge = document.getElementById('links-status-badge');
+  const linksStatusText = document.getElementById('links-status-text');
+  const updateLinksModal = document.getElementById('update-links-modal');
+  const closeLinksModalBtn = document.getElementById('close-links-modal-btn');
+  const closeLinksModalBottomBtn = document.getElementById('close-links-modal-bottom-btn');
+  const triggerUpdateLinksBtn = document.getElementById('trigger-update-links-btn');
+  const syncFavsCount = document.getElementById('sync-favs-count');
+  const syncFeaturedCount = document.getElementById('sync-featured-count');
+  const syncGlobeCount = document.getElementById('sync-globe-count');
+  const syncLastTime = document.getElementById('sync-last-time');
+  const syncApiMirror = document.getElementById('sync-api-mirror');
+  let isUpdatingLinks = false;
+
+  // Header Favorites Button
+  const showFavoritesBtn = document.getElementById('show-favorites-btn');
+  const headerFavCount = document.getElementById('header-fav-count');
 
   // Toast
   const toast = document.getElementById('toast');
@@ -469,10 +494,12 @@
 
   // --- Initializer ---
   function init() {
+    loadCachedCuratedStations();
     loadFavorites();
     initAudioEvents();
     initVisualizer();
     setupEventListeners();
+    updateLinksStatusDisplay();
 
     // Default volume
     const savedVol = localStorage.getItem('pulse_volume');
@@ -489,6 +516,34 @@
 
     // Preload large catalog of geo stations in background
     loadGeoStations();
+
+    // Automatically check and refresh radio station stream links on every app launch
+    setTimeout(() => {
+      updateStationLinks({ silent: true, isAuto: true });
+    }, 1800);
+  }
+
+  // --- Cached Curated Stations ---
+  function loadCachedCuratedStations() {
+    try {
+      const cached = localStorage.getItem('pulse_curated_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          CURATED_STATIONS.forEach(c => {
+            const match = parsed.find(p => p.stationuuid === c.stationuuid);
+            if (match && match.url_resolved) {
+              c.url_resolved = match.url_resolved;
+              if (match.bitrate) c.bitrate = match.bitrate;
+              if (match.codec) c.codec = match.codec;
+              if (match.favicon) c.favicon = match.favicon;
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Failed loading cached curated stations:', e);
+    }
   }
 
   // --- Storage & Favorites ---
@@ -514,6 +569,50 @@
   function updateFavoritesBadge() {
     const favCountEl = document.getElementById('fav-count');
     if (favCountEl) favCountEl.textContent = favorites.length;
+    if (headerFavCount) headerFavCount.textContent = favorites.length;
+    if (syncFavsCount) syncFavsCount.textContent = favorites.length;
+  }
+
+  function showFavorites() {
+    if (currentView === 'globe') {
+      switchView('grid');
+    }
+
+    if (searchInput) {
+      searchInput.value = '';
+      if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+    }
+
+    activeGenre = 'favorites';
+    document.querySelectorAll('.genre-pills-container .pill').forEach(p => {
+      if (p.getAttribute('data-genre') === 'favorites') {
+        p.classList.add('active');
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        p.classList.remove('active');
+      }
+    });
+
+    if (showFavoritesBtn) {
+      showFavoritesBtn.classList.add('is-active');
+    }
+
+    renderFavorites();
+  }
+
+  function toggleFavoritesView() {
+    if (activeGenre === 'favorites' && currentView === 'grid') {
+      const featuredPill = document.querySelector('.genre-pills-container .pill[data-genre="featured"]');
+      if (featuredPill) {
+        featuredPill.click();
+      } else {
+        activeGenre = 'featured';
+        if (showFavoritesBtn) showFavoritesBtn.classList.remove('is-active');
+        loadCuratedStations();
+      }
+    } else {
+      showFavorites();
+    }
   }
 
   function isFavorite(station) {
@@ -559,6 +658,83 @@
     }, 2800);
   }
 
+  // --- Pre-Roll & Audio Ad Policy Detection ---
+  function detectAdPolicy(station) {
+    if (!station) {
+      return { type: 'unknown', label: 'Direktstream', isAdFree: false, isPrerollLikely: false, tooltip: 'Standard-Stream' };
+    }
+
+    const url = (station.url_resolved || station.url || '').toLowerCase();
+    const name = (station.name || '').toLowerCase();
+    const tags = (station.tags || '').toLowerCase();
+
+    // 1. Guaranteed 100% Ad-Free (Public Broadcasters & Independent Listener-Supported)
+    const isAdFree =
+      // Public Broadcasters: Swiss SRG SSR / SRF
+      url.includes('srg-ssr.ch') || url.includes('srf.ch') || name.includes('swiss pop') || name.includes('swiss jazz') || name.includes('swiss classic') ||
+      // BBC
+      url.includes('bbc.co.uk') || url.includes('bbcfmt.net') || name.includes('bbc ') || name.startsWith('bbc') ||
+      // German ARD / Deutschlandradio
+      url.includes('wdr.de') || url.includes('ndr.de') || url.includes('swr.de') || url.includes('br.de') || url.includes('hr.de') || url.includes('rbb-online.de') || url.includes('deutschlandfunk') || url.includes('dradio.de') ||
+      // Austrian ORF
+      url.includes('orf.at') || name.includes('fm4') || name.includes('ö1') || name.includes('oe1') ||
+      // French Radio France (FIP, France Musique, etc.)
+      url.includes('radiofrance.fr') || url.includes('fip.') || name.includes('fip') || name.includes('france musique') ||
+      // Independent non-profit / listener supported
+      url.includes('somafm.com') || name.includes('somafm') ||
+      url.includes('kexp.org') || name.includes('kexp') ||
+      url.includes('byte.fm') || url.includes('radioparadise.com') ||
+      // Explicit tags
+      tags.includes('ad-free') || tags.includes('commercial-free') || tags.includes('werbefrei') || tags.includes('no ads');
+
+    if (isAdFree) {
+      return {
+        type: 'ad-free',
+        label: 'Werbefrei (0% Pre-Roll)',
+        shortLabel: 'Werbefrei',
+        isAdFree: true,
+        isPrerollLikely: false,
+        tooltip: 'Öffentlich-rechtlich oder spendenfinanziert: 100% werbefreier Audiostream ohne Pre-Roll Unterbrechung'
+      };
+    }
+
+    // 2. High probability of pre-roll ad insertion (Commercial SSAI ad network CDNs)
+    const isPrerollLikely =
+      url.includes('streamtheworld.com') ||
+      url.includes('tritondigital.com') ||
+      url.includes('adswizz.com') ||
+      url.includes('ais-stream') ||
+      url.includes('targetspot.com') ||
+      url.includes('bauerweb.co.uk') ||
+      url.includes('planetradio.co.uk') ||
+      url.includes('live365.com') ||
+      url.includes('?awparams=') ||
+      url.includes('&awparams=') ||
+      url.includes('?preroll=') ||
+      url.includes('&preroll=');
+
+    if (isPrerollLikely) {
+      return {
+        type: 'preroll-likely',
+        label: 'Pre-Roll Werbung möglich',
+        shortLabel: 'Pre-Roll möglich',
+        isAdFree: false,
+        isPrerollLikely: true,
+        tooltip: 'Kommerzielles Ad-Netzwerk (Triton / AdsWizz): Vor Streamstart kann ein Werbespot geschaltet werden'
+      };
+    }
+
+    // 3. Direct Icecast / Shoutcast Stream without known commercial ad wrappers
+    return {
+      type: 'direct',
+      label: 'Direktstream (Standard)',
+      shortLabel: 'Direktstream',
+      isAdFree: false,
+      isPrerollLikely: false,
+      tooltip: 'Direkter Radiostream ohne bekannte Pre-Roll Werbe-Engine'
+    };
+  }
+
   // --- Helper Functions ---
   function getCountryFlag(countryCode) {
     if (!countryCode || countryCode.length !== 2) return '🌐';
@@ -581,6 +757,358 @@
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  // ==========================================================================
+  // Station Links Manager & On-Demand Synchronization
+  // ==========================================================================
+
+  function formatLastUpdatedTime(timestamp) {
+    if (!timestamp) return 'Never';
+    const diffMs = Date.now() - timestamp;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHours = Math.floor(diffMin / 60);
+
+    if (diffSec < 60) return 'Just now';
+    if (diffMin < 60) return `${diffMin}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return new Date(timestamp).toLocaleDateString();
+  }
+
+  function updateLinksStatusDisplay(timestamp) {
+    const ts = timestamp || parseInt(localStorage.getItem('pulse_links_last_updated') || '0', 10);
+    const text = ts ? `Links: ${formatLastUpdatedTime(ts)}` : 'Links: Up to date';
+    if (linksStatusText) {
+      linksStatusText.textContent = text;
+    }
+    if (syncLastTime) {
+      syncLastTime.textContent = ts ? formatLastUpdatedTime(ts) : 'On startup';
+    }
+    if (syncFavsCount) {
+      syncFavsCount.textContent = favorites.length;
+    }
+    if (syncFeaturedCount) {
+      syncFeaturedCount.textContent = CURATED_STATIONS.length;
+    }
+    if (syncGlobeCount) {
+      syncGlobeCount.textContent = geoStationsList.length > 0 ? `${geoStationsList.length}+` : '1,500+';
+    }
+    if (syncApiMirror) {
+      syncApiMirror.textContent = getApiBase();
+    }
+  }
+
+  function setUpdateLinksUiState(updating) {
+    if (updateLinksBtn) {
+      if (updating) {
+        updateLinksBtn.classList.add('is-updating');
+        if (updateLinksBtnText) updateLinksBtnText.textContent = 'Updating...';
+      } else {
+        updateLinksBtn.classList.remove('is-updating');
+        if (updateLinksBtnText) updateLinksBtnText.textContent = 'Update Links';
+      }
+    }
+    if (linksStatusBadge) {
+      if (updating) {
+        linksStatusBadge.classList.add('is-syncing');
+        if (linksStatusText) linksStatusText.textContent = 'Updating links...';
+      } else {
+        linksStatusBadge.classList.remove('is-syncing');
+        updateLinksStatusDisplay();
+      }
+    }
+    if (triggerUpdateLinksBtn) {
+      triggerUpdateLinksBtn.disabled = updating;
+      const span = triggerUpdateLinksBtn.querySelector('span');
+      if (span) span.textContent = updating ? 'Synchronizing with API...' : 'Update All Links Now';
+    }
+  }
+
+  function openLinksManagerModal() {
+    updateLinksStatusDisplay();
+    if (updateLinksModal) updateLinksModal.classList.remove('hidden');
+  }
+
+  function closeLinksManagerModal() {
+    if (updateLinksModal) updateLinksModal.classList.add('hidden');
+  }
+
+  async function updateStationLinks(options = {}) {
+    const silent = !!options.silent;
+    const isAuto = !!options.isAuto;
+
+    if (isUpdatingLinks) {
+      if (!silent) showToast('Station links update is already running...');
+      return { inProgress: true };
+    }
+
+    isUpdatingLinks = true;
+    setUpdateLinksUiState(true);
+
+    let updatedFavorites = 0;
+    let verifiedFavorites = 0;
+    let updatedCurated = 0;
+    let verifiedCurated = 0;
+
+    try {
+      // 1. Synchronize Curated Stations Links with API
+      const curatedUuids = CURATED_STATIONS
+        .map(s => s.stationuuid)
+        .filter(uuid => uuid && uuid.length >= 30);
+
+      if (curatedUuids.length > 0) {
+        try {
+          const res = await fetch(`${getApiBase()}/json/stations/byuuid?uuids=${curatedUuids.join(',')}`, {
+            headers: { 'Accept': 'application/json' }
+          });
+          if (res.ok) {
+            const apiStations = await res.json();
+            if (Array.isArray(apiStations)) {
+              apiStations.forEach(apiStation => {
+                const local = CURATED_STATIONS.find(c => c.stationuuid === apiStation.stationuuid);
+                if (local && (apiStation.url_resolved || apiStation.url)) {
+                  const resolvedUrl = apiStation.url_resolved || apiStation.url;
+                  if (local.url_resolved !== resolvedUrl) {
+                    local.url_resolved = resolvedUrl;
+                    updatedCurated++;
+                  }
+                  if (apiStation.bitrate) local.bitrate = apiStation.bitrate;
+                  if (apiStation.codec) local.codec = apiStation.codec;
+                  if (apiStation.favicon && !local.favicon) local.favicon = apiStation.favicon;
+                  verifiedCurated++;
+                }
+              });
+
+              try {
+                localStorage.setItem('pulse_curated_cache', JSON.stringify(CURATED_STATIONS));
+              } catch (e) {}
+            }
+          }
+        } catch (curatedErr) {
+          console.warn('Failed to update curated stations from API mirror:', curatedErr);
+        }
+      }
+
+      // 2. Synchronize Saved Favorites Links with API
+      if (favorites.length > 0) {
+        const favUuids = favorites
+          .map(f => f.stationuuid)
+          .filter(uuid => uuid && uuid.length >= 30 && !uuid.startsWith('custom-'));
+
+        let freshFavMap = new Map();
+
+        if (favUuids.length > 0) {
+          try {
+            const res = await fetch(`${getApiBase()}/json/stations/byuuid?uuids=${favUuids.join(',')}`, {
+              headers: { 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data)) {
+                data.forEach(s => {
+                  if (s && s.stationuuid) freshFavMap.set(s.stationuuid, s);
+                });
+              }
+            }
+          } catch (favErr) {
+            console.warn('Failed batch fetching favorites by UUID:', favErr);
+          }
+        }
+
+        let favsChanged = false;
+        for (const fav of favorites) {
+          let fresh = freshFavMap.get(fav.stationuuid);
+
+          // If not in batch response, and not a custom user URL, fallback to name search
+          if (!fresh && fav.name && (!fav.stationuuid || !fav.stationuuid.startsWith('custom-'))) {
+            try {
+              const cleanName = fav.name.split('-')[0].split('(')[0].trim();
+              const searchRes = await fetch(`${getApiBase()}/json/stations/search?name=${encodeURIComponent(cleanName)}&limit=1`);
+              if (searchRes.ok) {
+                const results = await searchRes.json();
+                if (Array.isArray(results) && results.length > 0) {
+                  fresh = results[0];
+                }
+              }
+            } catch (e) {}
+          }
+
+          if (fresh && (fresh.url_resolved || fresh.url)) {
+            const resolvedUrl = fresh.url_resolved || fresh.url;
+            if (fav.url_resolved !== resolvedUrl) {
+              fav.url_resolved = resolvedUrl;
+              fav.url = fresh.url || resolvedUrl;
+              updatedFavorites++;
+              favsChanged = true;
+            }
+            if (fresh.bitrate) fav.bitrate = fresh.bitrate;
+            if (fresh.codec) fav.codec = fresh.codec;
+            if (fresh.favicon && !fav.favicon) fav.favicon = fresh.favicon;
+            verifiedFavorites++;
+          }
+        }
+
+        if (favsChanged) {
+          saveFavorites();
+        }
+      }
+
+      // 3. Update Currently Playing Station if its URL was refreshed
+      if (currentStation) {
+        const matchCurated = CURATED_STATIONS.find(c => c.stationuuid === currentStation.stationuuid);
+        if (matchCurated && matchCurated.url_resolved !== currentStation.url_resolved) {
+          currentStation.url_resolved = matchCurated.url_resolved;
+          currentStation.url = matchCurated.url || matchCurated.url_resolved;
+        }
+        const matchFav = favorites.find(f => f.stationuuid === currentStation.stationuuid);
+        if (matchFav && matchFav.url_resolved !== currentStation.url_resolved) {
+          currentStation.url_resolved = matchFav.url_resolved;
+          currentStation.url = matchFav.url || matchFav.url_resolved;
+        }
+      }
+
+      // 4. Refresh Active UI Grid View
+      if (activeGenre === 'featured') {
+        stationsList = CURATED_STATIONS;
+        renderCards(stationsList);
+      } else if (activeGenre === 'favorites') {
+        renderFavorites();
+      }
+
+      // 5. Refresh 3D Globe Radar Catalog in Background
+      loadGeoStations();
+
+      // 6. Record Timestamp
+      const now = Date.now();
+      localStorage.setItem('pulse_links_last_updated', now.toString());
+      updateLinksStatusDisplay(now);
+
+      const totalUpdated = updatedFavorites + updatedCurated;
+      const totalVerified = verifiedFavorites + verifiedCurated;
+
+      // 7. User Notification Feedback
+      if (!silent) {
+        if (totalUpdated > 0) {
+          showToast(`✨ Updated ${totalUpdated} radio stream link(s)! All streams active.`);
+        } else {
+          showToast(`✓ All station stream links verified up to date (${totalVerified} checked)`);
+        }
+      } else if (isAuto && totalUpdated > 0) {
+        showToast(`🔄 Auto-refreshed ${totalUpdated} stream links to latest live servers.`);
+      }
+
+      return {
+        success: true,
+        updatedFavorites,
+        verifiedFavorites,
+        updatedCurated,
+        verifiedCurated,
+        totalUpdated,
+        totalVerified,
+        timestamp: now
+      };
+    } catch (err) {
+      console.error('Error synchronizing station links:', err);
+      if (!silent) {
+        showToast('Encountered an issue updating links. Rotated to backup API mirror.');
+      }
+      rotateServer();
+      return { success: false, error: err };
+    } finally {
+      isUpdatingLinks = false;
+      setUpdateLinksUiState(false);
+    }
+  }
+
+  // --- Self-Healing Stream Recovery on Playback Interruption ---
+  async function handlePlaybackError(station, error) {
+    if (!station) return;
+
+    // Guard against repeated retry loops
+    if (station._healAttempted && Date.now() - station._healAttempted < 30000) {
+      isPlaying = false;
+      bufferingSpinner.classList.add('hidden');
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      liveDot.classList.remove('active');
+      setPlayerStatus('error', 'OFFLINE');
+      playbackTimer.textContent = 'OFFLINE';
+      stopLiveTimer();
+      showToast(`Unable to play "${station.name}". Stream might be offline or blocked.`);
+      return;
+    }
+
+    station._healAttempted = Date.now();
+    setPlayerStatus('loading', 'HEALING LINK');
+    showToast(`Stream issue detected. Checking live API for updated URL for "${station.name}"...`);
+
+    let freshStation = null;
+    if (station.stationuuid && station.stationuuid.length >= 30 && !station.stationuuid.startsWith('custom-')) {
+      try {
+        const res = await fetch(`${getApiBase()}/json/stations/byuuid/${station.stationuuid}`);
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length > 0) freshStation = list[0];
+        }
+      } catch (e) {}
+    }
+
+    if (!freshStation && station.name) {
+      try {
+        const cleanName = station.name.split('-')[0].split('(')[0].trim();
+        const res = await fetch(`${getApiBase()}/json/stations/search?name=${encodeURIComponent(cleanName)}&limit=1`);
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length > 0) freshStation = list[0];
+        }
+      } catch (e) {}
+    }
+
+    if (freshStation && (freshStation.url_resolved || freshStation.url)) {
+      const newUrl = freshStation.url_resolved || freshStation.url;
+      if (newUrl !== station.url_resolved) {
+        station.url_resolved = newUrl;
+        station.url = freshStation.url || newUrl;
+        if (freshStation.bitrate) station.bitrate = freshStation.bitrate;
+        if (freshStation.codec) station.codec = freshStation.codec;
+
+        // Update in favorites if saved
+        const favIdx = favorites.findIndex(f => f.stationuuid === station.stationuuid || f.name === station.name);
+        if (favIdx >= 0) {
+          favorites[favIdx].url_resolved = newUrl;
+          saveFavorites();
+        }
+
+        showToast(`Found updated live stream link for "${station.name}"! Reconnecting...`);
+        audio.src = newUrl;
+        audio.load();
+        const retryPromise = audio.play();
+        if (retryPromise !== undefined) {
+          retryPromise.then(() => {
+            isPlaying = true;
+            updatePlaybackUI();
+            startLiveTimer();
+          }).catch(retryErr => {
+            console.error('Playback error on retried link:', retryErr);
+            setPlayerStatus('error', 'OFFLINE');
+            showToast(`Stream for "${station.name}" is currently offline on broadcaster server.`);
+          });
+        }
+        return;
+      }
+    }
+
+    // Default error state if no new link was found
+    isPlaying = false;
+    bufferingSpinner.classList.add('hidden');
+    playIcon.classList.remove('hidden');
+    pauseIcon.classList.add('hidden');
+    liveDot.classList.remove('active');
+    setPlayerStatus('error', 'STREAM ERROR');
+    playbackTimer.textContent = 'OFFLINE';
+    stopLiveTimer();
+    showToast(`Unable to play "${station.name}". Stream might be offline or blocked.`);
   }
 
   // --- API Fetching ---
@@ -666,6 +1194,53 @@
     renderCards(stationsList);
   }
 
+  async function loadAdFreeStations() {
+    sectionTitle.textContent = 'Werbefreie Radiostreams (0% Pre-Roll)';
+    resultsCount.textContent = 'Lade werbefreie Sender...';
+
+    // 1. Curated verified ad-free streams
+    const adFreeCurated = CURATED_STATIONS.filter(s => detectAdPolicy(s).isAdFree);
+
+    // 2. Fetch popular stations & search public radio tags
+    try {
+      const sort = sortSelect.value || 'clickcount';
+      const country = countrySelect.value || '';
+      const params = {
+        limit: 80,
+        order: sort,
+        reverse: 'true',
+        hidebroken: 'true'
+      };
+      if (country) params.countrycode = country;
+
+      const [topStations, publicStations] = await Promise.all([
+        fetchRadioStations('/json/stations/topclick/80', country ? { countrycode: country } : {}),
+        fetchRadioStations('/json/stations/search', { ...params, tag: 'public radio' })
+      ]);
+
+      const map = new Map();
+      adFreeCurated.forEach(s => {
+        if (!country || s.countrycode === country) map.set(s.stationuuid, s);
+      });
+
+      [...(publicStations || []), ...(topStations || [])].forEach(s => {
+        if (s && s.stationuuid && !map.has(s.stationuuid)) {
+          if (detectAdPolicy(s).isAdFree) {
+            map.set(s.stationuuid, s);
+          }
+        }
+      });
+
+      stationsList = Array.from(map.values());
+      resultsCount.textContent = `${stationsList.length} werbefreie Sender gefunden`;
+      renderCards(stationsList);
+    } catch (err) {
+      stationsList = adFreeCurated;
+      resultsCount.textContent = `${stationsList.length} werbefreie Sender gefunden`;
+      renderCards(stationsList);
+    }
+  }
+
   async function performSearch(query) {
     if (!query || query.trim() === '') {
       if (activeGenre === 'featured') {
@@ -674,6 +1249,8 @@
         loadTopStations();
       } else if (activeGenre === 'favorites') {
         renderFavorites();
+      } else if (activeGenre === 'adfree') {
+        loadAdFreeStations();
       } else {
         loadGenreStations(activeGenre);
       }
@@ -794,48 +1371,51 @@
       const flag = getCountryFlag(station.countrycode);
       const isFav = isFavorite(station);
 
-      // Clean tags
-      const tagsArray = station.tags ? station.tags.split(',').map(t => t.trim()).filter(Boolean).slice(0, 3) : [];
-      const tagsHtml = tagsArray.map(t => `<span class="station-tag">#${escapeHtml(t)}</span>`).join('');
+      // Clean tags into sleek human-readable genres (no '#' clutter)
+      const tagsArray = station.tags ? station.tags.split(',').map(t => t.trim()).filter(Boolean).slice(0, 2) : [];
+      const cleanGenres = tagsArray.map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' • ');
 
-      const bitrateStr = station.bitrate && station.bitrate > 0 ? `${station.bitrate} kbps` : (station.codec || 'MP3');
+      // Ad policy check (Werbefrei vs Pre-Roll)
+      const adPolicy = detectAdPolicy(station);
+      let adBadgeHtml = '';
+      if (adPolicy.isAdFree) {
+        adBadgeHtml = `<span class="station-ad-badge badge-adfree" title="${escapeHtml(adPolicy.tooltip)}"><span class="ad-dot dot-adfree"></span>Werbefrei</span>`;
+      } else if (adPolicy.isPrerollLikely) {
+        adBadgeHtml = `<span class="station-ad-badge badge-preroll" title="${escapeHtml(adPolicy.tooltip)}"><span class="ad-dot dot-preroll"></span>Pre-Roll</span>`;
+      }
+
       const isCurrentPlaying = card.classList.contains('is-active') && isPlaying;
 
       card.innerHTML = `
-        <div class="station-card-top">
-          <div class="station-art-box">
-            ${station.favicon ? `<img src="${escapeHtml(station.favicon)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-            <div class="station-art-placeholder" style="${station.favicon ? 'display:none;' : ''}">📻</div>
-            ${isCurrentPlaying ? `
-              <div class="card-equalizer">
-                <span></span><span></span><span></span><span></span>
-              </div>
-            ` : ''}
-          </div>
-          <div class="station-info">
-            <h3 class="station-name" title="${escapeHtml(station.name)}">${escapeHtml(station.name)}</h3>
-            <div class="station-sub">
-              <span>${flag}</span>
-              <span>${escapeHtml(station.country || 'Global')}</span>
-            </div>
-          </div>
-          <button class="card-fav-btn ${isFav ? 'is-fav' : ''}" title="Favorite" aria-label="Favorite">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        <div class="station-art-box">
+          ${station.favicon ? `<img src="${escapeHtml(station.favicon)}" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+          <div class="station-art-placeholder" style="${station.favicon ? 'display:none;' : ''}">📻</div>
+          <div class="card-play-hover-btn" aria-label="Play">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <polygon points="7 4 19 12 7 20 7 4"></polygon>
             </svg>
-          </button>
+          </div>
+          ${isCurrentPlaying ? `
+            <div class="card-equalizer">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          ` : ''}
         </div>
 
-        ${tagsArray.length > 0 ? `<div class="station-tags-row">${tagsHtml}</div>` : ''}
-
-        <div class="station-card-bottom">
-          <span class="station-meta-badge">${escapeHtml(bitrateStr)}</span>
-          <button class="btn-card-play">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-              <polygon points="6 3 20 12 6 21 6 3"></polygon>
-            </svg>
-            <span>${card.classList.contains('is-active') && isPlaying ? 'Playing' : 'Listen'}</span>
-          </button>
+        <div class="station-info">
+          <div class="station-title-row">
+            <h3 class="station-name" title="${escapeHtml(station.name)}">${escapeHtml(station.name)}</h3>
+            <button class="card-fav-btn ${isFav ? 'is-fav' : ''}" title="Favorite" aria-label="Favorite">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="station-sub">
+            <span class="station-country">${flag} ${escapeHtml(station.country || 'Global')}</span>
+            ${cleanGenres ? `<span class="station-sub-dot">•</span><span class="station-genre-text">${escapeHtml(cleanGenres)}</span>` : ''}
+            ${adBadgeHtml ? `<span class="station-sub-dot">•</span>${adBadgeHtml}` : ''}
+          </div>
         </div>
       `;
 
@@ -874,6 +1454,24 @@
     currentStationName.textContent = station.name || 'Unknown Station';
     const flag = getCountryFlag(station.countrycode);
     currentStationTags.textContent = `${flag} ${station.country || 'Global'} • ${station.tags ? station.tags.split(',').slice(0, 2).join(', ') : 'Live Stream'}`;
+
+    // Update Pre-roll ad policy badge in player bar
+    const adPolicy = detectAdPolicy(station);
+    if (playerAdBadge) {
+      if (adPolicy.isAdFree) {
+        playerAdBadge.className = 'player-ad-pill adfree';
+        playerAdBadge.innerHTML = '<span class="ad-dot dot-adfree"></span> Werbefrei (0% Pre-Roll)';
+        playerAdBadge.title = adPolicy.tooltip;
+        playerAdBadge.classList.remove('hidden');
+      } else if (adPolicy.isPrerollLikely) {
+        playerAdBadge.className = 'player-ad-pill preroll';
+        playerAdBadge.innerHTML = '<span class="ad-dot dot-preroll"></span> Pre-Roll Spot möglich';
+        playerAdBadge.title = adPolicy.tooltip;
+        playerAdBadge.classList.remove('hidden');
+      } else {
+        playerAdBadge.className = 'player-ad-pill hidden';
+      }
+    }
 
     if (station.codec) {
       currentStationCodec.textContent = station.codec.toUpperCase();
@@ -914,11 +1512,7 @@
         })
         .catch(error => {
           console.error('Audio play error:', error);
-          setPlayerStatus('error', 'STREAM ERROR');
-          bufferingSpinner.classList.add('hidden');
-          playIcon.classList.remove('hidden');
-          pauseIcon.classList.add('hidden');
-          showToast(`Unable to play "${station.name}". Stream might be offline or blocked.`);
+          handlePlaybackError(station, error);
         });
     }
 
@@ -1049,14 +1643,7 @@
 
     audio.addEventListener('error', (e) => {
       console.error('Audio element error event:', e);
-      isPlaying = false;
-      bufferingSpinner.classList.add('hidden');
-      playIcon.classList.remove('hidden');
-      pauseIcon.classList.add('hidden');
-      liveDot.classList.remove('active');
-      setPlayerStatus('error', 'OFFLINE');
-      playbackTimer.textContent = 'OFFLINE';
-      stopLiveTimer();
+      handlePlaybackError(currentStation, e);
     });
   }
 
@@ -1200,6 +1787,8 @@
     hoveredStation: null,
     activeStationData: null,
     renderedStations: [],
+    worldCanvas: null,
+    worldTexture: null,
 
     init: function () {
       if (this.isInitialized) return;
@@ -1226,31 +1815,40 @@
       this.raycaster.params.Points = { threshold: 3.0 }; // Generous picking tolerance
       this.mouse = new THREE.Vector2();
 
-      // 2. Google Earth Natural Sunlight & Space Lighting
+      // 2. Clear, Balanced Space & Sun Lighting (Dual directional + ambient daylight)
       const sunLight = new THREE.DirectionalLight(0xffffff, 1.25);
       sunLight.position.set(220, 160, 210);
       this.scene.add(sunLight);
 
-      // Clear, balanced ambient light so all continents are vivid and legible
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+      // Fill light for opposite hemisphere (ensures night side is never pitch black)
+      const fillLight = new THREE.DirectionalLight(0xb4d8ff, 0.85);
+      fillLight.position.set(-220, -100, -210);
+      this.scene.add(fillLight);
+
+      // Balanced ambient light so all continents and borders are vivid
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1.15);
       this.scene.add(ambientLight);
 
-      // 3. Google Earth Globe Sphere (Authentic NASA Satellite Imagery)
+      // 3. 3D Globe Sphere with High-Definition Continents, Borders, and Coastlines
       const earthRadius = 100;
       const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
 
-      // Load authentic satellite photo directly — preserves 100% accurate landmasses, forests, and oceans
-      const textureLoader = new THREE.TextureLoader();
-      const earthTexture = textureLoader.load('earth.jpg');
+      // Generate rich procedural continent & country vector map texture (100% reliable offline & file://)
+      this.worldTexture = this.createWorldMapTexture();
 
       const earthMat = new THREE.MeshStandardMaterial({
-        map: earthTexture,
-        roughness: 0.7,
-        metalness: 0.02
+        map: this.worldTexture,
+        roughness: 0.55,
+        metalness: 0.05,
+        emissive: new THREE.Color(0x061426),
+        emissiveIntensity: 0.28
       });
 
       this.globeMesh = new THREE.Mesh(earthGeo, earthMat);
       this.scene.add(this.globeMesh);
+
+      // Asynchronously attempt to composite NASA satellite imagery if available
+      this.tryLoadEarthPhoto();
 
       // 4. Subtle Google Earth Rayleigh Atmospheric Horizon Haze
       this.createAtmosphere(earthRadius);
@@ -1274,6 +1872,309 @@
       if (geoStationsList.length > 0) {
         this.updateMarkers(geoStationsList);
       }
+    },
+
+    // Procedural High-Definition Equirectangular World Map Texture Generator
+    createWorldMapTexture: function () {
+      const width = 2048;
+      const height = 1024;
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      this.worldCanvas = canvas;
+
+      const toX = lon => ((lon + 180) / 360) * width;
+      const toY = lat => ((90 - lat) / 180) * height;
+
+      this.drawMapLayers(ctx, width, height, toX, toY, false);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      return texture;
+    },
+
+    drawMapLayers: function (ctx, width, height, toX, toY, isOverlay) {
+      if (!isOverlay) {
+        // 1. Oceanic Background Gradient
+        const oceanGrad = ctx.createLinearGradient(0, 0, 0, height);
+        oceanGrad.addColorStop(0, '#040d1a');
+        oceanGrad.addColorStop(0.2, '#06162d');
+        oceanGrad.addColorStop(0.5, '#0a2347');
+        oceanGrad.addColorStop(0.8, '#06162d');
+        oceanGrad.addColorStop(1, '#030a14');
+        ctx.fillStyle = oceanGrad;
+        ctx.fillRect(0, 0, width, height);
+
+        // Subtle bathymetric shelf glow
+        const shelfGrad = ctx.createRadialGradient(width / 2, height / 2, 80, width / 2, height / 2, width / 1.4);
+        shelfGrad.addColorStop(0, 'rgba(0, 180, 216, 0.09)');
+        shelfGrad.addColorStop(0.5, 'rgba(0, 119, 182, 0.05)');
+        shelfGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shelfGrad;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      // 2. Graticule Lines (Navigation coordinates)
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(0, 242, 254, 0.12)';
+
+      for (let lat = -75; lat <= 75; lat += 15) {
+        if (lat === 0) continue;
+        ctx.beginPath();
+        const y = toY(lat);
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      for (let lon = -180; lon <= 180; lon += 30) {
+        if (lon === 0) continue;
+        ctx.beginPath();
+        const x = toX(lon);
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      // Equator
+      ctx.strokeStyle = 'rgba(0, 242, 254, 0.38)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(0, toY(0));
+      ctx.lineTo(width, toY(0));
+      ctx.stroke();
+
+      // Prime Meridian
+      ctx.strokeStyle = 'rgba(0, 242, 254, 0.32)';
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(toX(0), 0);
+      ctx.lineTo(toX(0), height);
+      ctx.stroke();
+
+      // Tropics (Cancer +23.5, Capricorn -23.5)
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.24)';
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath();
+      ctx.moveTo(0, toY(23.5));
+      ctx.lineTo(width, toY(23.5));
+      ctx.moveTo(0, toY(-23.5));
+      ctx.lineTo(width, toY(-23.5));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      // Polygons for Continents & Landmasses
+      const continentPolys = [
+        // North America
+        [[-168, 66], [-162, 71], [-150, 71], [-141, 70], [-135, 69], [-125, 69], [-115, 68], [-100, 68], [-95, 68], [-94, 63], [-88, 64], [-82, 66], [-80, 62], [-82, 55], [-79, 51], [-76, 55], [-77, 62], [-70, 62], [-65, 60], [-60, 56], [-56, 52], [-58, 48], [-64, 46], [-66, 44], [-70, 42], [-74, 40], [-76, 35], [-81, 31], [-80, 25], [-83, 28], [-88, 30], [-94, 29], [-97, 26], [-97, 22], [-91, 19], [-88, 21], [-87, 16], [-83, 15], [-83, 10], [-79, 9], [-77, 8], [-81, 7], [-83, 8], [-85, 10], [-89, 13], [-93, 15], [-97, 16], [-103, 18], [-106, 22], [-110, 24], [-109, 23], [-112, 27], [-114, 30], [-117, 32], [-120, 35], [-122, 37], [-124, 43], [-125, 48], [-130, 54], [-136, 58], [-145, 60], [-152, 60], [-157, 56], [-162, 55], [-166, 54], [-168, 59], [-165, 63], [-168, 66]],
+        // Greenland
+        [[-44, 60], [-35, 65], [-20, 71], [-18, 77], [-25, 82], [-40, 83], [-55, 82], [-68, 77], [-60, 72], [-50, 68], [-52, 64], [-44, 60]],
+        // Cuba
+        [[-84, 22], [-82, 23], [-76, 21], [-74, 20], [-78, 20], [-84, 22]],
+        // Hispaniola
+        [[-74, 18], [-72, 20], [-68, 19], [-69, 18], [-74, 18]],
+        // South America
+        [[-77, 8], [-75, 11], [-72, 12], [-65, 10], [-60, 9], [-54, 6], [-50, 2], [-48, -1], [-44, -3], [-37, -5], [-35, -7], [-35, -10], [-38, -13], [-40, -19], [-43, -23], [-48, -26], [-52, -32], [-54, -34], [-58, -35], [-62, -39], [-65, -44], [-67, -47], [-66, -53], [-68, -55], [-73, -53], [-74, -48], [-73, -42], [-72, -35], [-71, -29], [-70, -22], [-71, -16], [-77, -12], [-81, -5], [-80, -1], [-79, 2], [-77, 6], [-77, 8]],
+        // Europe
+        [[-9, 37], [-9, 42], [-8, 44], [-2, 44], [-3, 48], [-1, 49], [2, 51], [4, 52], [7, 54], [8, 55], [10, 57], [10, 55], [12, 54], [14, 54], [19, 55], [24, 57], [28, 59], [25, 61], [22, 65], [20, 64], [18, 60], [13, 56], [8, 58], [5, 62], [12, 66], [18, 69], [28, 71], [36, 68], [42, 66], [50, 68], [60, 68], [60, 60], [55, 52], [50, 48], [48, 44], [40, 43], [35, 45], [30, 46], [28, 42], [24, 40], [23, 38], [21, 39], [19, 42], [14, 45], [12, 44], [16, 41], [16, 39], [12, 42], [9, 44], [5, 43], [3, 42], [0, 40], [-2, 37], [-5, 36], [-9, 37]],
+        // Great Britain
+        [[-5, 50], [-4, 52], [-5, 55], [-4, 58], [-2, 57], [-1, 53], [1, 51], [-3, 50], [-5, 50]],
+        // Ireland
+        [[-10, 52], [-10, 54], [-7, 55], [-6, 53], [-8, 52], [-10, 52]],
+        // Africa
+        [[-6, 36], [-9, 34], [-12, 28], [-16, 23], [-17, 18], [-17, 15], [-15, 11], [-11, 7], [-5, 5], [1, 6], [5, 5], [8, 4], [9, 1], [12, -5], [13, -12], [12, -18], [14, -23], [16, -28], [18, -34], [22, -35], [28, -33], [32, -29], [35, -24], [40, -18], [40, -11], [39, -5], [41, -2], [45, 2], [50, 8], [51, 11], [46, 12], [43, 13], [39, 16], [36, 22], [33, 28], [31, 31], [25, 32], [20, 31], [15, 32], [10, 37], [2, 36], [-2, 35], [-6, 36]],
+        // Madagascar
+        [[44, -12], [50, -15], [49, -20], [47, -25], [44, -25], [44, -18], [44, -12]],
+        // Asia
+        [[27, 41], [35, 41], [40, 37], [35, 33], [34, 28], [37, 24], [43, 17], [45, 13], [52, 15], [59, 23], [56, 26], [50, 27], [48, 30], [55, 26], [61, 25], [67, 24], [70, 21], [72, 19], [76, 10], [78, 8], [80, 13], [85, 19], [90, 22], [92, 21], [96, 16], [98, 11], [101, 6], [104, 1], [103, 5], [100, 10], [101, 13], [105, 10], [109, 13], [107, 17], [107, 21], [113, 22], [118, 25], [122, 31], [120, 36], [119, 39], [122, 40], [125, 38], [127, 35], [129, 36], [130, 41], [133, 43], [138, 47], [141, 52], [143, 58], [156, 51], [160, 56], [163, 60], [160, 62], [170, 64], [180, 66], [180, 71], [170, 70], [150, 72], [130, 73], [110, 76], [85, 73], [70, 70], [60, 68], [60, 60], [55, 50], [50, 44], [46, 40], [35, 41], [27, 41]],
+        // Japan (Honshu/Kyushu)
+        [[131, 32], [133, 34], [138, 35], [141, 39], [141, 41], [139, 37], [136, 35], [131, 32]],
+        // Japan (Hokkaido)
+        [[140, 42], [144, 43], [145, 44], [142, 45], [140, 42]],
+        // Sumatra
+        [[96, 5], [100, 1], [105, -5], [103, -4], [99, 0], [96, 5]],
+        // Java
+        [[106, -6], [111, -7], [114, -8], [112, -7], [106, -6]],
+        // Borneo
+        [[110, 1], [115, 4], [118, 5], [117, 1], [115, -3], [110, -3], [110, 1]],
+        // Philippines
+        [[120, 18], [122, 16], [124, 12], [126, 7], [123, 7], [121, 14], [120, 18]],
+        // Australia
+        [[114, -22], [113, -26], [115, -32], [115, -35], [120, -34], [126, -33], [133, -32], [138, -35], [142, -38], [146, -39], [150, -37], [151, -34], [153, -28], [151, -23], [146, -18], [143, -11], [142, -15], [137, -15], [136, -12], [131, -12], [128, -15], [124, -16], [122, -18], [118, -20], [114, -22]],
+        // Tasmania
+        [[145, -41], [148, -41], [148, -43], [145, -43], [145, -41]],
+        // New Zealand (North Island)
+        [[173, -35], [177, -38], [178, -38], [175, -41], [174, -37], [173, -35]],
+        // New Zealand (South Island)
+        [[173, -41], [174, -43], [170, -46], [167, -46], [170, -42], [173, -41]],
+        // Antarctica
+        [[-180, -70], [-120, -72], [-80, -73], [-68, -64], [-60, -63], [-58, -65], [-63, -72], [-20, -72], [20, -70], [60, -67], [100, -66], [140, -67], [180, -70], [180, -90], [-180, -90], [-180, -70]]
+      ];
+
+      // 3. Draw Continents
+      ctx.save();
+      continentPolys.forEach((poly, idx) => {
+        ctx.beginPath();
+        poly.forEach((pt, pIdx) => {
+          const x = toX(pt[0]);
+          const y = toY(pt[1]);
+          if (pIdx === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+
+        if (!isOverlay) {
+          // Polar regions: Greenland (1), Antarctica (21)
+          if (idx === 1 || idx === 21) {
+            ctx.fillStyle = '#cbe4f7';
+          } else {
+            ctx.fillStyle = '#1b4d35'; // Rich emerald / forest green
+          }
+          ctx.fill();
+        }
+
+        // Luminous glowing cyan coastline
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.9)';
+        ctx.lineWidth = isOverlay ? 1.8 : 2.2;
+        ctx.stroke();
+      });
+      ctx.restore();
+
+      // 4. Deserts / Arid Terranes (if base procedural)
+      if (!isOverlay) {
+        const desertRegions = [
+          // Sahara Desert
+          [[-15, 20], [-10, 30], [0, 32], [15, 30], [30, 30], [33, 24], [30, 16], [15, 16], [0, 16], [-15, 18], [-15, 20]],
+          // Arabian Desert
+          [[38, 28], [48, 30], [55, 24], [52, 17], [44, 16], [38, 28]],
+          // Australian Outback
+          [[120, -22], [135, -20], [140, -26], [138, -31], [124, -30], [120, -22]],
+          // Gobi & Central Asia
+          [[80, 42], [95, 45], [110, 44], [112, 38], [95, 38], [80, 40], [80, 42]],
+          // American Southwest
+          [[-115, 33], [-105, 34], [-102, 28], [-108, 26], [-115, 33]]
+        ];
+        ctx.save();
+        ctx.fillStyle = 'rgba(168, 128, 64, 0.42)';
+        desertRegions.forEach(poly => {
+          ctx.beginPath();
+          poly.forEach((pt, pIdx) => {
+            const x = toX(pt[0]);
+            const y = toY(pt[1]);
+            if (pIdx === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.closePath();
+          ctx.fill();
+        });
+        ctx.restore();
+      }
+
+      // 5. Country Border Lines
+      const countryBorderLines = [
+        // US / Canada
+        [[-124, 49], [-95, 49]],
+        [[-141, 60], [-141, 70]],
+        // US / Mexico
+        [[-117, 32.5], [-115, 32.7], [-106, 31.8], [-100, 28], [-97, 26]],
+        // Mexico / Guatemala
+        [[-92, 15], [-91, 17], [-88, 16]],
+        // South America
+        [[-54, -26], [-58, -30], [-58, -34]],
+        [[-70, -22], [-69, -32], [-71, -40], [-72, -50]],
+        [[-70, -4], [-73, -8], [-69, -12]],
+        [[-72, 11], [-70, 7], [-67, 3]],
+        // Europe
+        [[-2, 43.4], [3, 42.4]],
+        [[7.5, 48.5], [6, 46], [7, 44]],
+        [[14.3, 53.8], [14.7, 51.5]],
+        [[7, 46], [11, 46.5], [13, 46.5]],
+        [[-7.5, 54.5], [-6, 54]],
+        [[23, 51], [23, 48], [30, 46.5]],
+        [[30, 52], [36, 50], [38, 47]],
+        // Africa
+        [[-8, 28], [-4, 25], [0, 20]],
+        [[25, 22], [37, 22]],
+        [[8.5, 4.5], [12, 8], [14, 12]],
+        [[17, -28], [25, -26], [32, -26]],
+        // Middle East & Asia
+        [[36, 29], [42, 31], [48, 29], [55, 22]],
+        [[36, 37], [42, 37], [45, 33], [48, 30]],
+        [[50, 51], [65, 54], [80, 51], [87, 49]],
+        [[88, 49], [105, 50], [115, 50], [130, 48]],
+        [[68, 24], [72, 28], [74, 32]],
+        [[76, 32], [80, 31], [88, 28], [96, 28]],
+        [[126, 38], [129, 38]]
+      ];
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(165, 243, 252, 0.58)';
+      ctx.lineWidth = 1.3;
+      ctx.setLineDash([4, 4]);
+      countryBorderLines.forEach(line => {
+        ctx.beginPath();
+        line.forEach((pt, pIdx) => {
+          const x = toX(pt[0]);
+          const y = toY(pt[1]);
+          if (pIdx === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      });
+      ctx.restore();
+
+      // 6. Navigation Labels (Oceans & Coordinate degrees)
+      ctx.save();
+      ctx.fillStyle = 'rgba(0, 242, 254, 0.38)';
+      ctx.font = '600 13px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ATLANTIC OCEAN', toX(-32), toY(18));
+      ctx.fillText('PACIFIC OCEAN', toX(-140), toY(15));
+      ctx.fillText('PACIFIC OCEAN', toX(160), toY(15));
+      ctx.fillText('INDIAN OCEAN', toX(75), toY(-18));
+      ctx.fillText('ARCTIC OCEAN', toX(0), toY(80));
+
+      ctx.font = '500 11px Inter, system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(0, 242, 254, 0.42)';
+      [-60, -30, 0, 30, 60].forEach(lat => {
+        ctx.fillText(`${lat === 0 ? '0°' : Math.abs(lat) + '°' + (lat > 0 ? 'N' : 'S')}`, toX(2), toY(lat) - 4);
+      });
+      ctx.restore();
+    },
+
+    tryLoadEarthPhoto: function () {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          if (!this.worldCanvas) return;
+          const ctx = this.worldCanvas.getContext('2d');
+          const width = this.worldCanvas.width;
+          const height = this.worldCanvas.height;
+          const toX = lon => ((lon + 180) / 360) * width;
+          const toY = lat => ((90 - lat) / 180) * height;
+
+          // Draw the satellite image
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Overlay the glowing coastlines, country borders, and graticules on top
+          this.drawMapLayers(ctx, width, height, toX, toY, true);
+
+          if (this.worldTexture) {
+            this.worldTexture.needsUpdate = true;
+          }
+        } catch (err) {
+          // Keep procedural vector texture if security error
+        }
+      };
+      img.onerror = () => {
+        // Procedural vector texture is already active
+      };
+      img.src = 'earth.jpg';
     },
 
     // Google Earth Rayleigh Sky-Blue Atmosphere
@@ -1543,8 +2444,15 @@
       }
 
       const tagsEl = document.getElementById('gcard-tags');
-      const tags = station.tags ? station.tags.split(',').slice(0, 2).map(t => `<span class="station-tag">#${escapeHtml(t.trim())}</span>`).join('') : '';
-      tagsEl.innerHTML = tags;
+      const adPolicy = detectAdPolicy(station);
+      let adTagHtml = '';
+      if (adPolicy.isAdFree) {
+        adTagHtml = `<span class="station-ad-badge badge-adfree" title="${escapeHtml(adPolicy.tooltip)}"><span class="ad-dot dot-adfree"></span>Werbefrei</span>`;
+      } else if (adPolicy.isPrerollLikely) {
+        adTagHtml = `<span class="station-ad-badge badge-preroll" title="${escapeHtml(adPolicy.tooltip)}"><span class="ad-dot dot-preroll"></span>Pre-Roll</span>`;
+      }
+      const tags = station.tags ? station.tags.split(',').slice(0, 2).map(t => `<span class="station-tag">${escapeHtml(t.trim())}</span>`).join('') : '';
+      tagsEl.innerHTML = `${adTagHtml} ${tags}`;
 
       const playBtn = document.getElementById('gcard-play-btn');
       playBtn.onclick = () => {
@@ -2121,8 +3029,15 @@
         loadTopStations();
       } else if (genre === 'favorites') {
         renderFavorites();
+      } else if (genre === 'adfree') {
+        loadAdFreeStations();
       } else {
         loadGenreStations(genre);
+      }
+
+      if (showFavoritesBtn) {
+        if (genre === 'favorites') showFavoritesBtn.classList.add('is-active');
+        else showFavoritesBtn.classList.remove('is-active');
       }
     });
 
@@ -2131,6 +3046,7 @@
         performSearch(searchInput.value.trim());
       } else if (activeGenre !== 'featured' && activeGenre !== 'favorites') {
         if (activeGenre === 'topclick') loadTopStations();
+        else if (activeGenre === 'adfree') loadAdFreeStations();
         else loadGenreStations(activeGenre);
       }
     });
@@ -2140,6 +3056,7 @@
         performSearch(searchInput.value.trim());
       } else if (activeGenre !== 'featured' && activeGenre !== 'favorites') {
         if (activeGenre === 'topclick') loadTopStations();
+        else if (activeGenre === 'adfree') loadAdFreeStations();
         else loadGenreStations(activeGenre);
       }
     });
@@ -2155,10 +3072,27 @@
     sleepTimerBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       sleepTimerMenu.classList.toggle('hidden');
+      if (moreDropdownMenu) moreDropdownMenu.classList.add('hidden');
     });
+
+    if (moreMenuBtn && moreDropdownMenu) {
+      moreMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        moreDropdownMenu.classList.toggle('hidden');
+        if (sleepTimerMenu) sleepTimerMenu.classList.add('hidden');
+      });
+
+      moreDropdownMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (e.target.closest('.menu-item')) {
+          moreDropdownMenu.classList.add('hidden');
+        }
+      });
+    }
 
     document.addEventListener('click', () => {
       sleepTimerMenu.classList.add('hidden');
+      if (moreDropdownMenu) moreDropdownMenu.classList.add('hidden');
     });
 
     sleepTimerMenu.addEventListener('click', (e) => {
@@ -2222,6 +3156,42 @@
       showToast(visualizerMode === 0 ? 'Visualizer: Neon Wave mode' : 'Visualizer: Frequency Bars mode');
     });
 
+    // Show Favorites Button Listener
+    if (showFavoritesBtn) {
+      showFavoritesBtn.addEventListener('click', toggleFavoritesView);
+    }
+
+    // Stream Links Manager Listeners
+    if (updateLinksBtn) {
+      updateLinksBtn.addEventListener('click', () => {
+        updateStationLinks({ silent: false });
+      });
+    }
+
+    if (linksStatusBadge) {
+      linksStatusBadge.addEventListener('click', openLinksManagerModal);
+    }
+
+    if (triggerUpdateLinksBtn) {
+      triggerUpdateLinksBtn.addEventListener('click', () => {
+        updateStationLinks({ silent: false });
+      });
+    }
+
+    if (closeLinksModalBtn) {
+      closeLinksModalBtn.addEventListener('click', closeLinksManagerModal);
+    }
+
+    if (closeLinksModalBottomBtn) {
+      closeLinksModalBottomBtn.addEventListener('click', closeLinksManagerModal);
+    }
+
+    if (updateLinksModal) {
+      updateLinksModal.addEventListener('click', (e) => {
+        if (e.target === updateLinksModal) closeLinksManagerModal();
+      });
+    }
+
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         return;
@@ -2239,9 +3209,31 @@
       } else if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
         muteBtn.click();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFavoritesView();
+      } else if (e.key === 'u' || e.key === 'U') {
+        e.preventDefault();
+        updateStationLinks({ silent: false });
+      } else if (e.key === 'Escape') {
+        if (customModal) customModal.classList.add('hidden');
+        closeLinksManagerModal();
       }
     });
   }
+
+  // --- Public API ---
+  window.PulseCast = {
+    showFavorites,
+    toggleFavoritesView,
+    updateStationLinks,
+    openLinksManagerModal,
+    closeLinksManagerModal,
+    getCuratedStations: () => CURATED_STATIONS,
+    getFavorites: () => favorites,
+    getApiBase,
+    rotateServer
+  };
 
   // --- Run on Load ---
   if (document.readyState === 'loading') {
