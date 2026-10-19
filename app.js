@@ -1226,57 +1226,36 @@
       this.raycaster.params.Points = { threshold: 3.0 }; // Generous picking tolerance
       this.mouse = new THREE.Vector2();
 
-      // 2. Cinematic Celestial Lighting
-      // 2. Natural Google Earth Sun & Space Lighting
-      // Primary Sun: Natural warm-white sunlight
+      // 2. Google Earth Natural Sunlight & Space Lighting
       const sunLight = new THREE.DirectionalLight(0xffffff, 1.25);
-      sunLight.position.set(240, 150, 210);
+      sunLight.position.set(220, 160, 210);
       this.scene.add(sunLight);
 
-      // Deep space subtle ambient illumination
-      const ambientLight = new THREE.AmbientLight(0x182436, 0.72);
+      // Clear, balanced ambient light so all continents are vivid and legible
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
       this.scene.add(ambientLight);
 
-      // Soft blue secondary fill light
-      const nightFillLight = new THREE.DirectionalLight(0x2563eb, 0.25);
-      nightFillLight.position.set(-200, -80, -180);
-      this.scene.add(nightFillLight);
-
-      // 3. Google Earth Globe Sphere with Natural Specular Reflections
+      // 3. Google Earth Globe Sphere (Authentic NASA Satellite Imagery)
       const earthRadius = 100;
       const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
 
+      // Load authentic satellite photo directly — preserves 100% accurate landmasses, forests, and oceans
+      const textureLoader = new THREE.TextureLoader();
+      const earthTexture = textureLoader.load('earth.jpg');
+
       const earthMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.65,
-        metalness: 0.04
+        map: earthTexture,
+        roughness: 0.7,
+        metalness: 0.02
       });
 
       this.globeMesh = new THREE.Mesh(earthGeo, earthMat);
       this.scene.add(this.globeMesh);
 
-      // Load & enhance satellite texture into authentic Google Earth realism
-      const textureLoader = new THREE.TextureLoader();
-      textureLoader.load('earth.jpg', (texture) => {
-        try {
-          const { diffuseTex, roughTex } = this.createStylizedEarthTexture(texture.image);
-          earthMat.map = diffuseTex;
-          earthMat.roughnessMap = roughTex;
-          earthMat.needsUpdate = true;
-        } catch (err) {
-          console.warn('Canvas texture processing fallback:', err);
-          earthMat.map = texture;
-          earthMat.needsUpdate = true;
-        }
-      });
-
-      // 4. Google Earth Rayleigh Sky-Blue Atmosphere
+      // 4. Subtle Google Earth Rayleigh Atmospheric Horizon Haze
       this.createAtmosphere(earthRadius);
 
-      // 5. Realistic Google Earth Cloud Formations Layer
-      this.createCloudLayer(earthRadius);
-
-      // 6. Deep Space Starfield
+      // 5. Deep Space Starfield
       this.createStarfield();
 
       // 7. Active Beacon Ring Mesh (Anchored inside globeMesh)
@@ -1295,76 +1274,6 @@
       if (geoStationsList.length > 0) {
         this.updateMarkers(geoStationsList);
       }
-    },
-
-    // Enhances earth.jpg into authentic, vibrant Google Earth satellite appearance
-    createStylizedEarthTexture: function (sourceImage) {
-      const canvas = document.createElement('canvas');
-      canvas.width = sourceImage.width || 2048;
-      canvas.height = sourceImage.height || 1024;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(sourceImage, 0, 0, canvas.width, canvas.height);
-
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imgData.data;
-      const w = canvas.width;
-      const h = canvas.height;
-
-      const roughCanvas = document.createElement('canvas');
-      roughCanvas.width = w;
-      roughCanvas.height = h;
-      const rCtx = roughCanvas.getContext('2d');
-      const roughImgData = rCtx.createImageData(w, h);
-      const roughData = roughImgData.data;
-
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-
-        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-        // Water detection in satellite maps
-        const isWater = (b > r + 6 && b >= g - 4 && lum < 145) || (lum < 28 && b >= r);
-
-        if (isWater) {
-          // Google Earth natural deep sapphire-azure blue oceans
-          const depth = Math.min(1.0, Math.max(0.0, lum / 100));
-          data[i] = Math.round(8 + depth * 14);       // Red: 8 - 22
-          data[i + 1] = Math.round(38 + depth * 38);  // Green: 38 - 76
-          data[i + 2] = Math.round(85 + depth * 55);  // Rich oceanic blue: 85 - 140
-
-          // Oceans are smooth and reflective (low roughness = realistic sun glint)
-          roughData[i] = 40;
-          roughData[i + 1] = 40;
-          roughData[i + 2] = 40;
-          roughData[i + 3] = 255;
-        } else {
-          // Landmasses: vibrant, authentic Google Earth satellite colors
-          if (lum > 185 && Math.abs(r - b) < 30 && Math.abs(g - b) < 30) {
-            // Polar ice caps & glaciers: brilliant pure white
-            data[i] = Math.min(255, Math.round(r * 1.06));
-            data[i + 1] = Math.min(255, Math.round(g * 1.06));
-            data[i + 2] = Math.min(255, Math.round(b * 1.08));
-            roughData[i] = 110;
-          } else {
-            // Natural satellite landscape: lush vegetation, golden deserts, earthy mountains
-            data[i] = Math.min(255, Math.round(r * 1.08 + 2));
-            data[i + 1] = Math.min(255, Math.round(g * 1.10 + 4));
-            data[i + 2] = Math.min(255, Math.round(b * 1.04));
-            roughData[i] = 220; // Land is matte
-          }
-          roughData[i + 1] = roughData[i];
-          roughData[i + 2] = roughData[i];
-          roughData[i + 3] = 255;
-        }
-      }
-
-      ctx.putImageData(imgData, 0, 0);
-      rCtx.putImageData(roughImgData, 0, 0);
-
-      const diffuseTex = new THREE.CanvasTexture(canvas);
-      const roughTex = new THREE.CanvasTexture(roughCanvas);
-      return { diffuseTex, roughTex };
     },
 
     // Google Earth Rayleigh Sky-Blue Atmosphere
@@ -1400,53 +1309,6 @@
       });
       const outerMesh = new THREE.Mesh(outerGeo, outerMat);
       this.scene.add(outerMesh);
-    },
-
-    // Realistic Google Earth Procedural Cloud Formation Layer
-    createCloudLayer: function (radius) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1024;
-      canvas.height = 512;
-      const ctx = canvas.getContext('2d');
-
-      ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-      ctx.fillRect(0, 0, 1024, 512);
-
-      // Realistic natural atmospheric cloud clusters
-      const numClusters = 42;
-      for (let i = 0; i < numClusters; i++) {
-        const cx = Math.random() * 1024;
-        const latBias = (Math.random() - 0.5) * 420 + 256;
-        const cy = Math.max(30, Math.min(480, latBias));
-        const r = 40 + Math.random() * 85;
-
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        const opacity = 0.08 + Math.random() * 0.18;
-        grad.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
-        grad.addColorStop(0.5, `rgba(255, 255, 255, ${opacity * 0.45})`);
-        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      const cloudTex = new THREE.CanvasTexture(canvas);
-      cloudTex.wrapS = THREE.RepeatWrapping;
-      cloudTex.wrapT = THREE.ClampToEdgeWrapping;
-
-      const cloudGeo = new THREE.SphereGeometry(radius * 1.0035, 64, 64);
-      const cloudMat = new THREE.MeshStandardMaterial({
-        map: cloudTex,
-        transparent: true,
-        opacity: 0.7,
-        blending: THREE.NormalBlending,
-        depthWrite: false
-      });
-
-      this.cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
-      this.scene.add(this.cloudMesh);
     },
 
     createStarfield: function () {
@@ -2115,11 +1977,6 @@
         if (this.pointsMesh) {
           this.pointsMesh.rotation.x = this.currentRot.x;
           this.pointsMesh.rotation.y = this.currentRot.y;
-        }
-
-        if (this.cloudMesh) {
-          this.cloudMesh.rotation.x = this.currentRot.x;
-          this.cloudMesh.rotation.y = this.currentRot.y + frameCount * 0.00018;
         }
 
         // Radio Garden reticle lock check (throttled)
