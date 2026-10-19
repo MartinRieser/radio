@@ -86,6 +86,10 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
+    // On-Device AI / TensorFlow Lite Audio Classification (YAMNet AI VAD)
+    implementation("org.tensorflow:tensorflow-lite-task-audio:0.4.4")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+
     // Unit Testing
     testImplementation("junit:junit:4.13.2")
 }

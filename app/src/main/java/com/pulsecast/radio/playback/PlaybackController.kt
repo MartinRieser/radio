@@ -39,7 +39,7 @@ class PlaybackController(
     private val scope = CoroutineScope(Dispatchers.Main + Job())
     private var timerJob: Job? = null
 
-    val audioClassifier = AudioContentClassifier()
+    val audioClassifier = AudioContentClassifier(context)
     val smartSwitchCoordinator = SmartSwitchCoordinator(
         context = context,
         repository = repository,
