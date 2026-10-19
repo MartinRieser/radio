@@ -1,13 +1,12 @@
 package com.pulsecast.radio.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,12 +30,19 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -116,15 +122,17 @@ fun HomeScreen(viewModel: MainViewModel) {
                 onSleepClick = { showSleepDialog = true }
             )
 
-            // 2. Search Bar
-            SearchBar(
+            // 2. Search & Genre Filter Bar
+            SearchAndFilterBar(
                 query = searchQuery,
+                activeCategory = activeCategory,
                 onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                onClear = { viewModel.clearSearch() }
+                onClear = { viewModel.clearSearch() },
+                onSelectCategory = { viewModel.selectCategory(it) }
             )
 
-            // 3. Category Pills (Horizontal Scroll)
-            CategoryPills(
+            // 3. Category Tabs
+            CategoryTabs(
                 activeCategory = activeCategory,
                 favCount = favorites.size,
                 historyCount = history.size,
@@ -265,53 +273,11 @@ private fun HeaderView(
 }
 
 @Composable
-private fun SearchBar(
+private fun SearchAndFilterBar(
     query: String,
-    onQueryChange: (String) -> Unit,
-    onClear: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
-    ) {
-        TextField(
-            value = query,
-            onValueChange = onQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp)),
-            placeholder = { Text("Sender, Genre oder Land suchen…", color = TextMuted, fontSize = 14.sp) },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = null, tint = TextMuted)
-            },
-            trailingIcon = {
-                if (query.isNotBlank()) {
-                    IconButton(onClick = onClear) {
-                        Icon(Icons.Default.Clear, contentDescription = "Löschen", tint = TextMuted)
-                    }
-                }
-            },
-            singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = BgSurfaceCard,
-                unfocusedContainerColor = BgSurfaceCard,
-                focusedTextColor = TextPrimary,
-                unfocusedTextColor = TextPrimary,
-                cursorColor = AccentPrimary,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            )
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun CategoryPills(
     activeCategory: String,
-    favCount: Int,
-    historyCount: Int,
+    onQueryChange: (String) -> Unit,
+    onClear: () -> Unit,
     onSelectCategory: (String) -> Unit
 ) {
     val genres = listOf(
@@ -331,57 +297,89 @@ private fun CategoryPills(
         "lounge" to "Lounge & Easy Listening"
     )
 
-    val fixedCategories = listOf(
-        "featured" to "Featured",
-        "adfree" to "🛡️ Werbefrei",
-        "favorites" to "❤️ Favoriten ($favCount)",
-        "history" to "🕒 Verlauf ($historyCount)",
-        "topclick" to "Trending"
-    )
-
     var genreMenuExpanded by remember { mutableStateOf(false) }
 
     val selectedGenrePair = genres.find { it.first == activeCategory }
     val isGenreActive = (selectedGenrePair != null)
-    val genreButtonText = if (selectedGenrePair != null) "🎵 ${selectedGenrePair.second}" else "🎵 Genre wählen"
+    val genreLabel = if (selectedGenrePair != null) selectedGenrePair.second else "Genre"
 
-    FlowRow(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Genre Dropdown Selector Button (Placed Prominently First)
+        // Search Input Field
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .weight(1f)
+                .height(48.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            placeholder = { Text("Sender oder Genre suchen…", color = TextMuted, fontSize = 13.sp) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = TextMuted,
+                    modifier = Modifier.size(18.dp)
+                )
+            },
+            trailingIcon = {
+                if (query.isNotBlank()) {
+                    IconButton(onClick = onClear) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Löschen",
+                            tint = TextMuted,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = BgSurfaceCard,
+                unfocusedContainerColor = BgSurfaceCard,
+                focusedTextColor = TextPrimary,
+                unfocusedTextColor = TextPrimary,
+                cursorColor = AccentPrimary,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            )
+        )
+
+        // Genre Selector Dropdown Button
         Box {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        if (isGenreActive) AccentPrimary.copy(alpha = 0.2f)
-                        else BgSurfaceCard
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = if (isGenreActive) AccentPrimary else BorderSubtle,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .clickable { genreMenuExpanded = true }
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            Surface(
+                onClick = { genreMenuExpanded = true },
+                shape = RoundedCornerShape(12.dp),
+                color = if (isGenreActive) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard,
+                border = BorderStroke(1.dp, if (isGenreActive) AccentPrimary else BorderSubtle),
+                modifier = Modifier.height(48.dp)
             ) {
                 Row(
+                    modifier = Modifier.padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = "Genre Filter",
+                        tint = if (isGenreActive) AccentPrimary else TextSecondary,
+                        modifier = Modifier.size(16.dp)
+                    )
                     Text(
-                        text = genreButtonText,
-                        color = if (isGenreActive) TextPrimary else AccentPrimary,
+                        text = genreLabel,
+                        color = if (isGenreActive) TextPrimary else TextSecondary,
                         fontSize = 12.sp,
                         fontWeight = if (isGenreActive) FontWeight.Bold else FontWeight.Medium
                     )
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Genre Dropdown",
+                        contentDescription = null,
                         tint = if (isGenreActive) AccentPrimary else TextMuted,
                         modifier = Modifier.size(16.dp)
                     )
@@ -414,39 +412,60 @@ private fun CategoryPills(
                 }
             }
         }
+    }
+}
 
-        // Quick Category Pills
-        fixedCategories.forEach { (id, label) ->
-            val isSelected = (activeCategory == id)
-            val pillColor = when {
-                isSelected -> AccentPrimary
-                id == "favorites" -> AccentFav
-                id == "history" -> AccentHistory
-                else -> TextSecondary
-            }
+@Composable
+private fun CategoryTabs(
+    activeCategory: String,
+    favCount: Int,
+    historyCount: Int,
+    onSelectCategory: (String) -> Unit
+) {
+    val tabs = listOf(
+        "featured" to "Featured",
+        "adfree" to "🛡️ Werbefrei",
+        "favorites" to "❤️ Favoriten ($favCount)",
+        "history" to "🕒 Verlauf ($historyCount)",
+        "topclick" to "Trending"
+    )
 
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        if (isSelected) AccentPrimary.copy(alpha = 0.15f)
-                        else BgSurfaceCard
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = if (isSelected) AccentPrimary else BorderSubtle,
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .clickable { onSelectCategory(id) }
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = label,
-                    color = if (isSelected) TextPrimary else pillColor,
-                    fontSize = 12.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+    val selectedIndex = tabs.indexOfFirst { it.first == activeCategory }.let {
+        if (it >= 0) it else 0
+    }
+
+    ScrollableTabRow(
+        selectedTabIndex = selectedIndex,
+        containerColor = BgMain,
+        contentColor = AccentPrimary,
+        edgePadding = 16.dp,
+        indicator = { tabPositions ->
+            if (selectedIndex in tabPositions.indices) {
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedIndex]),
+                    color = AccentPrimary,
+                    height = 3.dp
                 )
             }
+        },
+        divider = {
+            HorizontalDivider(color = BorderSubtle, thickness = 0.5.dp)
+        }
+    ) {
+        tabs.forEach { (id, label) ->
+            val isSelected = (activeCategory == id)
+            Tab(
+                selected = isSelected,
+                onClick = { onSelectCategory(id) },
+                text = {
+                    Text(
+                        text = label,
+                        color = if (isSelected) AccentPrimary else TextSecondary,
+                        fontSize = 13.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+            )
         }
     }
 }
