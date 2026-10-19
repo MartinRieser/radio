@@ -1214,7 +1214,7 @@
 
       // 1. Scene, Camera, Renderer
       this.scene = new THREE.Scene();
-      this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
+      this.camera = new THREE.PerspectiveCamera(45, width / height, 0.2, 2000);
       this.camera.position.z = this.cameraDistance;
 
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -1464,8 +1464,16 @@
       if (!card) return;
 
       const flag = getCountryFlag(station.countrycode);
-      document.getElementById('gcard-name').textContent = station.name;
-      document.getElementById('gcard-meta').textContent = `${flag} ${station.country || 'Global'}${station.state ? ' • ' + station.state : ''}`;
+      const flagEl = document.getElementById('gcard-flag');
+      if (flagEl) flagEl.textContent = flag;
+
+      const metaEl = document.getElementById('gcard-meta');
+      if (metaEl) {
+        metaEl.textContent = `${station.country || 'Global'}${station.state ? ' • ' + station.state : ''}`;
+      }
+
+      const nameEl = document.getElementById('gcard-name');
+      if (nameEl) nameEl.textContent = station.name;
 
       const art = document.getElementById('gcard-art');
       if (station.favicon) {
@@ -1490,7 +1498,65 @@
         favBtn.className = `btn btn-secondary btn-sm ${isFavorite(station) ? 'is-fav' : ''}`;
       };
 
+      // Radio Garden Multi-Station City Explorer (Group stations in this city/region)
+      const nearbySection = document.getElementById('gcard-nearby-section');
+      const nearbyList = document.getElementById('gcard-nearby-list');
+      const nearbyCount = document.getElementById('nearby-count');
+
+      if (nearbySection && nearbyList && station.geo_lat != null) {
+        const lat = parseFloat(station.geo_lat);
+        const lon = parseFloat(station.geo_long);
+
+        const nearby = this.renderedStations.filter(s => {
+          if (s.stationuuid === station.stationuuid) return false;
+          const sLat = parseFloat(s.geo_lat);
+          const sLon = parseFloat(s.geo_long);
+          if (isNaN(sLat) || isNaN(sLon)) return false;
+          const dist = Math.hypot(lat - sLat, lon - sLon);
+          return dist < 3.2; // Local city/regional cluster
+        }).slice(0, 12);
+
+        if (nearby.length > 0) {
+          nearbyCount.textContent = nearby.length;
+          nearbyList.innerHTML = nearby.map(s => `
+            <button class="nearby-station-pill ${currentStation && currentStation.stationuuid === s.stationuuid ? 'is-active' : ''}" data-uuid="${s.stationuuid}" title="${escapeHtml(s.name)}">
+              ${escapeHtml(s.name)}
+            </button>
+          `).join('');
+
+          nearbyList.querySelectorAll('.nearby-station-pill').forEach(pill => {
+            pill.onclick = () => {
+              const uuid = pill.getAttribute('data-uuid');
+              const target = nearby.find(s => s.stationuuid === uuid);
+              if (target) {
+                playStation(target);
+                this.showStationCard(target);
+              }
+            };
+          });
+
+          nearbySection.classList.remove('hidden');
+        } else {
+          nearbySection.classList.add('hidden');
+        }
+      }
+
       card.classList.remove('hidden');
+    },
+
+    updateZoomBadge: function () {
+      const badge = document.getElementById('zoom-level-text');
+      if (!badge) return;
+      const dist = this.targetDistance;
+      if (dist <= 112) {
+        badge.textContent = 'City 📍';
+      } else if (dist <= 135) {
+        badge.textContent = 'Regional';
+      } else if (dist <= 175) {
+        badge.textContent = 'Country';
+      } else {
+        badge.textContent = 'Orbit';
+      }
     },
 
     setupGlobeEvents: function () {
@@ -1552,12 +1618,33 @@
         this.isDragging = false;
       });
 
-      // Gentle Zoom via Mouse Wheel
+      // Deeper Logarithmic Zoom via Mouse Wheel (Down to 103.8 city level)
       dom.addEventListener('wheel', (e) => {
         e.preventDefault();
-        this.targetDistance += e.deltaY * 0.06; // Calibrated smooth zoom
-        this.targetDistance = Math.max(140, Math.min(360, this.targetDistance));
+        const altitude = this.cameraDistance - 100;
+        const zoomFactor = Math.max(0.012, (altitude / 100) * 0.06);
+        this.targetDistance += e.deltaY * zoomFactor;
+        this.targetDistance = Math.max(103.8, Math.min(285, this.targetDistance));
+        this.updateZoomBadge();
       }, { passive: false });
+
+      // Double-click to fly deep into city/location
+      dom.addEventListener('dblclick', (e) => {
+        const rect = dom.getBoundingClientRect();
+        this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        const intersects = this.raycaster.intersectObject(this.globeMesh);
+        if (intersects.length > 0) {
+          const pt = intersects[0].point;
+          const lat = 90 - (Math.acos(pt.y / 100) * 180 / Math.PI);
+          const lon = ((Math.atan2(pt.z, -pt.x) * 180 / Math.PI) - 180);
+          this.flyToLocation(lat, lon);
+          this.targetDistance = 110; // Deep city dive
+          this.updateZoomBadge();
+          showToast('Diving in close to city view 📍');
+        }
+      });
 
       // Click to select station
       dom.addEventListener('click', () => {
@@ -1588,16 +1675,21 @@
       });
 
       document.getElementById('globe-zoom-in-btn').addEventListener('click', () => {
-        this.targetDistance = Math.max(140, this.targetDistance - 30);
+        const step = Math.max(4, (this.targetDistance - 100) * 0.35);
+        this.targetDistance = Math.max(103.8, this.targetDistance - step);
+        this.updateZoomBadge();
       });
 
       document.getElementById('globe-zoom-out-btn').addEventListener('click', () => {
-        this.targetDistance = Math.min(360, this.targetDistance + 30);
+        const step = Math.max(8, (this.targetDistance - 100) * 0.45);
+        this.targetDistance = Math.min(285, this.targetDistance + step);
+        this.updateZoomBadge();
       });
 
       document.getElementById('globe-reset-btn').addEventListener('click', () => {
         this.targetRot = { x: 0.25, y: 0 };
         this.targetDistance = 245;
+        this.updateZoomBadge();
         showToast('Camera reset to default');
       });
 
@@ -1648,37 +1740,70 @@
       tooltip.classList.add('hidden');
     },
 
+    // Radio Garden Center Reticle Targeting System
+    checkCenterReticle: function () {
+      if (!this.pointsMesh || this.renderedStations.length === 0) return;
+      const reticleEl = document.getElementById('garden-reticle');
+
+      this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
+      // Dynamic threshold: tighter when zoomed deep, wider when far
+      const altitude = this.cameraDistance - 100;
+      this.raycaster.params.Points.threshold = Math.max(1.2, altitude * 0.035);
+
+      const intersects = this.raycaster.intersectObject(this.pointsMesh);
+
+      if (intersects.length > 0) {
+        const hitIdx = intersects[0].index;
+        const station = this.renderedStations[hitIdx];
+        if (station) {
+          if (reticleEl) reticleEl.classList.add('is-locked');
+          if (this.hoverMarkerMesh) {
+            const pos = intersects[0].point;
+            this.hoverMarkerMesh.position.copy(pos).multiplyScalar(1.002);
+            this.hoverMarkerMesh.lookAt(new THREE.Vector3(0, 0, 0));
+            this.hoverMarkerMesh.visible = true;
+          }
+          this.hoveredStation = station;
+          this.showStationCard(station);
+          return;
+        }
+      }
+
+      if (reticleEl) reticleEl.classList.remove('is-locked');
+    },
+
     flyToRegion: function (region) {
       switch (region) {
         case 'eu': // Europe
           this.flyToLocation(48.8, 10.5);
-          this.targetDistance = 210;
+          this.targetDistance = 145; // Closer view
           break;
         case 'na': // North America
           this.flyToLocation(39.8, -98.5);
-          this.targetDistance = 220;
+          this.targetDistance = 155;
           break;
         case 'sa': // South America
           this.flyToLocation(-15.6, -56.0);
-          this.targetDistance = 220;
+          this.targetDistance = 155;
           break;
         case 'as': // Asia
           this.flyToLocation(34.0, 105.0);
-          this.targetDistance = 225;
+          this.targetDistance = 160;
           break;
         case 'af': // Africa
           this.flyToLocation(2.0, 21.0);
-          this.targetDistance = 225;
+          this.targetDistance = 160;
           break;
         case 'oc': // Oceania
           this.flyToLocation(-25.2, 134.0);
-          this.targetDistance = 225;
+          this.targetDistance = 160;
           break;
         default: // Global
           this.targetRot = { x: 0.25, y: 0 };
           this.targetDistance = 245;
           break;
       }
+      this.updateZoomBadge();
     },
 
     onResize: function () {
@@ -1695,9 +1820,11 @@
     startAnimation: function () {
       let beaconScale = 1;
       let beaconOpacity = 0.85;
+      let frameCount = 0;
 
       const render = () => {
         this.animFrameId = requestAnimationFrame(render);
+        frameCount++;
 
         // Only rotate if user explicitly enabled it
         if (!this.isDragging && this.autoRotate) {
@@ -1716,6 +1843,11 @@
         if (this.pointsMesh) {
           this.pointsMesh.rotation.x = this.currentRot.x;
           this.pointsMesh.rotation.y = this.currentRot.y;
+        }
+
+        // Radio Garden reticle lock check (throttled)
+        if (frameCount % 4 === 0) {
+          this.checkCenterReticle();
         }
 
         // Animate beacon pulse for active station

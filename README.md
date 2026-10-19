@@ -45,14 +45,15 @@ Then visit **`http://localhost:3000`** in your browser.
 
 ## ✨ Features & Views
 
-### 1. 🌍 Interactive 3D World Globe Radar
-- **3D Earth Sphere**: Textured with continental maps, atmospheric glow, coordinate graticules, and a starfield.
-- **Geo-located Radio Station Dots**: Hundreds of live radio stations plotted as glowing dots at their real latitude & longitude.
-- **Click to Tune In**: Click on any glowing dot to smoothly orbit the globe to that city and stream the radio live.
-- **Live Beacon Pulse**: The currently playing station emits an animated radar beacon wave from its coordinates on the globe.
-- **Hover HUD Tooltip**: Hovering over any dot displays station name, country flag, genre, and bitrate.
+### 1. 🌍 Interactive 3D World Globe Radar (Radio Garden Inspired)
+- **Deep Zoom to City Level**: Zoom all the way from deep space down to street/city altitude (distance 103.8 above the 100-radius Earth sphere).
+- **Double-Click Dive**: Double-click any location or dot on the globe to swoop straight in close to that city.
+- **Center Targeting Reticle**: Radio Garden style reticle locks onto stations as you rotate the globe with animated green target lock-on.
+- **Multi-Station City Explorer**: When targeting a city (Vienna, Berlin, London, Paris, Tokyo, etc.), it displays all other stations in that area so you can flick between local channels with a single tap.
+- **1,500+ Geo-located Pinpoint Dots**: Ultra-crisp pinpoint light dots across every continent with intelligent country & region geolocation mapping.
+- **Calibrated Physics**: Non-jerky weighted rotation sensitivity, gentle logarithmic wheel zoom, and stationary default (no unwanted spinning).
 - **Region Fly-To Jumps**: Instant one-click fly-to buttons for Europe, North America, South America, Asia, Africa, and Oceania.
-- **Orbit Controls**: Drag to rotate, scroll to zoom in/out, and toggle idle auto-spin.
+- **Live Beacon Pulse**: The currently playing station emits an animated radar wave from its exact coordinates on the globe.
 
 ### 2. 🗂️ Card Grid & Search View
 - **40,000+ Stations**: Live search by name, genre/tag (Chillout, Lo-Fi, Pop, Rock, Jazz, Classical, Electronic, News), and country.

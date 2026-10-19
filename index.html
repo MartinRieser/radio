@@ -225,50 +225,76 @@
             </div>
           </div>
 
+          <!-- Radio Garden Center Targeting Reticle -->
+          <div id="garden-reticle" class="garden-reticle" title="Center reticle: orbit globe to target stations">
+            <div class="reticle-ring"></div>
+            <div class="reticle-crosshair ch-top"></div>
+            <div class="reticle-crosshair ch-bottom"></div>
+            <div class="reticle-crosshair ch-left"></div>
+            <div class="reticle-crosshair ch-right"></div>
+            <div class="reticle-center-dot"></div>
+          </div>
+
           <!-- Bottom HUD Controls & Quick Details -->
           <div class="globe-hud-bottom">
-            <!-- Selected Station Floating Card -->
+            <!-- Radio Garden Style Floating Station & City Drawer -->
             <div id="globe-station-card" class="globe-station-card hidden">
-              <div class="gcard-top">
-                <div class="gcard-art" id="gcard-art">📻</div>
-                <div class="gcard-info">
-                  <h4 id="gcard-name" class="gcard-name">Station Name</h4>
-                  <p id="gcard-meta" class="gcard-meta">Country • City</p>
-                  <div class="gcard-tags" id="gcard-tags"></div>
+              <div class="gcard-header">
+                <div class="gcard-location">
+                  <span id="gcard-flag">📍</span>
+                  <span id="gcard-meta" class="gcard-location-text">City, Country</span>
                 </div>
                 <button id="gcard-close-btn" class="gcard-close" title="Close" aria-label="Close">×</button>
               </div>
-              <div class="gcard-actions">
-                <button id="gcard-play-btn" class="btn btn-primary btn-sm">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
-                  </svg>
-                  <span>Tune In</span>
-                </button>
-                <button id="gcard-fav-btn" class="btn btn-secondary btn-sm" title="Add to favorites">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </button>
+
+              <div class="gcard-main">
+                <div class="gcard-art" id="gcard-art">📻</div>
+                <div class="gcard-info">
+                  <h4 id="gcard-name" class="gcard-name">Station Name</h4>
+                  <div class="gcard-tags" id="gcard-tags"></div>
+                </div>
+                <div class="gcard-actions">
+                  <button id="gcard-play-btn" class="btn btn-primary btn-sm">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                      <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                    </svg>
+                    <span>Tune In</span>
+                  </button>
+                  <button id="gcard-fav-btn" class="btn btn-secondary btn-sm" title="Add to favorites">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Other stations in this city/region -->
+              <div id="gcard-nearby-section" class="gcard-nearby hidden">
+                <div class="gcard-nearby-title">More in this area (<span id="nearby-count">0</span>):</div>
+                <div id="gcard-nearby-list" class="gcard-nearby-list"></div>
               </div>
             </div>
 
             <!-- Globe Navigation Tools -->
             <div class="globe-tools">
-              <button id="globe-rotate-btn" class="btn-icon globe-tool-btn" title="Toggle Auto-Spin">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                </svg>
-              </button>
-              <button id="globe-zoom-in-btn" class="btn-icon globe-tool-btn" title="Zoom In">
+              <!-- Deep Zoom Indicator -->
+              <div id="globe-zoom-pill" class="globe-zoom-badge" title="Current zoom altitude">
+                <span id="zoom-level-text">Orbit</span>
+              </div>
+              <button id="globe-zoom-in-btn" class="btn-icon globe-tool-btn" title="Zoom in deeper (Double-click globe to fly in)">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </button>
-              <button id="globe-zoom-out-btn" class="btn-icon globe-tool-btn" title="Zoom Out">
+              <button id="globe-zoom-out-btn" class="btn-icon globe-tool-btn" title="Zoom out to space">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <button id="globe-rotate-btn" class="btn-icon globe-tool-btn" title="Toggle Auto-Spin">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
                 </svg>
               </button>
               <button id="globe-reset-btn" class="btn-icon globe-tool-btn" title="Reset View">
@@ -287,12 +313,12 @@
               <strong id="tooltip-title">Station Title</strong>
             </div>
             <div id="tooltip-sub" class="tooltip-sub">Country • 128 kbps</div>
-            <div class="tooltip-hint">Click dot to listen live</div>
+            <div class="tooltip-hint">Click or target with reticle to listen live</div>
           </div>
 
           <!-- Interactive Instruction Hint -->
           <div class="globe-hint-pill">
-            <span>🖱️ Drag to rotate • Scroll to zoom • Click any glowing dot to tune in</span>
+            <span>🔭 Deep Zoom: Scroll down to fly to city level • Double-click any dot to dive in</span>
           </div>
         </div>
       </div>
