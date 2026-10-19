@@ -1223,57 +1223,59 @@
       this.mountEl.appendChild(this.renderer.domElement);
 
       this.raycaster = new THREE.Raycaster();
-      this.raycaster.params.Points = { threshold: 1.8 }; // Generous comfortable hover picking
+      this.raycaster.params.Points = { threshold: 3.0 }; // Generous picking tolerance
       this.mouse = new THREE.Vector2();
 
-      // 2. Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+      // 2. Cinematic Celestial Lighting
+      // Primary Sun: Dramatic illumination angle with crisp day/night terminator
+      const sunLight = new THREE.DirectionalLight(0xf5f9ff, 1.35);
+      sunLight.position.set(240, 160, 210);
+      this.scene.add(sunLight);
+
+      // Deep sapphire fill light from night-side for luminous space depth
+      const nightFillLight = new THREE.DirectionalLight(0x1d4ed8, 0.45);
+      nightFillLight.position.set(-200, -100, -180);
+      this.scene.add(nightFillLight);
+
+      // Soft ambient space illumination
+      const ambientLight = new THREE.AmbientLight(0x0a1122, 0.65);
       this.scene.add(ambientLight);
 
-      const dirLight = new THREE.DirectionalLight(0x00f2fe, 0.45);
-      dirLight.position.set(200, 150, 200);
-      this.scene.add(dirLight);
-
-      // 3. Earth Globe Sphere
+      // 3. Earth Globe Sphere with Specular Ocean & Textured Continents
       const earthRadius = 100;
       const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
 
-      const textureLoader = new THREE.TextureLoader();
-      const earthTexture = textureLoader.load('earth.jpg');
-
-      const earthMat = new THREE.MeshPhongMaterial({
-        map: earthTexture,
-        color: 0x88aacc,
-        specular: 0x112233,
-        shininess: 12
+      const earthMat = new THREE.MeshStandardMaterial({
+        color: 0x93c5fd,
+        roughness: 0.5,
+        metalness: 0.08
       });
 
       this.globeMesh = new THREE.Mesh(earthGeo, earthMat);
       this.scene.add(this.globeMesh);
 
-      // 4. Subtle Atmosphere Outer Glow Shell
-      const atmosGeo = new THREE.SphereGeometry(earthRadius * 1.025, 48, 48);
-      const atmosMat = new THREE.MeshBasicMaterial({
-        color: 0x00f2fe,
-        transparent: true,
-        opacity: 0.12,
-        side: THREE.BackSide
+      // Asynchronously load and color-grade Earth into rich Midnight Satellite aesthetics
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.load('earth.jpg', (texture) => {
+        try {
+          const { diffuseTex, roughTex } = this.createStylizedEarthTexture(texture.image);
+          earthMat.map = diffuseTex;
+          earthMat.roughnessMap = roughTex;
+          earthMat.needsUpdate = true;
+        } catch (err) {
+          console.warn('Canvas texture processing fallback:', err);
+          earthMat.map = texture;
+          earthMat.needsUpdate = true;
+        }
       });
-      const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
-      this.scene.add(atmosMesh);
 
-      // 5. Grid Graticule Lines
-      const gridGeo = new THREE.SphereGeometry(earthRadius * 1.006, 24, 12);
-      const gridMat = new THREE.MeshBasicMaterial({
-        color: 0x00f2fe,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.08
-      });
-      const gridMesh = new THREE.Mesh(gridGeo, gridMat);
-      this.scene.add(gridMesh);
+      // 4. Double-Layer Atmospheric Fresnel Glow Corona
+      this.createAtmosphere(earthRadius);
 
-      // 6. Background Starfield
+      // 5. Aesthetic Celestial Graticule Rings (Equator, Tropics, Prime Meridian)
+      this.createGraticules(earthRadius);
+
+      // 6. Multi-Depth Deep Space Starfield
       this.createStarfield();
 
       // 7. Active Beacon Ring Mesh
@@ -1294,43 +1296,270 @@
       }
     },
 
-    createStarfield: function () {
-      const starGeo = new THREE.BufferGeometry();
-      const starCount = 600;
-      const starPos = new Float32Array(starCount * 3);
+    // Generates a high-contrast dark satellite texture with midnight oceans and glossy specular map
+    createStylizedEarthTexture: function (sourceImage) {
+      const canvas = document.createElement('canvas');
+      canvas.width = sourceImage.width || 2048;
+      canvas.height = sourceImage.height || 1024;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(sourceImage, 0, 0, canvas.width, canvas.height);
 
-      for (let i = 0; i < starCount * 3; i += 3) {
-        starPos[i] = (Math.random() - 0.5) * 1400;
-        starPos[i + 1] = (Math.random() - 0.5) * 1400;
-        starPos[i + 2] = (Math.random() - 0.5) * 1400;
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const roughCanvas = document.createElement('canvas');
+      roughCanvas.width = w;
+      roughCanvas.height = h;
+      const rCtx = roughCanvas.getContext('2d');
+      const roughImgData = rCtx.createImageData(w, h);
+      const roughData = roughImgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        // Water detection in satellite maps (blue dominant or low-luminance deep oceans)
+        const isWater = (b > r + 6 && b >= g - 4 && lum < 145) || (lum < 28 && b >= r);
+
+        if (isWater) {
+          // Deep midnight navy obsidian ocean with subtle depth shading
+          const depth = Math.min(1.0, Math.max(0.0, lum / 100));
+          data[i] = Math.round(5 + depth * 5);         // Red: 5 - 10
+          data[i + 1] = Math.round(12 + depth * 14);    // Green: 12 - 26
+          data[i + 2] = Math.round(30 + depth * 32);    // Blue: 30 - 62
+
+          // Oceans are glossy and reflective (smooth = low roughness)
+          roughData[i] = 35;
+          roughData[i + 1] = 35;
+          roughData[i + 2] = 35;
+          roughData[i + 3] = 255;
+        } else {
+          // Landmasses & topography
+          if (lum > 185 && Math.abs(r - b) < 30 && Math.abs(g - b) < 30) {
+            // Polar ice caps & snowy summits: frosty luminous cyan-white
+            data[i] = Math.round(195 + (r - 185) * 0.35);
+            data[i + 1] = Math.round(220 + (g - 185) * 0.35);
+            data[i + 2] = Math.round(242 + (b - 185) * 0.2);
+            roughData[i] = 110;
+          } else {
+            // Land topography: high-contrast dark satellite styling
+            const greenBias = g - (r + b) / 2;
+            if (greenBias > 4) {
+              // Lush forests & grasslands: deep emerald slate
+              data[i] = Math.round(r * 0.42 + 8);
+              data[i + 1] = Math.round(g * 0.62 + 16);
+              data[i + 2] = Math.round(b * 0.42 + 12);
+            } else {
+              // Desert, canyons & mountains: subtle warm bronze
+              data[i] = Math.round(r * 0.62 + 14);
+              data[i + 1] = Math.round(g * 0.54 + 11);
+              data[i + 2] = Math.round(b * 0.42 + 9);
+            }
+            roughData[i] = 215; // Continents are matte
+          }
+          roughData[i + 1] = roughData[i];
+          roughData[i + 2] = roughData[i];
+          roughData[i + 3] = 255;
+        }
       }
 
-      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-      const starMat = new THREE.PointsMaterial({
-        color: 0xffffff,
-        size: 1.5,
+      ctx.putImageData(imgData, 0, 0);
+      rCtx.putImageData(roughImgData, 0, 0);
+
+      const diffuseTex = new THREE.CanvasTexture(canvas);
+      const roughTex = new THREE.CanvasTexture(roughCanvas);
+      return { diffuseTex, roughTex };
+    },
+
+    // Dual-Layer Atmospheric Fresnel Corona
+    createAtmosphere: function (radius) {
+      // 1. Outer Glowing Atmospheric Rim (BackSide additive halo)
+      const outerGeo = new THREE.SphereGeometry(radius * 1.026, 64, 64);
+      const outerMat = new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+            vPosition = mvPos.xyz;
+            gl_Position = projectionMatrix * mvPos;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          void main() {
+            vec3 viewDir = normalize(-vPosition);
+            float intensity = 1.0 - abs(dot(viewDir, vNormal));
+            float glow = pow(intensity, 2.6);
+            vec3 atmosColor = mix(vec3(0.0, 0.45, 1.0), vec3(0.0, 0.95, 1.0), glow);
+            gl_FragColor = vec4(atmosColor, glow * 0.88);
+          }
+        `,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
         transparent: true,
-        opacity: 0.45
+        depthWrite: false
       });
-      const stars = new THREE.Points(starGeo, starMat);
-      this.scene.add(stars);
+      const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+      this.scene.add(outerMesh);
+
+      // 2. Inner Rim Scattering (Curvature highlight)
+      const innerGeo = new THREE.SphereGeometry(radius * 1.003, 64, 64);
+      const innerMat = new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+            vPosition = mvPos.xyz;
+            gl_Position = projectionMatrix * mvPos;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vNormal;
+          varying vec3 vPosition;
+          void main() {
+            vec3 viewDir = normalize(-vPosition);
+            float rim = 1.0 - max(dot(viewDir, vNormal), 0.0);
+            float glow = pow(rim, 3.2);
+            gl_FragColor = vec4(0.0, 0.85, 1.0, glow * 0.35);
+          }
+        `,
+        blending: THREE.AdditiveBlending,
+        side: THREE.FrontSide,
+        transparent: true,
+        depthWrite: false
+      });
+      const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+      this.scene.add(innerMesh);
+    },
+
+    // Aesthetic Planetary Graticule Rings
+    createGraticules: function (radius) {
+      this.graticuleGroup = new THREE.Group();
+
+      const createLatRing = (lat, col = 0x00f2fe, op = 0.15) => {
+        const phi = (lat * Math.PI) / 180;
+        const y = radius * 1.002 * Math.sin(phi);
+        const r = radius * 1.002 * Math.cos(phi);
+        const segs = 96;
+        const pts = [];
+        for (let i = 0; i <= segs; i++) {
+          const theta = (i / segs) * Math.PI * 2;
+          pts.push(new THREE.Vector3(r * Math.cos(theta), y, r * Math.sin(theta)));
+        }
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op });
+        return new THREE.Line(geo, mat);
+      };
+
+      const createMeridianRing = (lon, col = 0x00f2fe, op = 0.15) => {
+        const segs = 96;
+        const pts = [];
+        const theta = (lon * Math.PI) / 180;
+        for (let i = 0; i <= segs; i++) {
+          const phi = (i / segs) * Math.PI * 2;
+          const y = radius * 1.002 * Math.cos(phi);
+          const r = radius * 1.002 * Math.sin(phi);
+          pts.push(new THREE.Vector3(r * Math.sin(theta), y, r * Math.cos(theta)));
+        }
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: op });
+        return new THREE.Line(geo, mat);
+      };
+
+      // Glowing Equator line
+      this.graticuleGroup.add(createLatRing(0, 0x00f2fe, 0.32));
+      // Tropic of Cancer & Capricorn
+      this.graticuleGroup.add(createLatRing(23.44, 0x00f2fe, 0.14));
+      this.graticuleGroup.add(createLatRing(-23.44, 0x00f2fe, 0.14));
+      // Arctic & Antarctic Circles
+      this.graticuleGroup.add(createLatRing(66.5, 0x00f2fe, 0.10));
+      this.graticuleGroup.add(createLatRing(-66.5, 0x00f2fe, 0.10));
+      // Prime Meridian & Orthogonal Meridians
+      this.graticuleGroup.add(createMeridianRing(0, 0x00f2fe, 0.22));
+      this.graticuleGroup.add(createMeridianRing(90, 0x00f2fe, 0.10));
+      this.graticuleGroup.add(createMeridianRing(180, 0x00f2fe, 0.10));
+      this.graticuleGroup.add(createMeridianRing(270, 0x00f2fe, 0.10));
+
+      this.scene.add(this.graticuleGroup);
+    },
+
+    createStarfield: function () {
+      // Layer 1: Background distant faint starfield
+      const starGeo1 = new THREE.BufferGeometry();
+      const count1 = 700;
+      const pos1 = new Float32Array(count1 * 3);
+      for (let i = 0; i < count1 * 3; i += 3) {
+        pos1[i] = (Math.random() - 0.5) * 1600;
+        pos1[i + 1] = (Math.random() - 0.5) * 1600;
+        pos1[i + 2] = (Math.random() - 0.5) * 1600;
+      }
+      starGeo1.setAttribute('position', new THREE.BufferAttribute(pos1, 3));
+      const starMat1 = new THREE.PointsMaterial({
+        color: 0xdbeafe,
+        size: 1.1,
+        transparent: true,
+        opacity: 0.4
+      });
+      this.scene.add(new THREE.Points(starGeo1, starMat1));
+
+      // Layer 2: Radiant bright celestial stars (Cyan & Gold highlights)
+      const starGeo2 = new THREE.BufferGeometry();
+      const count2 = 180;
+      const pos2 = new Float32Array(count2 * 3);
+      const col2 = new Float32Array(count2 * 3);
+      const colorCyan = new THREE.Color(0x00f2fe);
+      const colorGold = new THREE.Color(0xfde68a);
+      const colorWhite = new THREE.Color(0xffffff);
+
+      for (let i = 0; i < count2; i++) {
+        const idx = i * 3;
+        pos2[idx] = (Math.random() - 0.5) * 1400;
+        pos2[idx + 1] = (Math.random() - 0.5) * 1400;
+        pos2[idx + 2] = (Math.random() - 0.5) * 1400;
+
+        const r = Math.random();
+        const c = r < 0.4 ? colorCyan : (r < 0.7 ? colorGold : colorWhite);
+        col2[idx] = c.r;
+        col2[idx + 1] = c.g;
+        col2[idx + 2] = c.b;
+      }
+      starGeo2.setAttribute('position', new THREE.BufferAttribute(pos2, 3));
+      starGeo2.setAttribute('color', new THREE.BufferAttribute(col2, 3));
+
+      const starMat2 = new THREE.PointsMaterial({
+        size: 2.2,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.75
+      });
+      this.scene.add(new THREE.Points(starGeo2, starMat2));
     },
 
     createDotTexture: function () {
       const canvas = document.createElement('canvas');
-      canvas.width = 32;
-      canvas.height = 32;
+      canvas.width = 16;
+      canvas.height = 16;
       const c = canvas.getContext('2d');
 
-      const grad = c.createRadialGradient(16, 16, 0, 16, 16, 16);
+      // Sharp, luminous center with gentle anti-aliased edge
+      const grad = c.createRadialGradient(8, 8, 0, 8, 8, 7.5);
       grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-      grad.addColorStop(0.3, 'rgba(0, 242, 254, 0.9)');
-      grad.addColorStop(0.7, 'rgba(0, 242, 254, 0.3)');
+      grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.9)');
+      grad.addColorStop(0.7, 'rgba(0, 242, 254, 0.6)');
       grad.addColorStop(1, 'rgba(0, 242, 254, 0)');
 
       c.fillStyle = grad;
       c.beginPath();
-      c.arc(16, 16, 15, 0, Math.PI * 2);
+      c.arc(8, 8, 7.5, 0, Math.PI * 2);
       c.fill();
 
       return new THREE.CanvasTexture(canvas);
@@ -1387,6 +1616,7 @@
 
       const colorCyan = new THREE.Color(0x00f2fe);
       const colorFav = new THREE.Color(0x10b981);
+      const colorActive = new THREE.Color(0xfacc15);
 
       stations.forEach((station) => {
         const lat = parseFloat(station.geo_lat);
@@ -1399,7 +1629,12 @@
         const pos = this.latLonToVec3(lat, lon, 100.45);
         positions.push(pos.x, pos.y, pos.z);
 
-        const col = isFavorite(station) ? colorFav : colorCyan;
+        let col = colorCyan;
+        if (currentStation && (currentStation.stationuuid === station.stationuuid || currentStation.url_resolved === station.url_resolved)) {
+          col = colorActive;
+        } else if (isFavorite(station)) {
+          col = colorFav;
+        }
         colors.push(col.r, col.g, col.b);
 
         this.renderedStations.push(station);
@@ -1409,15 +1644,15 @@
       bufferGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
       bufferGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-      // Ultra-small, crisp pinpoint dots
+      // Ultra-sharp, delicate pinpoint dots (sizeAttenuation: false prevents dots from expanding on zoom!)
       const dotTexture = this.createDotTexture();
       const pointsMat = new THREE.PointsMaterial({
-        size: 1.6, // Refined tiny pinpoint size
+        size: 2.4, // Crisp, ultra-sharp pinpoint dots
         map: dotTexture,
         transparent: true,
         opacity: 0.95,
         vertexColors: true,
-        sizeAttenuation: true
+        sizeAttenuation: false // Fixes giant blob issue when zooming close to city level!
       });
 
       this.pointsMesh = new THREE.Points(bufferGeo, pointsMat);
@@ -1563,10 +1798,15 @@
       const dom = this.renderer.domElement;
       const tooltip = document.getElementById('globe-hover-tooltip');
 
-      // Calibrated mouse drag rotation (Significantly reduced sensitivity)
+      // Calibrated mouse drag rotation with click vs drag differentiation
+      this.mouseDownPos = { x: 0, y: 0 };
+      this.mouseDownTime = 0;
+
       dom.addEventListener('mousedown', (e) => {
         this.isDragging = true;
         this.prevMousePos = { x: e.clientX, y: e.clientY };
+        this.mouseDownPos = { x: e.clientX, y: e.clientY };
+        this.mouseDownTime = Date.now();
       });
 
       window.addEventListener('mouseup', () => {
@@ -1598,6 +1838,8 @@
         if (e.touches.length === 1) {
           this.isDragging = true;
           this.prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          this.mouseDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          this.mouseDownTime = Date.now();
         }
       });
 
@@ -1614,8 +1856,15 @@
         }
       });
 
-      dom.addEventListener('touchend', () => {
+      dom.addEventListener('touchend', (e) => {
         this.isDragging = false;
+        if (e.changedTouches && e.changedTouches.length === 1) {
+          const t = e.changedTouches[0];
+          const moveDist = Math.hypot(t.clientX - this.mouseDownPos.x, t.clientY - this.mouseDownPos.y);
+          if (moveDist < 8 && Date.now() - this.mouseDownTime < 500) {
+            this.handleDotClick(t.clientX, t.clientY);
+          }
+        }
       });
 
       // Deeper Logarithmic Zoom via Mouse Wheel (Down to 103.8 city level)
@@ -1646,12 +1895,15 @@
         }
       });
 
-      // Click to select station
-      dom.addEventListener('click', () => {
-        if (this.hoveredStation) {
-          playStation(this.hoveredStation);
-          this.showStationCard(this.hoveredStation);
-        }
+      // Click to select & play station reliably
+      dom.addEventListener('click', (e) => {
+        const moveDist = Math.hypot(e.clientX - this.mouseDownPos.x, e.clientY - this.mouseDownPos.y);
+        const elapsed = Date.now() - this.mouseDownTime;
+
+        // If dragged more than 6px or held longer than 550ms, this was an intentional drag orbit, not a click
+        if (moveDist > 6 || elapsed > 550) return;
+
+        this.handleDotClick(e.clientX, e.clientY);
       });
 
       // Resize
@@ -1701,13 +1953,69 @@
       }
     },
 
+    // Handles direct station click at client screen coordinates
+    handleDotClick: function (clientX, clientY) {
+      const dom = this.renderer.domElement;
+      const rect = dom.getBoundingClientRect();
+      const clickNDC = new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
+      );
+
+      // Raycast with generous click tolerance for small dots
+      this.raycaster.setFromCamera(clickNDC, this.camera);
+      const altitude = this.cameraDistance - 100;
+      this.raycaster.params.Points.threshold = Math.max(3.2, altitude * 0.05);
+
+      let targetStation = null;
+      if (this.pointsMesh && this.renderedStations.length > 0) {
+        const intersects = this.raycaster.intersectObject(this.pointsMesh);
+        if (intersects.length > 0) {
+          intersects.sort((a, b) => (a.distanceToRay || 0) - (b.distanceToRay || 0));
+          targetStation = this.renderedStations[intersects[0].index];
+        }
+      }
+
+      if (!targetStation && this.hoveredStation) {
+        targetStation = this.hoveredStation;
+      }
+
+      // Proximity check on globe surface if clicked directly next to a station dot
+      if (!targetStation && this.globeMesh && this.renderedStations.length > 0) {
+        const globeHits = this.raycaster.intersectObject(this.globeMesh);
+        if (globeHits.length > 0) {
+          const clickPt = globeHits[0].point;
+          let bestDist = 5.0;
+          for (let i = 0; i < this.renderedStations.length; i++) {
+            const st = this.renderedStations[i];
+            const vec = this.latLonToVec3(parseFloat(st.geo_lat), parseFloat(st.geo_long), 100.45);
+            vec.applyEuler(this.globeMesh.rotation);
+            const d = vec.distanceTo(clickPt);
+            if (d < bestDist) {
+              bestDist = d;
+              targetStation = st;
+            }
+          }
+        }
+      }
+
+      if (targetStation) {
+        this.setActiveStation(targetStation);
+        playStation(targetStation);
+        showToast(`Tuned into: ${targetStation.name}`);
+      }
+    },
+
     checkHover: function (e, rect, tooltip) {
       if (!this.pointsMesh || this.renderedStations.length === 0) return;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
+      const altitude = this.cameraDistance - 100;
+      this.raycaster.params.Points.threshold = Math.max(2.8, altitude * 0.04);
       const intersects = this.raycaster.intersectObject(this.pointsMesh);
 
       if (intersects.length > 0) {
+        intersects.sort((a, b) => (a.distanceToRay || 0) - (b.distanceToRay || 0));
         const hitIdx = intersects[0].index;
         const station = this.renderedStations[hitIdx];
         if (station) {
@@ -1748,11 +2056,12 @@
       this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.camera);
       // Dynamic threshold: tighter when zoomed deep, wider when far
       const altitude = this.cameraDistance - 100;
-      this.raycaster.params.Points.threshold = Math.max(1.2, altitude * 0.035);
+      this.raycaster.params.Points.threshold = Math.max(1.5, altitude * 0.035);
 
       const intersects = this.raycaster.intersectObject(this.pointsMesh);
 
       if (intersects.length > 0) {
+        intersects.sort((a, b) => (a.distanceToRay || 0) - (b.distanceToRay || 0));
         const hitIdx = intersects[0].index;
         const station = this.renderedStations[hitIdx];
         if (station) {
@@ -1836,9 +2145,14 @@
         this.currentRot.y += (this.targetRot.y - this.currentRot.y) * 0.06;
         this.cameraDistance += (this.targetDistance - this.cameraDistance) * 0.06;
 
-        // Apply rotation to globe & points
+        // Apply rotation to globe, graticule rings & points
         this.globeMesh.rotation.x = this.currentRot.x;
         this.globeMesh.rotation.y = this.currentRot.y;
+
+        if (this.graticuleGroup) {
+          this.graticuleGroup.rotation.x = this.currentRot.x;
+          this.graticuleGroup.rotation.y = this.currentRot.y;
+        }
 
         if (this.pointsMesh) {
           this.pointsMesh.rotation.x = this.currentRot.x;
