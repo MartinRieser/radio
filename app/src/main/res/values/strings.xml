@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PulseCast</string>
+    <string name="channel_name">PulseCast Radio Wiedergabe</string>
+    <string name="channel_description">Wiedergabebenachrichtigung und Audiosteuerung für PulseCast</string>
+    <string name="notification_title">PulseCast Radio</string>
+    <string name="notification_playing">Wird abgespielt…</string>
+    <string name="notification_buffering">Verbinde Stream…</string>
+    <string name="notification_paused">Pausiert</string>
+</resources>

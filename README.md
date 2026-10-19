@@ -1,90 +1,106 @@
-# 📻 PulseCast — Modern Web Radio Player
+# PulseCast – Native Android Radio App
 
-A sleek, modern web radio player powered by the free community **[Radio Browser API](https://www.radio-browser.info/)** (over 40,000+ free online radio stations worldwide) featuring an **ultra-minimalist interface**, **Pre-Roll ad detection**, verified ad-free streams, handpicked presets, real-time search, sleep timer, favorites, and live audio visualizers.
-
----
-
-## 🌐 Free Radio Stream Providers & Ad-Free Listening
-
-When listening to web radio, you don't need a paid service. The best free providers delivering direct audio stream URLs are:
-
-1. **[Radio-Browser.info](https://www.radio-browser.info/) (Built-in via API)**:
-   - A free, open-source, community-driven database of **40,000+ live stations**.
-   - Provides free JSON APIs with no API key required and CORS enabled.
-   - Allows searching by genre/tag (Chillout, Lo-Fi, Pop, Rock, Jazz, Classical, Electronic, News), country, codec, and popularity.
-
-2. **Public Broadcasters & Independent Curators (100% Werbefrei / 0% Pre-Roll)**:
-   - **SRG SSR / Swiss Satellite Radio** (Radio Swiss Pop, Swiss Jazz, Swiss Classic — pristine 128 kbps commercial-free streams)
-   - **SomaFM** (Groove Salad, Drone Zone, Secret Agent, etc. — 100% listener supported, free commercial-free streams)
-   - **WDR / ARD & Deutschlandfunk** (Public service German stations)
-   - **ORF / FM4 & Ö3** (Austrian public service radio)
-   - **BBC World Service & BBC Radio 1** (Global news, music, and talk)
-   - **Radio France / FIP** (Eclectic, groove, and jazz without interruptions)
-   - **KEXP 90.3 FM Seattle** (Listener-powered indie & alternative music)
+Eine moderne, native Android-Radio-App mit **Kotlin**, **Jetpack Compose** und **AndroidX Media3 (ExoPlayer)** für hochqualitatives, unterbrechungsfreies Internetradio im Hintergrund und auf dem Sperrbildschirm.
 
 ---
 
-## 🛡️ Pre-Roll Ad Detection
+## 🚀 Kernfunktionen
 
-PulseCast automatically inspects radio streaming endpoints and identifies:
-- **🛡️ Werbefrei (0% Pre-Roll)**: Guaranteed commercial-free public service and non-profit community stations.
-- **⚠️ Pre-Roll Spot möglich**: Commercial broadcasters utilizing Server-Side Ad Insertion (SSAI) networks (*Triton Digital, AdsWizz, StreamTheWorld, TargetSpot*).
-- **Direct Stream (Standard)**: Direct Icecast / Shoutcast streams.
-- **"🛡️ Werbefrei" Filter Pill**: One-click filter in the genre bar to immediately browse guaranteed ad-free streams.
+1. **Modernste Audio-Engine (AndroidX Media3 & ExoPlayer)**:
+   - Robuste Wiedergabe von MP3, AAC, OGG, HLS (`.m3u8`) und Shoutcast/Icecast-Streams.
+   - **Hintergrund-Wiedergabe & Foreground Service**: Der Stream reißt nicht ab, wenn der Bildschirm ausgeschaltet oder andere Apps genutzt werden.
+   - **Sperrbildschirm & Benachrichtigungs-Steuerung**: Volle Integration in die Android-Mediensteuerung (Play/Pause, Vorheriger, Nächster).
+   - **Automatisches Audio-Focus-Management**: Pausiert bei eingehenden Anrufen und dämpft („ducking“) bei Navigationsansagen.
+   - **Headphones Becoming Noisy**: Pausiert automatisch beim Abziehen von Kopfhörern oder Trennen von Bluetooth.
+   - **ICY Live-Metadaten**: Zeigt den aktuellen Songtitel und Interpreten in Echtzeit an.
+
+2. **Wiedergabeverlauf (> 1 Minute Regel)**:
+   - Ein Sender wird **nur dann** im Verlauf gespeichert, wenn die Abspielzeit mindestens **1 Minute (60 Sekunden)** beträgt.
+   - Kürzere Abspielzeiten werden streng ignoriert.
+   - **Unbegrenzte Kapazität** – keine Beschränkung der Senderanzahl.
+   - Zuletzt gehörte Sender stehen ganz oben mit relativer Zeitangabe (*„vor 5 Min.“*, *„Gestern“*).
+   - Eigene Schaltfläche zum Leeren des Verlaufs.
+
+3. **Pre-Roll Werbe-Erkennung**:
+   - Automatische Erkennung von Werbenetzwerken (AdsWizz, TargetSpot, StreamTheWorld) vs. werbefreien öffentlich-rechtlichen & Community-Sendern (SomaFM, ORF, SRG SSR, SWR, BR, WDR, BBC, FIP).
+   - Badges: `🛡️ Werbefrei` vs `⚠️ Pre-Roll`.
+
+4. **Kategorien & Sender-Verzeichnis**:
+   - **Featured**: 19 handverlesene europäische & weltweite Top-Sender (offline sofort verfügbar).
+   - **Trending / Top Click**: Die beliebtesten weltweiten Sender über die Radio-Browser-API.
+   - **Genre-Tabs**: Chillout, Pop, Rock, Jazz, Electronic.
+   - **Live-Suche**: Schnelle Echtzeit-Suche nach Sendernamen, Genres und Ländern.
+
+5. **Sleep Timer**:
+   - Schlummerfunktion für 15, 30, 45, 60 oder 90 Minuten mit Countdown-Anzeige.
 
 ---
 
-## 🚀 How to Run the App
+## 🛠️ Architektur & Tech-Stack
 
-You have two easy ways to use the app:
+```
+app/src/main/java/com/pulsecast/radio/
+├── MainActivity.kt               # Entry-Activity & Permission Request (POST_NOTIFICATIONS)
+├── PulseCastApp.kt               # Application-Klasse (Notification-Channels)
+├── model/
+│   └── Station.kt                # Sender-Datenmodell & Hilfsmethoden
+├── data/
+│   ├── CuratedStations.kt        # Handverlesene Sender aus assets/curated_stations.json
+│   ├── RadioBrowserApi.kt        # Retrofit-API für das Radio-Browser-Netzwerk
+│   ├── ApiClient.kt              # HTTP-Client mit Spiegelserver-Rotation
+│   └── HistoryAndFavoritesRepository.kt # Persistierung von Favoriten & 60s-Verlauf
+├── playback/
+│   ├── RadioPlaybackService.kt   # MediaSessionService (Media3 + ExoPlayer im Hintergrund)
+│   └── PlaybackController.kt     # Verbindung zur UI, Live-Timer & 60s-Verlaufstracker
+└── ui/
+    ├── theme/                    # PulseCast Neon-Dark-Theme (Material 3)
+    ├── components/
+    │   ├── StationCard.kt        # Senderkarte mit Equalizer-Animation & Badges
+    │   ├── PlayerBar.kt          # Feste Mini-Player-Leiste am unteren Bildschirmrand
+    │   └── SleepTimerDialog.kt   # Dialog zur Auswahl des Sleep-Timers
+    ├── viewmodel/
+    │   └── MainViewModel.kt      # Zentraler StateHolder für Compose
+    └── screens/
+        └── HomeScreen.kt         # Hauptbildschirm mit Suche, Pills & Senderliste
+```
 
-### Option 1: Open Directly in Your Browser (Instant)
-Simply double-click [`index.html`](file:///c:/Users/Martin%20Rieser/radio/index.html) or right-click it and choose **"Open with..." > Chrome / Edge / Firefox**.
+---
 
-### Option 2: Run via Local Dev Server
-Open PowerShell in this directory (`c:\Users\Martin Rieser\radio`) and run:
+## 📱 Projekt in Android Studio öffnen & bauen
+
+1. Starten Sie **Android Studio**.
+2. Wählen Sie **File > Open** und öffnen Sie den Ordner:
+   ```
+   c:\Users\Martin Rieser\radio
+   ```
+3. Android Studio erkennt das Gradle-Projekt automatisch und lädt die Abhängigkeiten herunter.
+4. Schließen Sie Ihr Android-Smartphone per USB an (mit aktiviertem **USB-Debugging**) oder starten Sie einen Emulator.
+5. Drücken Sie den grünen **Play-Button (Run 'app')** in Android Studio.
+
+---
+
+## 📦 APK bauen ohne Android Studio (Kommandozeile)
+
+Wenn Java / JDK auf Ihrem Rechner installiert ist:
 
 ```bash
-# Using Python (built-in):
-python -m http.server 8088
+# Debug-APK erstellen:
+./gradlew assembleDebug
 
-# Or using Node.js:
-npx serve .
+# Die fertige APK liegt unter:
+# app/build/outputs/apk/debug/app-debug.apk
 ```
-Then visit **`http://localhost:8088`** in your browser.
 
----
+### Installation auf dem Smartphone (Sideloading ohne Play Store):
 
-## ✨ Features & Interface
-
-### 1. 🗂️ Clean Card Grid & Search
-- **Ultra-Minimalist Design**: Subtle ambient glow, uncluttered cards, clean genres, and responsive layout.
-- **40,000+ Stations**: Live search by name, genre/tag, and country.
-- **Curated Quick-Picks**: Verified high-uptime streams ready to play with one click.
-- **Filters & Sorting**: Filter by country or sort by popularity, highest votes, or bitrate.
-
-### 2. 🎵 Floating Glassmorphic Player Bar
-- Island pill player bar with smooth backdrop blur.
-- Live Pre-Roll status badge and bitrate/codec indicator.
-- Animated audio visualizer (Neon wave & frequency bars mode).
-- Previous / Next station navigation.
-- Volume slider with mute toggle and volume persistence.
-- **Favorites System**: Click the ❤️ heart icon to bookmark any station. Instant access via the **Favorites** button or shortcut `F`.
-- **Sleep Timer**: Auto-off timer (15, 30, 45, 60 minutes) for falling asleep to music.
-- **Custom Stream URL**: Paste any direct Icecast, Shoutcast, MP3, or AAC radio URL to stream directly.
-
-### 3. 🔄 Stream Links Manager (On-Demand & Automatic Updates)
-- **On-Demand Update**: Synchronize and verify all stream URLs against the live Radio Browser API database.
-- **Automatic Startup Sync**: Background check ensuring saved favorites and featured presets have fresh, working stream links.
-- **Self-Healing on Stream Error**: Re-queries the API for an updated working endpoint and resumes playback seamlessly if a link expires.
-
----
-
-## ⌨️ Keyboard Shortcuts
-- `Space`: Play / Pause
-- `Alt + Right`: Next Station
-- `Alt + Left`: Previous Station
-- `M`: Toggle Mute
-- `F`: Show / Toggle My Favorite Stations
-- `U`: Update / Refresh Station Links On Demand
-- `Esc`: Close Modals / Menus
+1. **Per USB (ADB)**:
+   ```bash
+   adb install -r app/build/outputs/apk/debug/app-debug.apk
+   ```
+2. **Per Smartphone-Download**:
+   - Starten Sie am PC einen lokalen Server:
+     ```bash
+     python -m http.server 8088
+     ```
+   - Öffnen Sie am Smartphone-Browser: `http://<IP-Ihres-PCs>:8088/app/build/outputs/apk/debug/app-debug.apk`.
+   - Datei antippen und installieren.
