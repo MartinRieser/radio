@@ -1,0 +1,13 @@
+{
+  "name": "pulsecast-web-radio",
+  "version": "1.0.0",
+  "description": "A sleek modern web radio player powered by the free Radio Browser API",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "dev": "python -m http.server 3000"
+  },
+  "keywords": ["radio", "webradio", "streaming", "audio", "radio-browser"],
+  "author": "",
+  "license": "MIT"
+}
