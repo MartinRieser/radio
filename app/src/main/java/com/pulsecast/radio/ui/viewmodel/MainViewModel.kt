@@ -256,6 +256,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return playbackController.intelligenceRepository.isStationPureMusic(station)
     }
 
+    val speechSensitivity = playbackController.intelligenceRepository.speechSensitivity
+    val speechResetHoldSeconds = playbackController.intelligenceRepository.speechResetHoldSeconds
+
     fun setSmartSwitchEnabled(enabled: Boolean) {
         playbackController.intelligenceRepository.setSmartSwitchEnabled(enabled)
     }
@@ -266,6 +269,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setBounceBackMinutes(minutes: Int) {
         playbackController.intelligenceRepository.setBounceBackMinutes(minutes)
+    }
+
+    fun setSpeechSensitivity(sensitivity: Float) {
+        playbackController.intelligenceRepository.setSpeechSensitivity(sensitivity)
+    }
+
+    fun setSpeechResetHoldSeconds(seconds: Int) {
+        playbackController.intelligenceRepository.setSpeechResetHoldSeconds(seconds)
     }
 
     fun returnToOriginalStation() {

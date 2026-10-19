@@ -62,6 +62,7 @@ class SmartSwitchCoordinator(
     private var currentStation: Station? = null
     private var isAudiblePlaying: Boolean = false
     private var consecutiveSpeechSeconds: Int = 0
+    private var consecutiveMusicSeconds: Int = 0
 
     fun onCurrentStationChanged(station: Station?) {
         val previous = currentStation
@@ -120,6 +121,9 @@ class SmartSwitchCoordinator(
                     continue
                 }
 
+                // Sync dynamic speech sensitivity to audio classifier
+                audioClassifier.sensitivityThreshold = intelligenceRepository.speechSensitivity.value
+
                 val minuteOfHour = Calendar.getInstance().get(Calendar.MINUTE)
                 val isSpeech = audioClassifier.isSpeechDetected
 
@@ -128,6 +132,7 @@ class SmartSwitchCoordinator(
 
                 if (isSpeech) {
                     consecutiveSpeechSeconds++
+                    consecutiveMusicSeconds = 0
                     _speechSeconds.value = consecutiveSpeechSeconds
                     val tolerance = intelligenceRepository.speechToleranceSeconds.value
 
@@ -135,6 +140,7 @@ class SmartSwitchCoordinator(
                         // Trigger Smart Switch
                         triggerSmartSwitch()
                         consecutiveSpeechSeconds = 0
+                        consecutiveMusicSeconds = 0
                         _speechSeconds.value = 0
                     } else {
                         _status.value = SmartSwitchStatus.SpeechTolerance(
@@ -143,8 +149,14 @@ class SmartSwitchCoordinator(
                         )
                     }
                 } else {
-                    consecutiveSpeechSeconds = 0
-                    _speechSeconds.value = 0
+                    consecutiveMusicSeconds++
+                    val holdSeconds = intelligenceRepository.speechResetHoldSeconds.value
+                    if (consecutiveMusicSeconds >= holdSeconds) {
+                        // Reset speech timer ONLY after sustained music for holdSeconds
+                        consecutiveSpeechSeconds = 0
+                        _speechSeconds.value = 0
+                    }
+
                     val original = _bounceBackStation.value
                     if (original != null && _bounceBackSecondsRemaining.value > 0) {
                         _status.value = SmartSwitchStatus.BounceBackActive(

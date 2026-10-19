@@ -47,6 +47,9 @@ class AudioContentClassifier(context: Context? = null) {
     private var smoothedSpeechScore: Float = 0.1f
 
     @Volatile
+    var sensitivityThreshold: Float = 0.50f
+
+    @Volatile
     var speechConfidence: Float = 0.1f
         private set
 
@@ -300,12 +303,14 @@ class AudioContentClassifier(context: Context? = null) {
         speechConfidence = smoothedSpeechScore
         musicConfidence = 1.0f - smoothedSpeechScore
 
-        // Hysteresis State Machine (Anti-Flicker):
-        // Turns ON when score >= 0.52f, stays ON until score drops below 0.35f
+        // Hysteresis State Machine (Anti-Flicker) with dynamic Sensitivity:
+        val onThreshold = sensitivityThreshold.coerceIn(0.25f, 0.75f)
+        val offThreshold = (onThreshold - 0.15f).coerceAtLeast(0.15f)
+
         isSpeechDetected = if (isSpeechDetected) {
-            smoothedSpeechScore >= 0.35f
+            smoothedSpeechScore >= offThreshold
         } else {
-            smoothedSpeechScore >= 0.52f
+            smoothedSpeechScore >= onThreshold
         }
 
         detectionReason = when {

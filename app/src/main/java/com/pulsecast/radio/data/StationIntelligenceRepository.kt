@@ -32,6 +32,12 @@ class StationIntelligenceRepository(context: Context) {
     private val _bounceBackMinutes = MutableStateFlow(prefs.getInt("bounce_back_minutes", 7))
     val bounceBackMinutes: StateFlow<Int> = _bounceBackMinutes.asStateFlow()
 
+    private val _speechSensitivity = MutableStateFlow(prefs.getFloat("speech_sensitivity", 0.50f))
+    val speechSensitivity: StateFlow<Float> = _speechSensitivity.asStateFlow()
+
+    private val _speechResetHoldSeconds = MutableStateFlow(prefs.getInt("speech_reset_hold_seconds", 3))
+    val speechResetHoldSeconds: StateFlow<Int> = _speechResetHoldSeconds.asStateFlow()
+
     // In-memory caches for fast lookup
     // Key: station identifier (UUID or Stream URL)
     private val hourlyHeatmaps = mutableMapOf<String, FloatArray>()
@@ -120,6 +126,18 @@ class StationIntelligenceRepository(context: Context) {
         val clamped = minutes.coerceIn(1, 15)
         _bounceBackMinutes.value = clamped
         prefs.edit().putInt("bounce_back_minutes", clamped).apply()
+    }
+
+    fun setSpeechSensitivity(sensitivity: Float) {
+        val clamped = sensitivity.coerceIn(0.25f, 0.75f)
+        _speechSensitivity.value = clamped
+        prefs.edit().putFloat("speech_sensitivity", clamped).apply()
+    }
+
+    fun setSpeechResetHoldSeconds(seconds: Int) {
+        val clamped = seconds.coerceIn(1, 10)
+        _speechResetHoldSeconds.value = clamped
+        prefs.edit().putInt("speech_reset_hold_seconds", clamped).apply()
     }
 
     /**

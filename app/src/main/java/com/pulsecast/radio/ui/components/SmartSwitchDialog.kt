@@ -46,9 +46,13 @@ fun SmartSwitchDialog(
     isEnabled: Boolean,
     toleranceSeconds: Int,
     bounceBackMinutes: Int,
+    speechSensitivity: Float,
+    speechResetHoldSeconds: Int,
     onEnabledChanged: (Boolean) -> Unit,
     onToleranceChanged: (Int) -> Unit,
     onBounceBackChanged: (Int) -> Unit,
+    onSensitivityChanged: (Float) -> Unit,
+    onResetHoldChanged: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -176,6 +180,94 @@ fun SmartSwitchDialog(
                         ) {
                             Text(
                                 text = if (s == 10) "${s}s (Std)" else "${s}s",
+                                color = if (isSelected) BgMain else TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // AI Model Sensitivity
+                Text(
+                    text = "Erkennungs-Empfindlichkeit (KI)",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Stellt ein, wie leicht die KI Sprache über Musik erkennt.",
+                    color = TextMuted,
+                    fontSize = 11.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(
+                        0.65f to "Schonend",
+                        0.50f to "Standard",
+                        0.35f to "Empfindlich"
+                    ).forEach { (sens, label) ->
+                        val isSelected = (speechSensitivity - sens).let { Math.abs(it) < 0.08f }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) AccentPrimary else Color(0xFF0F1523))
+                                .clickable { onSensitivityChanged(sens) }
+                                .padding(vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label,
+                                color = if (isSelected) BgMain else TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Speech Pause Hold Buffer
+                Text(
+                    text = "Sprechpausen-Puffer: $speechResetHoldSeconds Sekunden",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Verhindert Zurücksetzen des Timers bei kurzen Redepausen.",
+                    color = TextMuted,
+                    fontSize = 11.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(1, 2, 3, 5).forEach { h ->
+                        val isSelected = speechResetHoldSeconds == h
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) Color(0xFF10B981) else Color(0xFF0F1523))
+                                .clickable { onResetHoldChanged(h) }
+                                .padding(vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (h == 3) "${h}s (Std)" else "${h}s",
                                 color = if (isSelected) BgMain else TextSecondary,
                                 fontSize = 11.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal

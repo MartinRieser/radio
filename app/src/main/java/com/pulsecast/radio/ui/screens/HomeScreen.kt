@@ -102,6 +102,8 @@ fun HomeScreen(viewModel: MainViewModel) {
     val isSmartSwitchEnabled by viewModel.playbackController.intelligenceRepository.isSmartSwitchEnabled.collectAsState()
     val speechToleranceSeconds by viewModel.playbackController.intelligenceRepository.speechToleranceSeconds.collectAsState()
     val bounceBackMinutes by viewModel.playbackController.intelligenceRepository.bounceBackMinutes.collectAsState()
+    val speechSensitivity by viewModel.speechSensitivity.collectAsState()
+    val speechResetHoldSeconds by viewModel.speechResetHoldSeconds.collectAsState()
     var showSmartSwitchDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -215,9 +217,13 @@ fun HomeScreen(viewModel: MainViewModel) {
             isEnabled = isSmartSwitchEnabled,
             toleranceSeconds = speechToleranceSeconds,
             bounceBackMinutes = bounceBackMinutes,
+            speechSensitivity = speechSensitivity,
+            speechResetHoldSeconds = speechResetHoldSeconds,
             onEnabledChanged = { viewModel.setSmartSwitchEnabled(it) },
             onToleranceChanged = { viewModel.setSpeechToleranceSeconds(it) },
             onBounceBackChanged = { viewModel.setBounceBackMinutes(it) },
+            onSensitivityChanged = { viewModel.setSpeechSensitivity(it) },
+            onResetHoldChanged = { viewModel.setSpeechResetHoldSeconds(it) },
             onDismiss = { showSmartSwitchDialog = false }
         )
     }
