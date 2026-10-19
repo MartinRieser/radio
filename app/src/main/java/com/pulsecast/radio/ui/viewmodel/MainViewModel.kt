@@ -64,8 +64,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         searchJob = viewModelScope.launch {
             delay(400) // Debounce
             if (query.isBlank()) {
+                if (_activeCategory.value == "search") {
+                    _activeCategory.value = "featured"
+                }
                 loadCategory(_activeCategory.value)
             } else {
+                if (_activeCategory.value != "favorites" && _activeCategory.value != "history") {
+                    _activeCategory.value = "search"
+                }
                 performSearch(query)
             }
         }
@@ -73,6 +79,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearSearch() {
         _searchQuery.value = ""
+        if (_activeCategory.value == "search") {
+            _activeCategory.value = "featured"
+        }
         loadCategory(_activeCategory.value)
     }
 

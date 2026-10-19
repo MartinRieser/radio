@@ -554,6 +554,7 @@ private fun SectionHeader(
     )
 
     val title = when (activeCategory) {
+        "search" -> "Suchergebnisse"
         "featured" -> "Featured Sender"
         "puremusic" -> "🎵 100% Musik (Keine News / Werbung)"
         "adfree" -> "Werbefreie Sender"
