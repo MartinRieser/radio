@@ -136,8 +136,6 @@ class AudioContentClassifier {
         }
 
         // Low-Energy Frame Rate: Fraction of frames with RMS < 0.5 * avgRms
-        // In natural speech, pauses between syllables/words cause high low-energy frame rates (>0.35).
-        // In music, energy is sustained (<0.20).
         var lowEnergyFrames = 0
         for (rms in subFrameRms) {
             if (rms < avgRms * 0.5f) {
@@ -146,7 +144,7 @@ class AudioContentClassifier {
         }
         val lowEnergyRate = lowEnergyFrames.toFloat() / windowSize
 
-        // Zero Crossing Rate Variance
+        // Zero Crossing Rate Variance & Mean
         val avgZcr = subFrameZcr.average().toFloat()
         var zcrVariance = 0f
         for (z in subFrameZcr) {
@@ -155,16 +153,35 @@ class AudioContentClassifier {
         }
         zcrVariance /= windowSize
 
+        // RMS Coefficient of Variation (CV = StdDev / Mean RMS)
+        // Detects rapid syllabic voice fluctuations even when background music is present
+        var rmsVarianceSum = 0f
+        for (rms in subFrameRms) {
+            val diff = rms - avgRms
+            rmsVarianceSum += diff * diff
+        }
+        val rmsStdDev = sqrt(rmsVarianceSum / windowSize)
+        val rmsCoeffVar = if (avgRms > 0.001f) (rmsStdDev / avgRms) else 0f
+
         var acousticSpeechScore = 0.0f
-        if (lowEnergyRate >= 0.30f) acousticSpeechScore += 0.50f
-        else if (lowEnergyRate >= 0.20f) acousticSpeechScore += 0.30f
 
-        if (zcrVariance > 0.005f) acousticSpeechScore += 0.40f
-        else if (zcrVariance > 0.002f) acousticSpeechScore += 0.20f
+        // 1. Syllabic pauses in pure speech OR energy fluctuations of speech over background music
+        if (rmsCoeffVar >= 0.22f || lowEnergyRate >= 0.28f) {
+            acousticSpeechScore += 0.55f // High speech / voiceover probability
+        } else if (rmsCoeffVar >= 0.15f || lowEnergyRate >= 0.18f) {
+            acousticSpeechScore += 0.35f // Moderate speech over music
+        }
 
-        // Only apply song pattern discount if acoustic speech score is low
+        // 2. Fricative Consonants & Speech ZCR Dynamics
+        if (zcrVariance > 0.004f || avgZcr > 0.16f) {
+            acousticSpeechScore += 0.40f
+        } else if (zcrVariance > 0.002f || avgZcr > 0.10f) {
+            acousticSpeechScore += 0.20f
+        }
+
+        // Only apply song pattern discount if acoustic speech score is very low
         var metadataAdScore = 0.0f
-        if (isSongPattern && acousticSpeechScore < 0.35f) {
+        if (isSongPattern && acousticSpeechScore < 0.30f) {
             metadataAdScore = -0.15f
         }
 
