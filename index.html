@@ -35,6 +35,27 @@
         </div>
 
         <div class="header-actions">
+          <!-- View Switcher (Grid vs 3D Globe) -->
+          <div class="view-switcher" role="tablist">
+            <button id="view-grid-btn" class="view-btn active" role="tab" aria-selected="true" title="Grid View">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+              <span>Grid</span>
+            </button>
+            <button id="view-globe-btn" class="view-btn" role="tab" aria-selected="false" title="Interactive 3D Globe View">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>3D Globe</span>
+            </button>
+          </div>
+
           <!-- Custom URL stream button -->
           <button id="open-custom-modal-btn" class="btn btn-secondary" title="Play any custom audio stream URL">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -66,111 +87,214 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      <!-- Search & Filters Section -->
-      <section class="controls-section">
-        <div class="search-bar-wrapper">
-          <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input 
-            type="text" 
-            id="search-input" 
-            placeholder="Search stations, genres, artists, or cities (e.g. Jazz, Chillout, BBC, Swiss Pop)..." 
-            autocomplete="off"
-            spellcheck="false"
-          >
-          <button id="clear-search-btn" class="clear-btn hidden" aria-label="Clear search">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
+      <!-- 1. Grid View Container -->
+      <div id="grid-view-container" class="view-panel">
+        <!-- Search & Filters Section -->
+        <section class="controls-section">
+          <div class="search-bar-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-          </button>
-        </div>
-
-        <!-- Filter Controls Row -->
-        <div class="filters-row">
-          <!-- Category Pills -->
-          <div class="genre-pills-container" id="genre-pills">
-            <button class="pill active" data-genre="featured">✨ Featured</button>
-            <button class="pill" data-genre="topclick">🔥 Trending</button>
-            <button class="pill" data-genre="chillout">☕ Chillout & Lo-Fi</button>
-            <button class="pill" data-genre="pop">🎵 Pop Hits</button>
-            <button class="pill" data-genre="rock">🎸 Rock & Alternative</button>
-            <button class="pill" data-genre="jazz">🎷 Jazz & Blues</button>
-            <button class="pill" data-genre="classical">🎻 Classical</button>
-            <button class="pill" data-genre="electronic">⚡ Electronic & Club</button>
-            <button class="pill" data-genre="ambient">🌌 Ambient & Relax</button>
-            <button class="pill" data-genre="news">📰 News & Talk</button>
-            <button class="pill pill-favorites" data-genre="favorites">❤️ Favorites (<span id="fav-count">0</span>)</button>
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="Search stations, genres, artists, or cities (e.g. Jazz, Chillout, BBC, Swiss Pop)..." 
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button id="clear-search-btn" class="clear-btn hidden" aria-label="Clear search">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
 
-          <!-- Secondary Filters Dropdown -->
-          <div class="filter-selects">
-            <div class="select-wrapper">
-              <select id="country-select" title="Filter by Country">
-                <option value="">🌍 All Countries</option>
-                <option value="US">🇺🇸 United States</option>
-                <option value="GB">🇬🇧 United Kingdom</option>
-                <option value="DE">🇩🇪 Germany</option>
-                <option value="CH">🇨🇭 Switzerland</option>
-                <option value="AT">🇦🇹 Austria</option>
-                <option value="FR">🇫🇷 France</option>
-                <option value="IT">🇮🇹 Italy</option>
-                <option value="ES">🇪🇸 Spain</option>
-                <option value="CA">🇨🇦 Canada</option>
-                <option value="NL">🇳🇱 Netherlands</option>
-                <option value="AU">🇦🇺 Australia</option>
-                <option value="JP">🇯🇵 Japan</option>
-                <option value="BR">🇧🇷 Brazil</option>
-              </select>
+          <!-- Filter Controls Row -->
+          <div class="filters-row">
+            <!-- Category Pills -->
+            <div class="genre-pills-container" id="genre-pills">
+              <button class="pill active" data-genre="featured">✨ Featured</button>
+              <button class="pill" data-genre="topclick">🔥 Trending</button>
+              <button class="pill" data-genre="chillout">☕ Chillout & Lo-Fi</button>
+              <button class="pill" data-genre="pop">🎵 Pop Hits</button>
+              <button class="pill" data-genre="rock">🎸 Rock & Alternative</button>
+              <button class="pill" data-genre="jazz">🎷 Jazz & Blues</button>
+              <button class="pill" data-genre="classical">🎻 Classical</button>
+              <button class="pill" data-genre="electronic">⚡ Electronic & Club</button>
+              <button class="pill" data-genre="ambient">🌌 Ambient & Relax</button>
+              <button class="pill" data-genre="news">📰 News & Talk</button>
+              <button class="pill pill-favorites" data-genre="favorites">❤️ Favorites (<span id="fav-count">0</span>)</button>
             </div>
 
-            <div class="select-wrapper">
-              <select id="sort-select" title="Sort Stations">
-                <option value="clickcount">🔥 Most Popular</option>
-                <option value="votes">⭐ Highest Voted</option>
-                <option value="bitrate">🎧 Best Quality (Bitrate)</option>
-                <option value="name">🔤 Alphabetical</option>
-              </select>
+            <!-- Secondary Filters Dropdown -->
+            <div class="filter-selects">
+              <div class="select-wrapper">
+                <select id="country-select" title="Filter by Country">
+                  <option value="">🌍 All Countries</option>
+                  <option value="US">🇺🇸 United States</option>
+                  <option value="GB">🇬🇧 United Kingdom</option>
+                  <option value="DE">🇩🇪 Germany</option>
+                  <option value="CH">🇨🇭 Switzerland</option>
+                  <option value="AT">🇦🇹 Austria</option>
+                  <option value="FR">🇫🇷 France</option>
+                  <option value="IT">🇮🇹 Italy</option>
+                  <option value="ES">🇪🇸 Spain</option>
+                  <option value="CA">🇨🇦 Canada</option>
+                  <option value="NL">🇳🇱 Netherlands</option>
+                  <option value="AU">🇦🇺 Australia</option>
+                  <option value="JP">🇯🇵 Japan</option>
+                  <option value="BR">🇧🇷 Brazil</option>
+                </select>
+              </div>
+
+              <div class="select-wrapper">
+                <select id="sort-select" title="Sort Stations">
+                  <option value="clickcount">🔥 Most Popular</option>
+                  <option value="votes">⭐ Highest Voted</option>
+                  <option value="bitrate">🎧 Best Quality (Bitrate)</option>
+                  <option value="name">🔤 Alphabetical</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Active Filter Status -->
-      <section class="results-header">
-        <div class="results-meta">
-          <h2 id="section-title">Featured Stations</h2>
-          <span id="results-count" class="results-badge">14 handpicked stations</span>
-        </div>
-        <div id="api-status-note" class="provider-pill" title="Powered by the free Open Radio Browser community API">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-          </svg>
-          <span>Free Radio Browser API</span>
-        </div>
-      </section>
+        <!-- Active Filter Status -->
+        <section class="results-header">
+          <div class="results-meta">
+            <h2 id="section-title">Featured Stations</h2>
+            <span id="results-count" class="results-badge">14 handpicked stations</span>
+          </div>
+          <div id="api-status-note" class="provider-pill" title="Powered by the free Open Radio Browser community API">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>Free Radio Browser API</span>
+          </div>
+        </section>
 
-      <!-- Station Cards Grid -->
-      <section id="stations-grid" class="stations-grid">
-        <!-- Station cards injected dynamically via JS -->
-      </section>
+        <!-- Station Cards Grid -->
+        <section id="stations-grid" class="stations-grid">
+          <!-- Station cards injected dynamically via JS -->
+        </section>
 
-      <!-- Loading Indicator -->
-      <div id="loading-spinner" class="loading-container hidden">
-        <div class="spinner"></div>
-        <p>Loading radio streams...</p>
+        <!-- Loading Indicator -->
+        <div id="loading-spinner" class="loading-container hidden">
+          <div class="spinner"></div>
+          <p>Loading radio streams...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-icon">📻</div>
+          <h3 id="empty-title">No stations found</h3>
+          <p id="empty-desc">Try searching for a different genre, station name, or country.</p>
+          <button id="reset-filter-btn" class="btn btn-primary">Reset Filters</button>
+        </div>
       </div>
 
-      <!-- Empty State -->
-      <div id="empty-state" class="empty-state hidden">
-        <div class="empty-icon">📻</div>
-        <h3 id="empty-title">No stations found</h3>
-        <p id="empty-desc">Try searching for a different genre, station name, or country.</p>
-        <button id="reset-filter-btn" class="btn btn-primary">Reset Filters</button>
+      <!-- 2. 3D Globe Radar View Container -->
+      <div id="globe-view-container" class="view-panel hidden">
+        <div class="globe-viewport-card">
+          <!-- Three.js Canvas Mount Container -->
+          <div id="globe-canvas-mount" class="globe-canvas-mount"></div>
+
+          <!-- Top Globe HUD -->
+          <div class="globe-hud-top">
+            <div class="globe-hud-brand">
+              <div class="globe-live-indicator">
+                <span class="globe-pulse"></span>
+                <span>RADIO RADAR 3D</span>
+              </div>
+              <span id="globe-stats-badge" class="globe-badge">Connecting to satellite feed...</span>
+            </div>
+
+            <!-- Region Fly-To Jump Buttons -->
+            <div class="globe-regions" id="globe-regions">
+              <button class="globe-region-btn active" data-region="all">🌍 Global</button>
+              <button class="globe-region-btn" data-region="eu">🇪🇺 Europe</button>
+              <button class="globe-region-btn" data-region="na">🇺🇸 North America</button>
+              <button class="globe-region-btn" data-region="sa">🇧🇷 South America</button>
+              <button class="globe-region-btn" data-region="as">🇯🇵 Asia</button>
+              <button class="globe-region-btn" data-region="af">🇿🇦 Africa</button>
+              <button class="globe-region-btn" data-region="oc">🇦🇺 Oceania</button>
+            </div>
+          </div>
+
+          <!-- Bottom HUD Controls & Quick Details -->
+          <div class="globe-hud-bottom">
+            <!-- Selected Station Floating Card -->
+            <div id="globe-station-card" class="globe-station-card hidden">
+              <div class="gcard-top">
+                <div class="gcard-art" id="gcard-art">📻</div>
+                <div class="gcard-info">
+                  <h4 id="gcard-name" class="gcard-name">Station Name</h4>
+                  <p id="gcard-meta" class="gcard-meta">Country • City</p>
+                  <div class="gcard-tags" id="gcard-tags"></div>
+                </div>
+                <button id="gcard-close-btn" class="gcard-close" title="Close" aria-label="Close">×</button>
+              </div>
+              <div class="gcard-actions">
+                <button id="gcard-play-btn" class="btn btn-primary btn-sm">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                  <span>Tune In</span>
+                </button>
+                <button id="gcard-fav-btn" class="btn btn-secondary btn-sm" title="Add to favorites">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Globe Navigation Tools -->
+            <div class="globe-tools">
+              <button id="globe-rotate-btn" class="btn-icon globe-tool-btn" title="Toggle Auto-Spin">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+              </button>
+              <button id="globe-zoom-in-btn" class="btn-icon globe-tool-btn" title="Zoom In">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <button id="globe-zoom-out-btn" class="btn-icon globe-tool-btn" title="Zoom Out">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <button id="globe-reset-btn" class="btn-icon globe-tool-btn" title="Reset View">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tooltip on Dot Hover -->
+          <div id="globe-hover-tooltip" class="globe-hover-tooltip hidden">
+            <div class="tooltip-header">
+              <span id="tooltip-flag">🌐</span>
+              <strong id="tooltip-title">Station Title</strong>
+            </div>
+            <div id="tooltip-sub" class="tooltip-sub">Country • 128 kbps</div>
+            <div class="tooltip-hint">Click dot to listen live</div>
+          </div>
+
+          <!-- Interactive Instruction Hint -->
+          <div class="globe-hint-pill">
+            <span>🖱️ Drag to rotate • Scroll to zoom • Click any glowing dot to tune in</span>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -314,6 +438,8 @@
   <!-- Hidden HTML5 Audio Element -->
   <audio id="audio-player" preload="none"></audio>
 
+  <!-- 3D Globe Library -->
+  <script src="three.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 /**
  * PulseCast Web Radio
  * Modern Web Radio player powered by the free Radio Browser API
+ * Featuring Grid View & 3D Interactive World Globe Radar View
  */
 
 (function () {
@@ -23,7 +24,7 @@
     console.warn('Rotated to backup API server:', getApiBase());
   }
 
-  // --- Handpicked Featured High-Uptime Stations ---
+  // --- Handpicked Featured High-Uptime Stations with Geolocation ---
   const CURATED_STATIONS = [
     {
       stationuuid: 'curated-groovesalad',
@@ -35,7 +36,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://somafm.com/img3/groovesalad120.png',
-      votes: 1845
+      votes: 1845,
+      geo_lat: 37.7749,
+      geo_long: -122.4194
     },
     {
       stationuuid: 'curated-swisspop',
@@ -47,7 +50,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://www.radioswisspop.ch/dist/images/touch-icon-192x192.png',
-      votes: 1620
+      votes: 1620,
+      geo_lat: 46.9480,
+      geo_long: 7.4474
     },
     {
       stationuuid: 'curated-kexp',
@@ -59,7 +64,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://kexp.org/static/assets/img/kexp-touch-icon-180x180.png',
-      votes: 1430
+      votes: 1430,
+      geo_lat: 47.6062,
+      geo_long: -122.3321
     },
     {
       stationuuid: 'curated-lofi',
@@ -71,7 +78,9 @@
       codec: 'MP3',
       bitrate: 192,
       favicon: 'https://ilovemusic.de/app/uploads/2021/03/iloveradio-lofi.png',
-      votes: 1310
+      votes: 1310,
+      geo_lat: 52.5200,
+      geo_long: 13.4050
     },
     {
       stationuuid: 'curated-swissclassic',
@@ -83,7 +92,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://www.radioswissclassic.ch/dist/images/touch-icon-192x192.png',
-      votes: 980
+      votes: 980,
+      geo_lat: 47.5596,
+      geo_long: 7.5886
     },
     {
       stationuuid: 'curated-dronezone',
@@ -95,7 +106,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://somafm.com/img3/dronezone120.png',
-      votes: 1220
+      votes: 1220,
+      geo_lat: 37.7849,
+      geo_long: -122.4094
     },
     {
       stationuuid: 'curated-swissjazz',
@@ -107,7 +120,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://www.radioswissjazz.ch/dist/images/touch-icon-192x192.png',
-      votes: 1140
+      votes: 1140,
+      geo_lat: 47.3769,
+      geo_long: 8.5417
     },
     {
       stationuuid: 'curated-ibizaglobal',
@@ -119,7 +134,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://ibizaglobalradio.com/favicon.ico',
-      votes: 1540
+      votes: 1540,
+      geo_lat: 38.9067,
+      geo_long: 1.4206
     },
     {
       stationuuid: 'curated-antennechill',
@@ -131,7 +148,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://www.antenne.de/apple-touch-icon.png',
-      votes: 890
+      votes: 890,
+      geo_lat: 48.1351,
+      geo_long: 11.5820
     },
     {
       stationuuid: 'curated-secretagent',
@@ -143,7 +162,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://somafm.com/img3/secretagent120.png',
-      votes: 950
+      votes: 950,
+      geo_lat: 37.7649,
+      geo_long: -122.4294
     },
     {
       stationuuid: 'curated-rockantenne',
@@ -155,7 +176,9 @@
       codec: 'MP3',
       bitrate: 128,
       favicon: 'https://www.rockantenne.de/apple-touch-icon.png',
-      votes: 870
+      votes: 870,
+      geo_lat: 48.1451,
+      geo_long: 11.5720
     },
     {
       stationuuid: 'curated-bbcworld',
@@ -167,12 +190,16 @@
       codec: 'MP3',
       bitrate: 96,
       favicon: 'https://www.bbc.co.uk/favicon.ico',
-      votes: 2100
+      votes: 2100,
+      geo_lat: 51.5074,
+      geo_long: -0.1278
     }
   ];
 
   // --- App State ---
+  let currentView = 'grid'; // 'grid' | 'globe'
   let stationsList = [];
+  let geoStationsList = [];
   let currentStationIndex = -1;
   let currentStation = null;
   let isPlaying = false;
@@ -197,6 +224,12 @@
   const loadingSpinner = document.getElementById('loading-spinner');
   const emptyState = document.getElementById('empty-state');
   const resetFilterBtn = document.getElementById('reset-filter-btn');
+
+  // View Containers & Switcher
+  const gridViewContainer = document.getElementById('grid-view-container');
+  const globeViewContainer = document.getElementById('globe-view-container');
+  const viewGridBtn = document.getElementById('view-grid-btn');
+  const viewGlobeBtn = document.getElementById('view-globe-btn');
 
   // Player DOM
   const playPauseBtn = document.getElementById('play-pause-btn');
@@ -265,6 +298,9 @@
 
     // Load featured stations on launch
     loadCuratedStations();
+
+    // Preload geo stations in background
+    loadGeoStations();
   }
 
   // --- Storage & Favorites ---
@@ -374,21 +410,14 @@
 
     try {
       const response = await fetch(url.toString(), {
-        headers: {
-          'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       loadingSpinner.classList.add('hidden');
 
-      // Filter out duplicate or broken stations without valid stream URLs
-      const validStations = data.filter(s => s && (s.url_resolved || s.url));
-      return validStations;
+      return data.filter(s => s && (s.url_resolved || s.url));
     } catch (err) {
       console.warn('API error, attempting fallback server:', err);
       rotateServer();
@@ -499,6 +528,39 @@
     }
   }
 
+  // --- Fetch Geo-Located Stations for Globe ---
+  async function loadGeoStations() {
+    try {
+      const statsBadge = document.getElementById('globe-stats-badge');
+      if (statsBadge) statsBadge.textContent = 'Scanning global satellite coordinates...';
+
+      const url = `${getApiBase()}/json/stations/search?has_geo_info=true&limit=350&order=clickcount&reverse=true`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        const valid = data.filter(s => s && s.geo_lat != null && s.geo_long != null && (s.url_resolved || s.url));
+        
+        // Merge with curated stations
+        const combined = [...CURATED_STATIONS];
+        valid.forEach(s => {
+          if (!combined.some(c => c.stationuuid === s.stationuuid)) {
+            combined.push(s);
+          }
+        });
+        geoStationsList = combined;
+      } else {
+        geoStationsList = CURATED_STATIONS;
+      }
+    } catch (e) {
+      console.warn('Failed to fetch geo stations from API, using curated stations:', e);
+      geoStationsList = CURATED_STATIONS;
+    }
+
+    if (GlobeRadar.isInitialized) {
+      GlobeRadar.updateMarkers(geoStationsList);
+    }
+  }
+
   // --- Rendering UI Cards ---
   function renderCards(stations) {
     stationsGrid.innerHTML = '';
@@ -564,9 +626,7 @@
         </div>
       `;
 
-      // Handle card click
       card.addEventListener('click', (e) => {
-        // Prevent click if favorite button was pressed
         if (e.target.closest('.card-fav-btn')) {
           e.stopPropagation();
           toggleFavorite(station);
@@ -583,7 +643,6 @@
   function playStation(station, index = -1) {
     if (!station) return;
 
-    // If same station is already playing, toggle pause
     if (currentStation && (currentStation.stationuuid === station.stationuuid || currentStation.url_resolved === station.url_resolved)) {
       togglePlayPause();
       return;
@@ -650,7 +709,11 @@
         });
     }
 
-    // Re-render grid to update active card states
+    // Update Globe Active Dot Beacon
+    if (GlobeRadar.isInitialized) {
+      GlobeRadar.setActiveStation(station);
+    }
+
     renderCards(stationsList);
   }
 
@@ -658,6 +721,8 @@
     if (!currentStation) {
       if (stationsList.length > 0) {
         playStation(stationsList[0], 0);
+      } else if (geoStationsList.length > 0) {
+        playStation(geoStationsList[0], 0);
       }
       return;
     }
@@ -688,15 +753,17 @@
   }
 
   function playNextStation() {
-    if (stationsList.length === 0) return;
-    let nextIdx = (currentStationIndex + 1) % stationsList.length;
-    playStation(stationsList[nextIdx], nextIdx);
+    const list = currentView === 'globe' && geoStationsList.length > 0 ? geoStationsList : stationsList;
+    if (list.length === 0) return;
+    let nextIdx = (currentStationIndex + 1) % list.length;
+    playStation(list[nextIdx], nextIdx);
   }
 
   function playPrevStation() {
-    if (stationsList.length === 0) return;
-    let prevIdx = (currentStationIndex - 1 + stationsList.length) % stationsList.length;
-    playStation(stationsList[prevIdx], prevIdx);
+    const list = currentView === 'globe' && geoStationsList.length > 0 ? geoStationsList : stationsList;
+    if (list.length === 0) return;
+    let prevIdx = (currentStationIndex - 1 + list.length) % list.length;
+    playStation(list[prevIdx], prevIdx);
   }
 
   function updatePlaybackUI() {
@@ -760,7 +827,7 @@
 
     audio.addEventListener('pause', () => {
       isPlaying = false;
-      bufferingSpinner.classList.add('hidden');
+      bufferingSpinner.classList.remove('hidden');
       playIcon.classList.remove('hidden');
       pauseIcon.classList.add('hidden');
       liveDot.classList.remove('active');
@@ -831,7 +898,6 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (!isPlaying) {
-        // Flat calm ambient line
         ctx.strokeStyle = 'rgba(79, 172, 254, 0.08)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -870,22 +936,6 @@
           x += sliceWidth;
         }
         ctx.stroke();
-
-        // Secondary subtle wave
-        ctx.strokeStyle = 'rgba(0, 242, 254, 0.18)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        x = 0;
-        for (let i = 0; i <= 100; i++) {
-          const sin1 = Math.sin(phase * 0.8 + i * 0.15 + 1);
-          const amplitude = sin1 * (canvas.height * 0.22) * volMultiplier;
-          const y = (canvas.height / 2) + amplitude;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-          x += sliceWidth;
-        }
-        ctx.stroke();
-
       } else {
         // Dynamic Glowing Frequency Bars
         const barWidth = canvas.width / barCount;
@@ -910,8 +960,551 @@
     draw();
   }
 
+  // ==========================================================================
+  // 3D Interactive World Globe Engine (Three.js)
+  // ==========================================================================
+  const GlobeRadar = {
+    isInitialized: false,
+    scene: null,
+    camera: null,
+    renderer: null,
+    globeMesh: null,
+    markersGroup: null,
+    beaconMesh: null,
+    raycaster: null,
+    mouse: null,
+    mountEl: null,
+    animFrameId: null,
+
+    // Rotation & Orbit physics
+    isDragging: false,
+    prevMousePos: { x: 0, y: 0 },
+    rotationSpeed: { x: 0, y: 0.0018 },
+    currentRot: { x: 0.25, y: 0 },
+    targetRot: { x: 0.25, y: 0 },
+    cameraDistance: 245,
+    targetDistance: 245,
+    autoRotate: true,
+    hoveredStation: null,
+    activeStationData: null,
+
+    init: function () {
+      if (this.isInitialized) return;
+      this.mountEl = document.getElementById('globe-canvas-mount');
+      if (!this.mountEl || typeof THREE === 'undefined') {
+        console.warn('Three.js or mount element missing');
+        return;
+      }
+
+      const width = this.mountEl.clientWidth || 800;
+      const height = this.mountEl.clientHeight || 700;
+
+      // 1. Scene, Camera, Renderer
+      this.scene = new THREE.Scene();
+      this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
+      this.camera.position.z = this.cameraDistance;
+
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      this.renderer.setSize(width, height);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.mountEl.appendChild(this.renderer.domElement);
+
+      this.raycaster = new THREE.Raycaster();
+      this.raycaster.params.Points = { threshold: 3 };
+      this.mouse = new THREE.Vector2();
+
+      // 2. Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+      this.scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0x00f2fe, 0.45);
+      dirLight.position.set(200, 150, 200);
+      this.scene.add(dirLight);
+
+      // 3. Earth Globe Sphere
+      const earthRadius = 100;
+      const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
+
+      // Load local Earth texture
+      const textureLoader = new THREE.TextureLoader();
+      const earthTexture = textureLoader.load('earth.jpg');
+
+      const earthMat = new THREE.MeshPhongMaterial({
+        map: earthTexture,
+        color: 0x88aacc,
+        specular: 0x112233,
+        shininess: 12
+      });
+
+      this.globeMesh = new THREE.Mesh(earthGeo, earthMat);
+      this.scene.add(this.globeMesh);
+
+      // 4. Subtle Atmosphere Outer Glow Shell
+      const atmosGeo = new THREE.SphereGeometry(earthRadius * 1.025, 48, 48);
+      const atmosMat = new THREE.MeshBasicMaterial({
+        color: 0x00f2fe,
+        transparent: true,
+        opacity: 0.12,
+        side: THREE.BackSide
+      });
+      const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
+      this.scene.add(atmosMesh);
+
+      // 5. Grid Graticule Lines (Coordinate Rings)
+      const gridGeo = new THREE.SphereGeometry(earthRadius * 1.006, 24, 12);
+      const gridMat = new THREE.MeshBasicMaterial({
+        color: 0x00f2fe,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.08
+      });
+      const gridMesh = new THREE.Mesh(gridGeo, gridMat);
+      this.scene.add(gridMesh);
+
+      // 6. Background Starfield
+      this.createStarfield();
+
+      // 7. Group for Station Marker Dots
+      this.markersGroup = new THREE.Group();
+      this.scene.add(this.markersGroup);
+
+      // 8. Active Beacon Ring Mesh
+      this.createBeaconRing(earthRadius);
+
+      // 9. Input and Interaction listeners
+      this.setupGlobeEvents();
+
+      this.isInitialized = true;
+      this.startAnimation();
+
+      // Render initial markers
+      if (geoStationsList.length > 0) {
+        this.updateMarkers(geoStationsList);
+      }
+    },
+
+    createStarfield: function () {
+      const starGeo = new THREE.BufferGeometry();
+      const starCount = 600;
+      const starPos = new Float32Array(starCount * 3);
+
+      for (let i = 0; i < starCount * 3; i += 3) {
+        starPos[i] = (Math.random() - 0.5) * 1400;
+        starPos[i + 1] = (Math.random() - 0.5) * 1400;
+        starPos[i + 2] = (Math.random() - 0.5) * 1400;
+      }
+
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      const starMat = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 1.5,
+        transparent: true,
+        opacity: 0.45
+      });
+      const stars = new THREE.Points(starGeo, starMat);
+      this.scene.add(stars);
+    },
+
+    createBeaconRing: function (radius) {
+      const ringGeo = new THREE.RingGeometry(1.2, 2.8, 24);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x00f2fe,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.8
+      });
+      this.beaconMesh = new THREE.Mesh(ringGeo, ringMat);
+      this.beaconMesh.visible = false;
+      this.scene.add(this.beaconMesh);
+    },
+
+    latLonToVec3: function (lat, lon, radius = 101.4) {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      const x = -(radius * Math.sin(phi) * Math.cos(theta));
+      const z = (radius * Math.sin(phi) * Math.sin(theta));
+      const y = (radius * Math.cos(phi));
+      return new THREE.Vector3(x, y, z);
+    },
+
+    updateMarkers: function (stations) {
+      if (!this.isInitialized || !this.markersGroup) return;
+
+      // Clear existing markers
+      while (this.markersGroup.children.length > 0) {
+        const obj = this.markersGroup.children[0];
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) obj.material.dispose();
+        this.markersGroup.remove(obj);
+      }
+
+      const dotGeo = new THREE.SphereGeometry(1.2, 8, 8);
+      const dotMatCyan = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
+      const dotMatGreen = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+
+      let count = 0;
+      stations.forEach((station) => {
+        const lat = parseFloat(station.geo_lat);
+        const lon = parseFloat(station.geo_long);
+
+        if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+          return;
+        }
+
+        const pos = this.latLonToVec3(lat, lon, 101.4);
+        const marker = new THREE.Mesh(dotGeo, isFavorite(station) ? dotMatGreen : dotMatCyan);
+        marker.position.copy(pos);
+        marker.userData = { station: station };
+
+        this.markersGroup.add(marker);
+        count++;
+      });
+
+      const statsBadge = document.getElementById('globe-stats-badge');
+      if (statsBadge) {
+        statsBadge.textContent = `${count} Stations Active on Radar`;
+      }
+    },
+
+    setActiveStation: function (station) {
+      this.activeStationData = station;
+      if (!station || station.geo_lat == null || station.geo_long == null) {
+        if (this.beaconMesh) this.beaconMesh.visible = false;
+        return;
+      }
+
+      const lat = parseFloat(station.geo_lat);
+      const lon = parseFloat(station.geo_long);
+      if (isNaN(lat) || isNaN(lon)) return;
+
+      const pos = this.latLonToVec3(lat, lon, 101.8);
+      if (this.beaconMesh) {
+        this.beaconMesh.position.copy(pos);
+        this.beaconMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        this.beaconMesh.visible = true;
+      }
+
+      // Smoothly rotate globe to face the station
+      this.flyToLocation(lat, lon);
+      this.showStationCard(station);
+    },
+
+    flyToLocation: function (lat, lon) {
+      // Calculate spherical rotation target
+      const targetPhi = (lat * Math.PI) / 180;
+      const targetTheta = -(lon * Math.PI) / 180 - Math.PI / 2;
+
+      this.targetRot.x = Math.max(-1.2, Math.min(1.2, targetPhi));
+      this.targetRot.y = targetTheta;
+    },
+
+    showStationCard: function (station) {
+      const card = document.getElementById('globe-station-card');
+      if (!card) return;
+
+      const flag = getCountryFlag(station.countrycode);
+      document.getElementById('gcard-name').textContent = station.name;
+      document.getElementById('gcard-meta').textContent = `${flag} ${station.country || 'Global'}${station.state ? ' • ' + station.state : ''}`;
+
+      const art = document.getElementById('gcard-art');
+      if (station.favicon) {
+        art.innerHTML = `<img src="${escapeHtml(station.favicon)}" alt="" onerror="this.parentElement.textContent='📻'">`;
+      } else {
+        art.textContent = '📻';
+      }
+
+      const tagsEl = document.getElementById('gcard-tags');
+      const tags = station.tags ? station.tags.split(',').slice(0, 2).map(t => `<span class="station-tag">#${escapeHtml(t.trim())}</span>`).join('') : '';
+      tagsEl.innerHTML = tags;
+
+      const playBtn = document.getElementById('gcard-play-btn');
+      playBtn.onclick = () => {
+        playStation(station);
+      };
+
+      const favBtn = document.getElementById('gcard-fav-btn');
+      favBtn.className = `btn btn-secondary btn-sm ${isFavorite(station) ? 'is-fav' : ''}`;
+      favBtn.onclick = () => {
+        toggleFavorite(station);
+        favBtn.className = `btn btn-secondary btn-sm ${isFavorite(station) ? 'is-fav' : ''}`;
+      };
+
+      card.classList.remove('hidden');
+    },
+
+    setupGlobeEvents: function () {
+      const dom = this.renderer.domElement;
+      const tooltip = document.getElementById('globe-hover-tooltip');
+
+      // Mouse Drag Rotation
+      dom.addEventListener('mousedown', (e) => {
+        this.isDragging = true;
+        this.prevMousePos = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mouseup', () => {
+        this.isDragging = false;
+      });
+
+      dom.addEventListener('mousemove', (e) => {
+        const rect = dom.getBoundingClientRect();
+        this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        if (this.isDragging) {
+          const deltaX = e.clientX - this.prevMousePos.x;
+          const deltaY = e.clientY - this.prevMousePos.y;
+
+          this.targetRot.y += deltaX * 0.005;
+          this.targetRot.x += deltaY * 0.005;
+          this.targetRot.x = Math.max(-1.3, Math.min(1.3, this.targetRot.x));
+
+          this.prevMousePos = { x: e.clientX, y: e.clientY };
+        } else {
+          // Raycast for hover tooltip
+          this.checkHover(e, rect, tooltip);
+        }
+      });
+
+      // Touch interactions
+      dom.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          this.isDragging = true;
+          this.prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      });
+
+      dom.addEventListener('touchmove', (e) => {
+        if (this.isDragging && e.touches.length === 1) {
+          const deltaX = e.touches[0].clientX - this.prevMousePos.x;
+          const deltaY = e.touches[0].clientY - this.prevMousePos.y;
+
+          this.targetRot.y += deltaX * 0.006;
+          this.targetRot.x += deltaY * 0.006;
+          this.targetRot.x = Math.max(-1.3, Math.min(1.3, this.targetRot.x));
+
+          this.prevMousePos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      });
+
+      dom.addEventListener('touchend', () => {
+        this.isDragging = false;
+      });
+
+      // Zoom via Mouse Wheel
+      dom.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        this.targetDistance += e.deltaY * 0.15;
+        this.targetDistance = Math.max(140, Math.min(360, this.targetDistance));
+      }, { passive: false });
+
+      // Click to select station
+      dom.addEventListener('click', () => {
+        if (this.hoveredStation) {
+          playStation(this.hoveredStation);
+          this.showStationCard(this.hoveredStation);
+        }
+      });
+
+      // Resize
+      window.addEventListener('resize', () => this.onResize());
+
+      // Region buttons
+      const regionBtns = document.querySelectorAll('.globe-region-btn');
+      regionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          regionBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const region = btn.getAttribute('data-region');
+          this.flyToRegion(region);
+        });
+      });
+
+      // HUD Tools
+      document.getElementById('globe-rotate-btn').addEventListener('click', () => {
+        this.autoRotate = !this.autoRotate;
+        showToast(this.autoRotate ? 'Auto-spin enabled 🌐' : 'Auto-spin paused');
+      });
+
+      document.getElementById('globe-zoom-in-btn').addEventListener('click', () => {
+        this.targetDistance = Math.max(140, this.targetDistance - 35);
+      });
+
+      document.getElementById('globe-zoom-out-btn').addEventListener('click', () => {
+        this.targetDistance = Math.min(360, this.targetDistance + 35);
+      });
+
+      document.getElementById('globe-reset-btn').addEventListener('click', () => {
+        this.targetRot = { x: 0.25, y: 0 };
+        this.targetDistance = 245;
+        showToast('Camera reset to default');
+      });
+
+      // Close floating card
+      const closeBtn = document.getElementById('gcard-close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          document.getElementById('globe-station-card').classList.add('hidden');
+        });
+      }
+    },
+
+    checkHover: function (e, rect, tooltip) {
+      if (!this.markersGroup) return;
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      const intersects = this.raycaster.intersectObjects(this.markersGroup.children);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        const station = hit.userData.station;
+        if (station) {
+          this.hoveredStation = station;
+          this.mountEl.style.cursor = 'pointer';
+
+          const flag = getCountryFlag(station.countrycode);
+          document.getElementById('tooltip-flag').textContent = flag;
+          document.getElementById('tooltip-title').textContent = station.name;
+          document.getElementById('tooltip-sub').textContent = `${station.country || 'Global'} • ${station.bitrate ? station.bitrate + ' kbps' : (station.codec || 'Live')}`;
+
+          tooltip.style.left = `${e.clientX - rect.left}px`;
+          tooltip.style.top = `${e.clientY - rect.top}px`;
+          tooltip.classList.remove('hidden');
+          return;
+        }
+      }
+
+      this.hoveredStation = null;
+      this.mountEl.style.cursor = 'grab';
+      tooltip.classList.add('hidden');
+    },
+
+    flyToRegion: function (region) {
+      switch (region) {
+        case 'eu': // Europe
+          this.flyToLocation(48.8, 10.5);
+          this.targetDistance = 210;
+          break;
+        case 'na': // North America
+          this.flyToLocation(39.8, -98.5);
+          this.targetDistance = 220;
+          break;
+        case 'sa': // South America
+          this.flyToLocation(-15.6, -56.0);
+          this.targetDistance = 220;
+          break;
+        case 'as': // Asia
+          this.flyToLocation(34.0, 105.0);
+          this.targetDistance = 225;
+          break;
+        case 'af': // Africa
+          this.flyToLocation(2.0, 21.0);
+          this.targetDistance = 225;
+          break;
+        case 'oc': // Oceania
+          this.flyToLocation(-25.2, 134.0);
+          this.targetDistance = 225;
+          break;
+        default: // All / Global
+          this.targetRot = { x: 0.25, y: 0 };
+          this.targetDistance = 245;
+          break;
+      }
+    },
+
+    onResize: function () {
+      if (!this.mountEl || !this.renderer || !this.camera) return;
+      const width = this.mountEl.clientWidth;
+      const height = this.mountEl.clientHeight;
+      if (width === 0 || height === 0) return;
+
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(width, height);
+    },
+
+    startAnimation: function () {
+      let beaconScale = 1;
+      let beaconOpacity = 0.8;
+
+      const render = () => {
+        this.animFrameId = requestAnimationFrame(render);
+
+        if (!this.isDragging && this.autoRotate) {
+          this.targetRot.y += 0.0018;
+        }
+
+        // Smooth damping
+        this.currentRot.x += (this.targetRot.x - this.currentRot.x) * 0.08;
+        this.currentRot.y += (this.targetRot.y - this.currentRot.y) * 0.08;
+        this.cameraDistance += (this.targetDistance - this.cameraDistance) * 0.08;
+
+        // Apply rotation to globe & markers
+        this.globeMesh.rotation.x = this.currentRot.x;
+        this.globeMesh.rotation.y = this.currentRot.y;
+        this.markersGroup.rotation.x = this.currentRot.x;
+        this.markersGroup.rotation.y = this.currentRot.y;
+
+        // Animate beacon pulse
+        if (this.beaconMesh && this.beaconMesh.visible) {
+          beaconScale += 0.04;
+          beaconOpacity -= 0.02;
+          if (beaconScale > 2.5) {
+            beaconScale = 1;
+            beaconOpacity = 0.85;
+          }
+          this.beaconMesh.scale.set(beaconScale, beaconScale, 1);
+          this.beaconMesh.material.opacity = Math.max(0, beaconOpacity);
+        }
+
+        this.camera.position.z = this.cameraDistance;
+        this.renderer.render(this.scene, this.camera);
+      };
+
+      render();
+    }
+  };
+
+  // --- View Switcher Logic ---
+  function switchView(viewName) {
+    currentView = viewName;
+    if (viewName === 'grid') {
+      viewGridBtn.classList.add('active');
+      viewGlobeBtn.classList.remove('active');
+      viewGridBtn.setAttribute('aria-selected', 'true');
+      viewGlobeBtn.setAttribute('aria-selected', 'false');
+
+      gridViewContainer.classList.remove('hidden');
+      globeViewContainer.classList.add('hidden');
+    } else {
+      viewGlobeBtn.classList.add('active');
+      viewGridBtn.classList.remove('active');
+      viewGlobeBtn.setAttribute('aria-selected', 'true');
+      viewGridBtn.setAttribute('aria-selected', 'false');
+
+      gridViewContainer.classList.add('hidden');
+      globeViewContainer.classList.remove('hidden');
+
+      // Initialize Globe if not initialized yet
+      if (!GlobeRadar.isInitialized) {
+        GlobeRadar.init();
+      } else {
+        setTimeout(() => GlobeRadar.onResize(), 50);
+      }
+
+      // If a station is already playing, highlight it on the globe
+      if (currentStation) {
+        GlobeRadar.setActiveStation(currentStation);
+      }
+    }
+  }
+
   // --- Event Handlers & Listeners ---
   function setupEventListeners() {
+    // View Switcher Buttons
+    viewGridBtn.addEventListener('click', () => switchView('grid'));
+    viewGlobeBtn.addEventListener('click', () => switchView('globe'));
+
     // Play/Pause
     playPauseBtn.addEventListener('click', togglePlayPause);
     prevStationBtn.addEventListener('click', playPrevStation);
@@ -1088,7 +1681,6 @@
         votes: 1
       };
 
-      // Add to favorites automatically so it persists
       favorites.unshift(customStation);
       saveFavorites();
 
@@ -1107,7 +1699,6 @@
 
     // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
-      // Don't trigger if user is typing in an input
       if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         return;
       }
