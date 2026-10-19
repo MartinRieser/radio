@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
+import com.pulsecast.radio.ui.components.SmartSwitchDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -96,6 +98,12 @@ fun HomeScreen(viewModel: MainViewModel) {
     val sleepMinutes by viewModel.sleepMinutesRemaining.collectAsState()
     var showSleepDialog by remember { mutableStateOf(false) }
 
+    val smartSwitchStatus by viewModel.playbackController.smartSwitchCoordinator.status.collectAsState()
+    val isSmartSwitchEnabled by viewModel.playbackController.intelligenceRepository.isSmartSwitchEnabled.collectAsState()
+    val speechToleranceSeconds by viewModel.playbackController.intelligenceRepository.speechToleranceSeconds.collectAsState()
+    val bounceBackMinutes by viewModel.playbackController.intelligenceRepository.bounceBackMinutes.collectAsState()
+    var showSmartSwitchDialog by remember { mutableStateOf(false) }
+
     Scaffold(
         containerColor = BgMain,
         bottomBar = {
@@ -105,9 +113,12 @@ fun HomeScreen(viewModel: MainViewModel) {
                 isBuffering = isBuffering,
                 liveSeconds = liveSeconds,
                 trackTitle = trackTitle,
+                smartSwitchStatus = smartSwitchStatus,
                 onPlayPauseClick = { viewModel.togglePlayPause() },
                 onNextClick = { viewModel.playNext() },
-                onPrevClick = { viewModel.playPrevious() }
+                onPrevClick = { viewModel.playPrevious() },
+                onReturnNowClick = { viewModel.returnToOriginalStation() },
+                onStayHereClick = { viewModel.cancelBounceBack() }
             )
         }
     ) { paddingValues ->
@@ -119,7 +130,9 @@ fun HomeScreen(viewModel: MainViewModel) {
             // 1. App Header
             HeaderView(
                 sleepMinutes = sleepMinutes,
-                onSleepClick = { showSleepDialog = true }
+                isSmartSwitchEnabled = isSmartSwitchEnabled,
+                onSleepClick = { showSleepDialog = true },
+                onSmartSwitchClick = { showSmartSwitchDialog = true }
             )
 
             // 2. Search & Genre Filter Bar
@@ -196,12 +209,26 @@ fun HomeScreen(viewModel: MainViewModel) {
             onSelectMinutes = { viewModel.setSleepTimer(it) }
         )
     }
+
+    if (showSmartSwitchDialog) {
+        SmartSwitchDialog(
+            isEnabled = isSmartSwitchEnabled,
+            toleranceSeconds = speechToleranceSeconds,
+            bounceBackMinutes = bounceBackMinutes,
+            onEnabledChanged = { viewModel.setSmartSwitchEnabled(it) },
+            onToleranceChanged = { viewModel.setSpeechToleranceSeconds(it) },
+            onBounceBackChanged = { viewModel.setBounceBackMinutes(it) },
+            onDismiss = { showSmartSwitchDialog = false }
+        )
+    }
 }
 
 @Composable
 private fun HeaderView(
     sleepMinutes: Int,
-    onSleepClick: () -> Unit
+    isSmartSwitchEnabled: Boolean,
+    onSleepClick: () -> Unit,
+    onSmartSwitchClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -242,30 +269,62 @@ private fun HeaderView(
             }
         }
 
-        // Sleep Timer Button
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(if (sleepMinutes > 0) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard)
-                .clickable(onClick = onSleepClick)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            contentAlignment = Alignment.Center
+        // Action Buttons: Smart Switch & Sleep Timer
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Bedtime,
-                    contentDescription = "Sleep Timer",
-                    tint = if (sleepMinutes > 0) AccentPrimary else TextSecondary,
-                    modifier = Modifier.size(16.dp)
-                )
-                if (sleepMinutes > 0) {
-                    Spacer(modifier = Modifier.width(6.dp))
+            // Smart Switch Button
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(if (isSmartSwitchEnabled) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard)
+                    .clickable(onClick = onSmartSwitchClick)
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = "Smart Switch",
+                        tint = if (isSmartSwitchEnabled) AccentPrimary else TextSecondary,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "${sleepMinutes}m",
-                        color = AccentPrimary,
-                        fontSize = 12.sp,
+                        text = if (isSmartSwitchEnabled) "Smart" else "Aus",
+                        color = if (isSmartSwitchEnabled) AccentPrimary else TextSecondary,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
                     )
+                }
+            }
+
+            // Sleep Timer Button
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(if (sleepMinutes > 0) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard)
+                    .clickable(onClick = onSleepClick)
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Bedtime,
+                        contentDescription = "Sleep Timer",
+                        tint = if (sleepMinutes > 0) AccentPrimary else TextSecondary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    if (sleepMinutes > 0) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "${sleepMinutes}m",
+                            color = AccentPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -424,6 +483,7 @@ private fun CategoryTabs(
 ) {
     val tabs = listOf(
         "featured" to "Featured",
+        "puremusic" to "🎵 100% Musik",
         "adfree" to "🛡️ Werbefrei",
         "favorites" to "❤️ Favoriten ($favCount)",
         "history" to "🕒 Verlauf ($historyCount)",
@@ -495,6 +555,7 @@ private fun SectionHeader(
 
     val title = when (activeCategory) {
         "featured" -> "Featured Sender"
+        "puremusic" -> "🎵 100% Musik (Keine News / Werbung)"
         "adfree" -> "Werbefreie Sender"
         "favorites" -> "Gespeicherte Favoriten"
         "history" -> "Zuletzt gespielt (Verlauf)"
@@ -587,6 +648,7 @@ private fun EmptyStateView(
 
         val title = when {
             query.isNotBlank() -> "Keine Sender gefunden"
+            category == "puremusic" -> "Keine 100% Musik-Sender"
             category == "favorites" -> "Noch keine Favoriten"
             category == "history" -> "Kein Verlauf vorhanden"
             else -> "Keine Sender verfügbar"
@@ -594,6 +656,7 @@ private fun EmptyStateView(
 
         val desc = when {
             query.isNotBlank() -> "Versuche einen anderen Suchbegriff oder ein anderes Genre."
+            category == "puremusic" -> "Hier findest du Sender, die durchgehend Musik spielen und keine Nachrichten- oder Werbeblöcke senden."
             category == "favorites" -> "Tippe auf das Herz-Symbol bei einem Sender, um ihn hier zu speichern."
             category == "history" -> "Radiosender werden hier automatisch gespeichert, sobald du sie mindestens 1 Minute lang hörst."
             else -> "Bitte prüfe deine Internetverbindung."

@@ -51,6 +51,8 @@ import com.pulsecast.radio.ui.theme.TextMuted
 import com.pulsecast.radio.ui.theme.TextPrimary
 import com.pulsecast.radio.ui.theme.TextSecondary
 
+import com.pulsecast.radio.playback.SmartSwitchStatus
+
 @Composable
 fun PlayerBar(
     station: Station?,
@@ -58,9 +60,12 @@ fun PlayerBar(
     isBuffering: Boolean,
     liveSeconds: Int,
     trackTitle: String,
+    smartSwitchStatus: SmartSwitchStatus = SmartSwitchStatus.Idle,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
-    onPrevClick: () -> Unit
+    onPrevClick: () -> Unit,
+    onReturnNowClick: (() -> Unit)? = null,
+    onStayHereClick: (() -> Unit)? = null
 ) {
     AnimatedVisibility(
         visible = station != null,
@@ -69,16 +74,147 @@ fun PlayerBar(
     ) {
         if (station == null) return@AnimatedVisibility
 
-        Surface(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = BgSurface,
-            tonalElevation = 8.dp,
-            shadowElevation = 12.dp,
-            border = androidx.compose.foundation.BorderStroke(1.dp, BorderAccent)
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
+            // Smart Switch Status Strip
+            when (smartSwitchStatus) {
+                is SmartSwitchStatus.BounceBackActive -> {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0xFF1E1B4B),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF6366F1))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            val min = smartSwitchStatus.remainingSeconds / 60
+                            val sec = smartSwitchStatus.remainingSeconds % 60
+                            val timeStr = String.format("%02d:%02d", min, sec)
+                            Text(
+                                text = "↩️ Zurück zu ${smartSwitchStatus.originalStation.name} in $timeStr",
+                                color = Color(0xFFA5B4FC),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFF4F46E5))
+                                        .clickable { onReturnNowClick?.invoke() }
+                                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                                ) {
+                                    Text("Jetzt", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFF312E81))
+                                        .clickable { onStayHereClick?.invoke() }
+                                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                                ) {
+                                    Text("Bleiben", color = Color(0xFFC7D2FE), fontSize = 10.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+                is SmartSwitchStatus.SpeechTolerance -> {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0xFF451A03),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "🗣️ Sprache / News erkannt (${smartSwitchStatus.elapsedSeconds}s / ${smartSwitchStatus.maxSeconds}s)...",
+                                color = Color(0xFFFDE68A),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+                is SmartSwitchStatus.ProbingCandidate -> {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0xFF064E3B),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF10B981))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "🔍 Prüfe stumm Ausweichsender: ${smartSwitchStatus.candidateName}...",
+                                color = Color(0xFFA7F3D0),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+                is SmartSwitchStatus.AbsorbingPreRoll -> {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0xFF3B0764),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFA855F7))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "⏳ Warte Pre-Roll Werbung stumm ab (${smartSwitchStatus.secondsWaited}s)...",
+                                color = Color(0xFFE9D5FF),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+                else -> Unit
+            }
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = BgSurface,
+                tonalElevation = 8.dp,
+                shadowElevation = 12.dp,
+                border = androidx.compose.foundation.BorderStroke(1.dp, BorderAccent)
+            ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -220,3 +356,8 @@ fun PlayerBar(
         }
     }
 }
+}
+
+
+
+

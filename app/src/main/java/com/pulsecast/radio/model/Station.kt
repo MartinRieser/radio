@@ -51,8 +51,29 @@ data class Station(
     // Local state fields
     val isFavorite: Boolean = false,
     val lastPlayed: Long? = null,
-    val playDuration: Int = 0
+    val playDuration: Int = 0,
+    @SerializedName("is_pure_music")
+    val isPureMusic: Boolean = false,
+    val learnedNewsWindow: String? = null
 ) {
+    /**
+     * Checks if this station is dedicated to continuous music with no news/commercial breaks.
+     */
+    fun isPureMusicStation(): Boolean {
+        if (isPureMusic) return true
+        val n = name.lowercase()
+        val t = (tags ?: "").lowercase()
+        if (n.contains("news") || n.contains("info") || n.contains("talk") || n.contains("world service")) {
+            return false
+        }
+        val pureKeywords = listOf("somafm", "swiss pop", "swiss jazz", "swiss classic", "lofi cafe", "drone zone", "fip")
+        if (pureKeywords.any { n.contains(it) }) return true
+        if (t.contains("lo-fi") || t.contains("ambient") || t.contains("chillout") || t.contains("downtempo")) {
+            return true
+        }
+        return false
+    }
+
     /**
      * Resolves the primary streaming URL (fallback to url if url_resolved is null)
      */

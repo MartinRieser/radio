@@ -11,7 +11,8 @@
     "favicon": "https://tubestatic.orf.at/mojo/1_3/storyserver//tube/common/images/apple-icons/oe3.png",
     "votes": 3500,
     "geo_lat": 48.2082,
-    "geo_long": 16.3738
+    "geo_long": 16.3738,
+    "learnedNewsWindow": ":00 - :04"
   },
   {
     "stationuuid": "206f93c5-5f3c-4ba1-82c2-19a42582fcc2",
@@ -39,7 +40,8 @@
     "favicon": "https://www.radioswisspop.ch/social-media/rsp-web.png",
     "votes": 2400,
     "geo_lat": 46.948,
-    "geo_long": 7.4474
+    "geo_long": 7.4474,
+    "is_pure_music": true
   },
   {
     "stationuuid": "0de82079-04e7-407b-b616-e0726eba5244",
@@ -53,7 +55,8 @@
     "favicon": "https://api.ardmediathek.de/image-service/images/urn:ard:image:52fd25fc45de7c6a?w=512",
     "votes": 2150,
     "geo_lat": 48.1351,
-    "geo_long": 11.582
+    "geo_long": 11.582,
+    "learnedNewsWindow": ":00 - :04"
   },
   {
     "stationuuid": "240d28b9-7858-48d2-a816-9cf8e1875fe8",
@@ -67,7 +70,8 @@
     "favicon": "https://www.swr3.de/favicon.ico",
     "votes": 2200,
     "geo_lat": 48.7606,
-    "geo_long": 8.24
+    "geo_long": 8.24,
+    "learnedNewsWindow": ":00 - :04"
   },
   {
     "stationuuid": "b2cbd1fd-275d-432a-8b20-37dcb3572315",
@@ -81,7 +85,8 @@
     "favicon": "https://www1.wdr.de/radio/1live/resources-v5.122.3/img/favicon/apple-touch-icon.png",
     "votes": 2050,
     "geo_lat": 50.9375,
-    "geo_long": 6.9603
+    "geo_long": 6.9603,
+    "learnedNewsWindow": ":00 - :04"
   },
   {
     "stationuuid": "7b6aca3d-dfa3-47dd-9f57-820b04c3f339",
@@ -95,7 +100,8 @@
     "favicon": "https://www.radiofrance.fr/assets/favicon/fip-apple-touch-icon.png",
     "votes": 2600,
     "geo_lat": 48.8566,
-    "geo_long": 2.3522
+    "geo_long": 2.3522,
+    "is_pure_music": true
   },
   {
     "stationuuid": "0596bdc5-77fc-48ba-8653-e5e34bb86568",
@@ -109,7 +115,8 @@
     "favicon": "https://somafm.com/img3/groovesalad120.png",
     "votes": 2900,
     "geo_lat": 37.7749,
-    "geo_long": -122.4194
+    "geo_long": -122.4194,
+    "is_pure_music": true
   },
   {
     "stationuuid": "e9fddd49-3ee2-4597-8574-1b7dbd00aac0",
@@ -137,7 +144,8 @@
     "favicon": "https://ilovemusic.de/app/uploads/2021/03/iloveradio-lofi.png",
     "votes": 1650,
     "geo_lat": 52.52,
-    "geo_long": 13.405
+    "geo_long": 13.405,
+    "is_pure_music": true
   },
   {
     "stationuuid": "34edbcea-ce81-4e39-81ab-71e74745d544",
@@ -151,7 +159,8 @@
     "favicon": "https://www.radioswissclassic.ch/social-media/rsc-web.png",
     "votes": 1380,
     "geo_lat": 47.5596,
-    "geo_long": 7.5886
+    "geo_long": 7.5886,
+    "is_pure_music": true
   },
   {
     "stationuuid": "960eb2e9-0601-11e8-ae97-52543be04c81",
@@ -165,7 +174,8 @@
     "favicon": "https://somafm.com/img3/dronezone120.png",
     "votes": 1420,
     "geo_lat": 37.7849,
-    "geo_long": -122.4094
+    "geo_long": -122.4094,
+    "is_pure_music": true
   },
   {
     "stationuuid": "9a368941-71a3-4bda-9186-6604d9030514",
@@ -179,7 +189,8 @@
     "favicon": "https://www.radioswissjazz.ch/social-media/rsj-web.png",
     "votes": 1540,
     "geo_lat": 47.3769,
-    "geo_long": 8.5417
+    "geo_long": 8.5417,
+    "is_pure_music": true
   },
   {
     "stationuuid": "960e4940-0601-11e8-ae97-52543be04c81",
@@ -193,7 +204,8 @@
     "favicon": "https://ibizaglobalradio.com/favicon.ico",
     "votes": 1740,
     "geo_lat": 38.9067,
-    "geo_long": 1.4206
+    "geo_long": 1.4206,
+    "is_pure_music": true
   },
   {
     "stationuuid": "78d27eb0-ad49-4188-be72-38f7137e4164",
@@ -207,7 +219,8 @@
     "favicon": "https://www.antenne.de/apple-touch-icon.png",
     "votes": 1690,
     "geo_lat": 48.1451,
-    "geo_long": 11.572
+    "geo_long": 11.572,
+    "learnedNewsWindow": ":00 - :04"
   },
   {
     "stationuuid": "0ec95505-0ff5-4b11-af12-80d77d591367",
@@ -221,7 +234,8 @@
     "favicon": "https://somafm.com/img3/secretagent120.png",
     "votes": 1150,
     "geo_lat": 37.7649,
-    "geo_long": -122.4294
+    "geo_long": -122.4294,
+    "is_pure_music": true
   },
   {
     "stationuuid": "4b473070-a3c2-41bd-8d98-c2db5f5954bc",

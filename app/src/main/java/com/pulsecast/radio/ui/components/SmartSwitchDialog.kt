@@ -1,0 +1,263 @@
+package com.pulsecast.radio.ui.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import com.pulsecast.radio.ui.theme.AccentPrimary
+import com.pulsecast.radio.ui.theme.BgMain
+import com.pulsecast.radio.ui.theme.BgSurfaceCard
+import com.pulsecast.radio.ui.theme.BorderSubtle
+import com.pulsecast.radio.ui.theme.TextMuted
+import com.pulsecast.radio.ui.theme.TextPrimary
+import com.pulsecast.radio.ui.theme.TextSecondary
+
+@Composable
+fun SmartSwitchDialog(
+    isEnabled: Boolean,
+    toleranceSeconds: Int,
+    bounceBackMinutes: Int,
+    onEnabledChanged: (Boolean) -> Unit,
+    onToleranceChanged: (Int) -> Unit,
+    onBounceBackChanged: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp)),
+            colors = CardDefaults.cardColors(containerColor = BgSurfaceCard),
+            border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = AccentPrimary
+                        )
+                        Text(
+                            text = "Smart Station Switcher",
+                            color = TextPrimary,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Schließen",
+                            tint = TextMuted
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Master Toggle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF0F1523))
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Automatisches Ausweichen",
+                            color = TextPrimary,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Wechselt zu Musik bei Werbung, News & Stau",
+                            color = TextSecondary,
+                            fontSize = 11.sp
+                        )
+                    }
+                    Switch(
+                        checked = isEnabled,
+                        onCheckedChange = onEnabledChanged,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = BgMain,
+                            checkedTrackColor = AccentPrimary
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Tolerance Slider
+                Text(
+                    text = "Sprach-Toleranz: $toleranceSeconds Sekunden",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Verhindert Senderwechsel bei kurzen DJ-Anmoderationen.",
+                    color = TextMuted,
+                    fontSize = 11.sp
+                )
+
+                Slider(
+                    value = toleranceSeconds.toFloat(),
+                    onValueChange = { onToleranceChanged(it.toInt()) },
+                    valueRange = 5f..30f,
+                    steps = 24,
+                    colors = SliderDefaults.colors(
+                        thumbColor = AccentPrimary,
+                        activeTrackColor = AccentPrimary,
+                        inactiveTrackColor = Color(0xFF1E293B)
+                    )
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(5, 10, 15, 20).forEach { s ->
+                        val isSelected = toleranceSeconds == s
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) AccentPrimary else Color(0xFF0F1523))
+                                .clickable { onToleranceChanged(s) }
+                                .padding(vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (s == 10) "${s}s (Std)" else "${s}s",
+                                color = if (isSelected) BgMain else TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = BorderSubtle)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Bounce-Back
+                Text(
+                    text = "Rückkehr zum Hauptsender (Bounce-Back)",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Kehrt nach ca. $bounceBackMinutes Minuten automatisch zurück, sobald der Hauptsender wieder Musik spielt.",
+                    color = TextMuted,
+                    fontSize = 11.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(3, 5, 7, 10).forEach { m ->
+                        val isSelected = bounceBackMinutes == m
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) Color(0xFF6366F1) else Color(0xFF0F1523))
+                                .clickable { onBounceBackChanged(m) }
+                                .padding(vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (m == 7) "${m} Min (Std)" else "${m} Min",
+                                color = if (isSelected) Color.White else TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Learning & Fallback Explanatory Info Card
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF080D1A))
+                        .padding(12.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "💡 So funktioniert die intelligente Steuerung:",
+                            color = AccentPrimary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "• 1. Priorität: Favoriten mit '100% Musik' & ohne News.\n" +
+                                   "• 2. Priorität: Elektronische Musiksender (SomaFM, Lofi Cafe, Ibiza).\n" +
+                                   "• Stumme Vorab-Prüfung: Wartet Pre-Roll Werbung stumm ab, bevor Ton wechselt.\n" +
+                                   "• Selbstlernend: Merkt sich feste Nachrichtenzeiten (:00 / :30) jedes Senders.",
+                            color = TextSecondary,
+                            fontSize = 10.sp,
+                            lineHeight = 14.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

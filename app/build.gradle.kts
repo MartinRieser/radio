@@ -85,4 +85,7 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+
+    // Unit Testing
+    testImplementation("junit:junit:4.13.2")
 }

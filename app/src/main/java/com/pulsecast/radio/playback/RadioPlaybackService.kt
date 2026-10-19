@@ -16,6 +16,13 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.pulsecast.radio.MainActivity
 
+import android.content.Context
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
+import com.pulsecast.radio.playback.audio.AudioBridge
+import com.pulsecast.radio.playback.audio.PcmTapAudioProcessor
+
 @UnstableApi
 class RadioPlaybackService : MediaSessionService() {
 
@@ -25,8 +32,25 @@ class RadioPlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
 
-        // 1. Configure ExoPlayer for live radio streaming
-        player = ExoPlayer.Builder(this)
+        // 1. Configure PCM Audio Tap for Speech / Commercial Detection
+        val pcmTap = PcmTapAudioProcessor { buffer, sampleRate, channelCount ->
+            AudioBridge.classifier?.processPcmBuffer(buffer, sampleRate, channelCount)
+        }
+
+        val renderersFactory = object : DefaultRenderersFactory(this) {
+            override fun buildAudioSink(
+                context: Context,
+                enableFloatOutput: Boolean,
+                enableAudioTrackPlaybackParams: Boolean
+            ): AudioSink? {
+                return DefaultAudioSink.Builder(context)
+                    .setAudioProcessors(arrayOf(pcmTap))
+                    .build()
+            }
+        }
+
+        // Configure ExoPlayer for live radio streaming
+        player = ExoPlayer.Builder(this, renderersFactory)
             .setWakeMode(C.WAKE_MODE_NETWORK) // Prevent CPU/WiFi sleep
             .setAudioAttributes(
                 AudioAttributes.Builder()

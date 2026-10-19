@@ -13,7 +13,10 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
+import com.pulsecast.radio.data.StationIntelligenceRepository
 import com.pulsecast.radio.model.Station
+import com.pulsecast.radio.playback.audio.AudioBridge
+import com.pulsecast.radio.playback.audio.AudioContentClassifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,13 +30,25 @@ import kotlinx.coroutines.launch
 @OptIn(UnstableApi::class)
 class PlaybackController(
     private val context: Context,
-    private val repository: HistoryAndFavoritesRepository
+    private val repository: HistoryAndFavoritesRepository,
+    val intelligenceRepository: StationIntelligenceRepository = StationIntelligenceRepository(context)
 ) {
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
     private var timerJob: Job? = null
+
+    val audioClassifier = AudioContentClassifier()
+    val smartSwitchCoordinator = SmartSwitchCoordinator(
+        context = context,
+        repository = repository,
+        intelligenceRepository = intelligenceRepository,
+        audioClassifier = audioClassifier,
+        onSwitchStationRequest = { targetStation ->
+            playStation(targetStation)
+        }
+    )
 
     private val _currentStation = MutableStateFlow<Station?>(null)
     val currentStation: StateFlow<Station?> = _currentStation.asStateFlow()
@@ -55,6 +70,7 @@ class PlaybackController(
     private var stationHistorySaved = false
 
     init {
+        AudioBridge.classifier = audioClassifier
         connectToService()
     }
 
@@ -75,6 +91,7 @@ class PlaybackController(
         mediaController?.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
                 _isPlaying.value = playing
+                smartSwitchCoordinator.onPlaybackStateChanged(playing)
                 if (playing) {
                     startTimer()
                 } else {
@@ -93,12 +110,14 @@ class PlaybackController(
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 val title = mediaMetadata.title?.toString() ?: ""
                 val artist = mediaMetadata.artist?.toString() ?: ""
-                _trackTitle.value = when {
+                val formatted = when {
                     artist.isNotBlank() && title.isNotBlank() -> "$artist - $title"
                     title.isNotBlank() -> title
                     artist.isNotBlank() -> artist
                     else -> ""
                 }
+                _trackTitle.value = formatted
+                smartSwitchCoordinator.onMediaMetadataUpdated(formatted)
             }
         })
     }
@@ -112,6 +131,7 @@ class PlaybackController(
         finalizeHistory()
 
         _currentStation.value = station
+        smartSwitchCoordinator.onCurrentStationChanged(station)
         _trackTitle.value = ""
         _liveSeconds.value = 0
         stationListeningSeconds = 0
@@ -188,6 +208,7 @@ class PlaybackController(
     }
 
     fun release() {
+        smartSwitchCoordinator.release()
         finalizeHistory()
         stopTimer()
         MediaController.releaseFuture(controllerFuture ?: return)

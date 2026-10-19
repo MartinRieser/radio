@@ -85,6 +85,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     "featured" -> {
                         _stations.value = CuratedStations.load(getApplication())
                     }
+                    "puremusic" -> {
+                        val curated = CuratedStations.load(getApplication())
+                        val apiStations = try {
+                            ApiClient.getApi().getTopClickStations(40)
+                        } catch (e: Exception) {
+                            emptyList()
+                        }
+                        val combined = (curated + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
+                        _stations.value = combined.filter { playbackController.intelligenceRepository.isStationPureMusic(it) }
+                    }
                     "adfree" -> {
                         val curated = CuratedStations.load(getApplication())
                         val apiStations = try {
@@ -139,6 +149,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     (it.tags?.lowercase()?.contains(q) == true) ||
                     (it.country?.lowercase()?.contains(q) == true)
                 }
+            } else if (_activeCategory.value == "puremusic") {
+                val q = query.lowercase().trim()
+                val curated = CuratedStations.load(getApplication())
+                val apiStations = try {
+                    ApiClient.getApi().searchStations(query, 50)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                _stations.value = (curated + apiStations)
+                    .distinctBy { it.stationuuid ?: it.getStreamUrl() }
+                    .filter { playbackController.intelligenceRepository.isStationPureMusic(it) }
+                    .filter {
+                        it.name.lowercase().contains(q) ||
+                        (it.tags?.lowercase()?.contains(q) == true) ||
+                        (it.country?.lowercase()?.contains(q) == true)
+                    }
             } else {
                 _stations.value = ApiClient.getApi().searchStations(query, 50)
             }
@@ -208,6 +234,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _sleepMinutesRemaining.value = 0
             }
         }
+    }
+
+    fun togglePureMusic(station: Station) {
+        playbackController.intelligenceRepository.togglePureMusic(station)
+        if (_activeCategory.value == "puremusic") {
+            loadCategory("puremusic")
+        }
+    }
+
+    fun isStationPureMusic(station: Station): Boolean {
+        return playbackController.intelligenceRepository.isStationPureMusic(station)
+    }
+
+    fun setSmartSwitchEnabled(enabled: Boolean) {
+        playbackController.intelligenceRepository.setSmartSwitchEnabled(enabled)
+    }
+
+    fun setSpeechToleranceSeconds(seconds: Int) {
+        playbackController.intelligenceRepository.setSpeechToleranceSeconds(seconds)
+    }
+
+    fun setBounceBackMinutes(minutes: Int) {
+        playbackController.intelligenceRepository.setBounceBackMinutes(minutes)
+    }
+
+    fun returnToOriginalStation() {
+        playbackController.smartSwitchCoordinator.returnToOriginalStation()
+    }
+
+    fun cancelBounceBack() {
+        playbackController.smartSwitchCoordinator.cancelBounceBack()
     }
 
     override fun onCleared() {

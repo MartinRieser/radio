@@ -175,6 +175,13 @@ fun StationCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    // 100% Music Badge (No News)
+                    if (station.isPureMusicStation()) {
+                        BadgeView("🎵 100% Musik", Color(0xFF00E5FF))
+                    } else if (!station.learnedNewsWindow.isNullOrBlank()) {
+                        BadgeView("📰 News ${station.learnedNewsWindow}", Color(0xFFFFB74D))
+                    }
+
                     // Pre-roll Ad Badge
                     if (station.isAdFree()) {
                         BadgeView("🛡️ Werbefrei", AccentAdFree)
