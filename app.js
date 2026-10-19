@@ -984,8 +984,9 @@
     targetRot: { x: 0.25, y: 0 },
     cameraDistance: 245,
     targetDistance: 245,
-    autoRotate: true,
+    autoRotate: false, // Automatic idle rotation disabled per user preference
     hoveredStation: null,
+    currentHoveredDot: null,
     activeStationData: null,
 
     init: function () {
@@ -1106,19 +1107,19 @@
     },
 
     createBeaconRing: function (radius) {
-      const ringGeo = new THREE.RingGeometry(1.2, 2.8, 24);
+      const ringGeo = new THREE.RingGeometry(0.45, 1.3, 24);
       const ringMat = new THREE.MeshBasicMaterial({
         color: 0x00f2fe,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.85
       });
       this.beaconMesh = new THREE.Mesh(ringGeo, ringMat);
       this.beaconMesh.visible = false;
       this.scene.add(this.beaconMesh);
     },
 
-    latLonToVec3: function (lat, lon, radius = 101.4) {
+    latLonToVec3: function (lat, lon, radius = 100.6) {
       const phi = (90 - lat) * (Math.PI / 180);
       const theta = (lon + 180) * (Math.PI / 180);
       const x = -(radius * Math.sin(phi) * Math.cos(theta));
@@ -1138,9 +1139,14 @@
         this.markersGroup.remove(obj);
       }
 
-      const dotGeo = new THREE.SphereGeometry(1.2, 8, 8);
+      // Much smaller visible pinpoint dots
+      const dotGeo = new THREE.SphereGeometry(0.35, 8, 8);
       const dotMatCyan = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
       const dotMatGreen = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+
+      // Invisible slightly larger hitbox for easy hovering/clicking
+      const hitGeo = new THREE.SphereGeometry(1.2, 6, 6);
+      const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
 
       let count = 0;
       stations.forEach((station) => {
@@ -1151,12 +1157,21 @@
           return;
         }
 
-        const pos = this.latLonToVec3(lat, lon, 101.4);
-        const marker = new THREE.Mesh(dotGeo, isFavorite(station) ? dotMatGreen : dotMatCyan);
-        marker.position.copy(pos);
-        marker.userData = { station: station };
+        const pos = this.latLonToVec3(lat, lon, 100.6);
 
-        this.markersGroup.add(marker);
+        const markerGroup = new THREE.Group();
+        markerGroup.position.copy(pos);
+
+        const visibleDot = new THREE.Mesh(dotGeo, isFavorite(station) ? dotMatGreen : dotMatCyan);
+        markerGroup.add(visibleDot);
+
+        const hitBox = new THREE.Mesh(hitGeo, hitMat);
+        markerGroup.add(hitBox);
+
+        hitBox.userData = { station: station, visibleDot: visibleDot };
+        visibleDot.userData = { station: station, visibleDot: visibleDot };
+
+        this.markersGroup.add(markerGroup);
         count++;
       });
 
@@ -1177,7 +1192,7 @@
       const lon = parseFloat(station.geo_long);
       if (isNaN(lat) || isNaN(lon)) return;
 
-      const pos = this.latLonToVec3(lat, lon, 101.8);
+      const pos = this.latLonToVec3(lat, lon, 100.9);
       if (this.beaconMesh) {
         this.beaconMesh.position.copy(pos);
         this.beaconMesh.lookAt(new THREE.Vector3(0, 0, 0));
@@ -1353,12 +1368,20 @@
       if (!this.markersGroup) return;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
-      const intersects = this.raycaster.intersectObjects(this.markersGroup.children);
+      const intersects = this.raycaster.intersectObjects(this.markersGroup.children, true);
 
       if (intersects.length > 0) {
         const hit = intersects[0].object;
         const station = hit.userData.station;
         if (station) {
+          if (this.currentHoveredDot && this.currentHoveredDot !== hit.userData.visibleDot) {
+            this.currentHoveredDot.scale.set(1, 1, 1);
+          }
+          if (hit.userData.visibleDot) {
+            this.currentHoveredDot = hit.userData.visibleDot;
+            this.currentHoveredDot.scale.set(1.8, 1.8, 1.8);
+          }
+
           this.hoveredStation = station;
           this.mountEl.style.cursor = 'pointer';
 
@@ -1374,6 +1397,10 @@
         }
       }
 
+      if (this.currentHoveredDot) {
+        this.currentHoveredDot.scale.set(1, 1, 1);
+        this.currentHoveredDot = null;
+      }
       this.hoveredStation = null;
       this.mountEl.style.cursor = 'grab';
       tooltip.classList.add('hidden');
