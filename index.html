@@ -84,6 +84,13 @@
                 </svg>
                 <span>Play Custom URL</span>
               </button>
+              <button id="menu-history-btn" class="menu-item menu-item-action" title="Zuletzt gespielte Sender (> 1 Min. gehört)">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Verlauf anzeigen</span>
+              </button>
               <div class="dropdown-divider"></div>
               <div id="links-status-badge" class="menu-item menu-item-status" title="Click to view stream links details and mirror info">
                 <span class="links-status-dot"></span>
@@ -128,6 +135,7 @@
               <button class="pill active" data-genre="featured">Featured</button>
               <button class="pill pill-adfree" data-genre="adfree">🛡️ Werbefrei</button>
               <button class="pill pill-favorites" data-genre="favorites">Favorites (<span id="fav-count">0</span>)</button>
+              <button class="pill pill-history" data-genre="history">🕒 Verlauf (<span id="history-count">0</span>)</button>
               <button class="pill" data-genre="topclick">Trending</button>
               <button class="pill" data-genre="chillout">Chillout</button>
               <button class="pill" data-genre="pop">Pop</button>
@@ -178,6 +186,13 @@
             <h2 id="section-title">Featured Stations</h2>
             <span id="results-count" class="results-badge">14 handpicked stations</span>
           </div>
+          <button id="clear-history-btn" class="btn-clear-history hidden" title="Verlauf leeren">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Verlauf leeren</span>
+          </button>
         </section>
 
         <!-- Station Cards Grid -->

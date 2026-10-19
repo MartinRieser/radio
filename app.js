@@ -303,9 +303,12 @@
   let activeGenre = 'featured';
   let liveDurationTimer = null;
   let playbackSeconds = 0;
+  let stationListeningSeconds = 0;
+  let stationHistorySaved = false;
   let sleepTimerInterval = null;
   let sleepTimeRemaining = 0;
   let favorites = [];
+  let history = [];
 
   // --- DOM Elements ---
   const audio = document.getElementById('audio-player');
@@ -317,6 +320,8 @@
   const sortSelect = document.getElementById('sort-select');
   const sectionTitle = document.getElementById('section-title');
   const resultsCount = document.getElementById('results-count');
+  const clearHistoryBtn = document.getElementById('clear-history-btn');
+  const menuHistoryBtn = document.getElementById('menu-history-btn');
   const loadingSpinner = document.getElementById('loading-spinner');
   const emptyState = document.getElementById('empty-state');
   const resetFilterBtn = document.getElementById('reset-filter-btn');
@@ -399,6 +404,7 @@
   function init() {
     loadCachedCuratedStations();
     loadFavorites();
+    loadHistory();
     initAudioEvents();
     initVisualizer();
     setupEventListeners();
@@ -541,6 +547,138 @@
     } else {
       currentFavBtn.classList.remove('is-fav');
     }
+  }
+
+  // --- Storage & History (> 1 Minute Playback) ---
+  function loadHistory() {
+    try {
+      const stored = localStorage.getItem('pulse_history');
+      history = stored ? JSON.parse(stored) : [];
+      if (!Array.isArray(history)) history = [];
+    } catch (e) {
+      history = [];
+    }
+    updateHistoryBadge();
+  }
+
+  function saveHistory() {
+    try {
+      localStorage.setItem('pulse_history', JSON.stringify(history));
+    } catch (e) {
+      console.error('Failed to save history to localStorage', e);
+    }
+    updateHistoryBadge();
+  }
+
+  function updateHistoryBadge() {
+    const historyCountEl = document.getElementById('history-count');
+    if (historyCountEl) historyCountEl.textContent = history.length;
+  }
+
+  function addStationToHistory(station, duration = 60) {
+    if (!station) return;
+
+    // Check if station is already in history (by uuid or url or name)
+    const existingIndex = history.findIndex(s => 
+      (s.stationuuid && station.stationuuid && s.stationuuid === station.stationuuid) ||
+      (s.url_resolved && station.url_resolved && s.url_resolved === station.url_resolved) ||
+      (s.name && station.name && s.name.toLowerCase() === station.name.toLowerCase())
+    );
+
+    const historyItem = {
+      ...station,
+      lastPlayed: Date.now(),
+      playDuration: duration
+    };
+
+    if (existingIndex >= 0) {
+      history.splice(existingIndex, 1);
+    }
+
+    // Unlimited memory - newest to top
+    history.unshift(historyItem);
+    saveHistory();
+
+    if (activeGenre === 'history') {
+      renderHistory();
+    }
+  }
+
+  function finalizeCurrentStationHistory() {
+    if (currentStation && stationListeningSeconds >= 60 && !stationHistorySaved) {
+      addStationToHistory(currentStation, stationListeningSeconds);
+      stationHistorySaved = true;
+    }
+  }
+
+  function clearHistory() {
+    if (!history || history.length === 0) return;
+    if (confirm('Möchtest du den gesamten Verlauf wirklich leeren?')) {
+      history = [];
+      saveHistory();
+      showToast('Verlauf geleert');
+      if (activeGenre === 'history') {
+        renderHistory();
+      }
+    }
+  }
+
+  function showHistory() {
+    if (searchInput) {
+      searchInput.value = '';
+      if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+    }
+
+    activeGenre = 'history';
+    document.querySelectorAll('.genre-pills-container .pill').forEach(p => {
+      if (p.getAttribute('data-genre') === 'history') {
+        p.classList.add('active');
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        p.classList.remove('active');
+      }
+    });
+
+    if (showFavoritesBtn) {
+      showFavoritesBtn.classList.remove('is-active');
+    }
+
+    renderHistory();
+  }
+
+  function renderHistory() {
+    stationsList = history;
+    sectionTitle.textContent = 'Zuletzt gespielt (Verlauf)';
+    resultsCount.textContent = `${history.length} ${history.length === 1 ? 'Sender' : 'Sender'} (> 1 Min. gehört)`;
+
+    if (clearHistoryBtn) {
+      if (history.length > 0) clearHistoryBtn.classList.remove('hidden');
+      else clearHistoryBtn.classList.add('hidden');
+    }
+
+    if (history.length === 0) {
+      stationsGrid.innerHTML = '';
+      emptyState.classList.remove('hidden');
+      document.getElementById('empty-title').textContent = 'Kein Verlauf vorhanden';
+      document.getElementById('empty-desc').textContent = 'Radiosender werden hier automatisch gespeichert, sobald du sie mindestens 1 Minute lang hörst.';
+      resetFilterBtn.classList.add('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+      resetFilterBtn.classList.remove('hidden');
+      renderCards(stationsList);
+    }
+  }
+
+  function formatHistoryTime(timestamp) {
+    if (!timestamp) return '';
+    const diff = Math.floor((Date.now() - timestamp) / 1000);
+    if (diff < 60) return 'Gerade eben';
+    if (diff < 3600) return `vor ${Math.floor(diff / 60)} Min.`;
+    if (diff < 86400) return `vor ${Math.floor(diff / 3600)} Std.`;
+    const days = Math.floor(diff / 86400);
+    if (days === 1) return 'Gestern';
+    if (days < 7) return `vor ${days} Tagen`;
+    return new Date(timestamp).toLocaleDateString();
   }
 
   // --- Toast Notifications ---
@@ -1142,11 +1280,27 @@
         loadTopStations();
       } else if (activeGenre === 'favorites') {
         renderFavorites();
+      } else if (activeGenre === 'history') {
+        renderHistory();
       } else if (activeGenre === 'adfree') {
         loadAdFreeStations();
       } else {
         loadGenreStations(activeGenre);
       }
+      return;
+    }
+
+    if (activeGenre === 'history') {
+      const q = query.toLowerCase().trim();
+      const filtered = history.filter(s =>
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.tags && s.tags.toLowerCase().includes(q)) ||
+        (s.country && s.country.toLowerCase().includes(q))
+      );
+      stationsList = filtered;
+      sectionTitle.textContent = `Verlauf-Suche: "${query}"`;
+      resultsCount.textContent = `${filtered.length} Sender gefunden`;
+      renderCards(stationsList);
       return;
     }
 
@@ -1175,6 +1329,7 @@
     stationsList = favorites;
     sectionTitle.textContent = 'Your Saved Favorites';
     resultsCount.textContent = `${favorites.length} stations`;
+    if (clearHistoryBtn) clearHistoryBtn.classList.add('hidden');
     if (favorites.length === 0) {
       stationsGrid.innerHTML = '';
       emptyState.classList.remove('hidden');
@@ -1221,6 +1376,10 @@
 
       const isCurrentPlaying = card.classList.contains('is-active') && isPlaying;
 
+      const historyTimeHtml = (activeGenre === 'history' && station.lastPlayed)
+        ? `<span class="station-sub-dot">•</span><span class="station-history-time" title="${new Date(station.lastPlayed).toLocaleString()}">${formatHistoryTime(station.lastPlayed)}</span>`
+        : '';
+
       card.innerHTML = `
         <div class="station-art-box">
           ${station.favicon ? `<img src="${escapeHtml(station.favicon)}" alt="" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
@@ -1250,6 +1409,7 @@
             <span class="station-country">${flag} ${escapeHtml(station.country || 'Global')}</span>
             ${cleanGenres ? `<span class="station-sub-dot">•</span><span class="station-genre-text">${escapeHtml(cleanGenres)}</span>` : ''}
             ${adBadgeHtml ? `<span class="station-sub-dot">•</span>${adBadgeHtml}` : ''}
+            ${historyTimeHtml}
           </div>
         </div>
       `;
@@ -1276,8 +1436,14 @@
       return;
     }
 
+    // Finalize previous station history if listened to for >= 60 seconds
+    finalizeCurrentStationHistory();
+
     currentStation = station;
     currentStationIndex = index >= 0 ? index : stationsList.findIndex(s => s.stationuuid === station.stationuuid || s.url_resolved === station.url_resolved);
+    playbackSeconds = 0;
+    stationListeningSeconds = 0;
+    stationHistorySaved = false;
 
     const streamUrl = station.url_resolved || station.url;
     if (!streamUrl) {
@@ -1382,6 +1548,7 @@
       updatePlaybackUI();
       stopLiveTimer();
       setPlayerStatus('ready', 'PAUSED');
+      finalizeCurrentStationHistory();
     }
 
     renderCards(stationsList);
@@ -1423,11 +1590,17 @@
 
   function startLiveTimer() {
     stopLiveTimer();
-    playbackSeconds = 0;
-    playbackTimer.textContent = 'LIVE 00:00';
+    playbackTimer.textContent = `LIVE ${formatTime(playbackSeconds)}`;
     liveDurationTimer = setInterval(() => {
       playbackSeconds++;
+      stationListeningSeconds++;
       playbackTimer.textContent = `LIVE ${formatTime(playbackSeconds)}`;
+
+      // When listening time reaches 60 seconds (1 minute), automatically record to history
+      if (stationListeningSeconds >= 60 && !stationHistorySaved && currentStation) {
+        addStationToHistory(currentStation, stationListeningSeconds);
+        stationHistorySaved = true;
+      }
     }, 1000);
   }
 
@@ -1668,10 +1841,16 @@
         loadTopStations();
       } else if (genre === 'favorites') {
         renderFavorites();
+      } else if (genre === 'history') {
+        renderHistory();
       } else if (genre === 'adfree') {
         loadAdFreeStations();
       } else {
         loadGenreStations(genre);
+      }
+
+      if (clearHistoryBtn && genre !== 'history') {
+        clearHistoryBtn.classList.add('hidden');
       }
 
       if (showFavoritesBtn) {
@@ -1683,7 +1862,7 @@
     countrySelect.addEventListener('change', () => {
       if (searchInput.value.trim()) {
         performSearch(searchInput.value.trim());
-      } else if (activeGenre !== 'featured' && activeGenre !== 'favorites') {
+      } else if (activeGenre !== 'featured' && activeGenre !== 'favorites' && activeGenre !== 'history') {
         if (activeGenre === 'topclick') loadTopStations();
         else if (activeGenre === 'adfree') loadAdFreeStations();
         else loadGenreStations(activeGenre);
@@ -1693,7 +1872,7 @@
     sortSelect.addEventListener('change', () => {
       if (searchInput.value.trim()) {
         performSearch(searchInput.value.trim());
-      } else if (activeGenre !== 'featured' && activeGenre !== 'favorites') {
+      } else if (activeGenre !== 'featured' && activeGenre !== 'favorites' && activeGenre !== 'history') {
         if (activeGenre === 'topclick') loadTopStations();
         else if (activeGenre === 'adfree') loadAdFreeStations();
         else loadGenreStations(activeGenre);
@@ -1851,6 +2030,9 @@
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         toggleFavoritesView();
+      } else if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault();
+        showHistory();
       } else if (e.key === 'u' || e.key === 'U') {
         e.preventDefault();
         updateStationLinks({ silent: false });
@@ -1859,17 +2041,33 @@
         closeLinksManagerModal();
       }
     });
+
+    if (clearHistoryBtn) {
+      clearHistoryBtn.addEventListener('click', clearHistory);
+    }
+
+    if (menuHistoryBtn) {
+      menuHistoryBtn.addEventListener('click', () => {
+        showHistory();
+        if (moreDropdownMenu) moreDropdownMenu.classList.add('hidden');
+      });
+    }
+
+    window.addEventListener('beforeunload', finalizeCurrentStationHistory);
   }
 
   // --- Public API ---
   window.PulseCast = {
     showFavorites,
     toggleFavoritesView,
+    showHistory,
+    clearHistory,
     updateStationLinks,
     openLinksManagerModal,
     closeLinksManagerModal,
     getCuratedStations: () => CURATED_STATIONS,
     getFavorites: () => favorites,
+    getHistory: () => history,
     getApiBase,
     rotateServer
   };

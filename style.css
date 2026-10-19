@@ -499,6 +499,17 @@ body {
   color: #fff;
 }
 
+.pill-history {
+  color: #60a5fa;
+}
+
+.pill-history.active {
+  background: rgba(37, 99, 235, 0.22);
+  border-color: #3b82f6;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.3);
+  color: #fff;
+}
+
 .filter-selects {
   display: flex;
   gap: 8px;
@@ -547,7 +558,7 @@ body {
 .results-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-bottom: 8px;
 }
@@ -568,6 +579,28 @@ body {
 .results-badge {
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.btn-clear-history {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 4px 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-clear-history:hover {
+  color: #ff5c5c;
+  border-color: rgba(255, 92, 92, 0.35);
+  background: rgba(255, 92, 92, 0.08);
 }
 
 /* Station Cards Grid */
@@ -764,6 +797,13 @@ body {
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.station-history-time {
+  color: #60a5fa;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Station Ad Policy Badges */
