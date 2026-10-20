@@ -64,6 +64,18 @@ class SmartSwitchCoordinator(
     private var consecutiveSpeechSeconds: Int = 0
     private var consecutiveMusicSeconds: Int = 0
 
+    // Sliding history buffer of recently used fallback stations (prevents repeating the same station 5 times)
+    private val recentFallbackKeys = mutableListOf<String>()
+
+    private fun markFallbackUsed(station: Station) {
+        val key = station.stationuuid?.takeIf { it.isNotBlank() } ?: station.getStreamUrl()
+        recentFallbackKeys.remove(key)
+        recentFallbackKeys.add(0, key)
+        if (recentFallbackKeys.size > 5) {
+            recentFallbackKeys.removeAt(recentFallbackKeys.size - 1)
+        }
+    }
+
     fun onCurrentStationChanged(station: Station?) {
         val previous = currentStation
         currentStation = station
@@ -195,6 +207,7 @@ class SmartSwitchCoordinator(
 
             if (isCandidateReady) {
                 // Execute switch
+                markFallbackUsed(candidate)
                 onSwitchStationRequest(candidate)
                 startBounceBackTimer()
             } else {
@@ -204,6 +217,7 @@ class SmartSwitchCoordinator(
                     _status.value = SmartSwitchStatus.ProbingCandidate(electronicFallback.name)
                     val probe2 = silentlyProbeCandidate(electronicFallback)
                     if (probe2) {
+                        markFallbackUsed(electronicFallback)
                         onSwitchStationRequest(electronicFallback)
                         startBounceBackTimer()
                     }
@@ -216,20 +230,11 @@ class SmartSwitchCoordinator(
         val strategy = intelligenceRepository.smartSwitchStrategy.value
         val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
         val curated = CuratedStations.load(context)
-        val favorites = repository.favorites.value.filter {
-            it.stationuuid != excludeStation.stationuuid && it.getStreamUrl() != excludeStation.getStreamUrl()
-        }
+        val favorites = repository.favorites.value
 
         when (strategy) {
             "favorites_only" -> {
-                if (favorites.isEmpty()) return null
-                val ranked = favorites.sortedWith(
-                    compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
-                        .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
-                        .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
-                )
-                return ranked.firstOrNull { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) < 0.70f }
-                    ?: ranked.firstOrNull()
+                return pickBestCandidateFromList(favorites, excludeStation, currentMinute)
             }
 
             "specific" -> {
@@ -250,35 +255,68 @@ class SmartSwitchCoordinator(
                         st.stationuuid != excludeStation.stationuuid && st.getStreamUrl() != excludeStation.getStreamUrl() &&
                         st.tags?.lowercase()?.split(",")?.any { tag -> currentTags.contains(tag.trim()) } == true
                     }
-                    if (matchingGenreStations.isNotEmpty()) {
-                        val ranked = matchingGenreStations.sortedWith(
-                            compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
-                                .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
-                                .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
-                        )
-                        return ranked.firstOrNull()
-                    }
+                    val pick = pickBestCandidateFromList(matchingGenreStations, excludeStation, currentMinute)
+                    if (pick != null) return pick
                 }
             }
         }
 
         // Default: "favorites_first"
-        if (favorites.isNotEmpty()) {
-            val ranked = favorites.sortedWith(
-                compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
-                    .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
-                    .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
-            )
-            val bestFav = ranked.firstOrNull { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) < 0.70f }
-            if (bestFav != null) return bestFav
-        }
+        val bestFav = pickBestCandidateFromList(favorites, excludeStation, currentMinute)
+        if (bestFav != null) return bestFav
 
         // Electronic / Pure Music Fallback
         return getCuratedElectronicFallback(excludeStation)
     }
 
+    private fun pickBestCandidateFromList(
+        candidates: List<Station>,
+        excludeStation: Station,
+        currentMinute: Int
+    ): Station? {
+        if (candidates.isEmpty()) return null
+
+        val excludeKeys = setOfNotNull(
+            excludeStation.stationuuid,
+            excludeStation.getStreamUrl(),
+            _bounceBackStation.value?.stationuuid,
+            _bounceBackStation.value?.getStreamUrl()
+        )
+
+        // Filter out current playing station and original bounce-back station
+        val eligible = candidates.filter { st ->
+            val key1 = st.stationuuid
+            val key2 = st.getStreamUrl()
+            (key1 == null || !excludeKeys.contains(key1)) && !excludeKeys.contains(key2)
+        }
+
+        if (eligible.isEmpty()) return null
+
+        // Filter out recently used fallbacks if alternative candidates exist
+        val freshCandidates = eligible.filter { st ->
+            val key = st.stationuuid?.takeIf { it.isNotBlank() } ?: st.getStreamUrl()
+            !recentFallbackKeys.contains(key)
+        }.ifEmpty { eligible }
+
+        // Rank candidates by pure music status, pre-roll ad presence, and lowest speech probability
+        val ranked = freshCandidates.sortedWith(
+            compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
+                .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
+                .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
+        )
+
+        // Filter out candidates with very high speech probability at this minute
+        val lowSpeechCandidates = ranked.filter {
+            intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) < 0.70f
+        }.ifEmpty { ranked }
+
+        // Take top 3 candidates and shuffle to ensure natural rotation variety
+        return lowSpeechCandidates.take(3).shuffled().firstOrNull()
+    }
+
     private fun getCuratedElectronicFallback(excludeStation: Station): Station? {
         val curated = CuratedStations.load(context)
+        val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
         val electronicStations = curated.filter {
             (it.stationuuid != excludeStation.stationuuid && it.getStreamUrl() != excludeStation.getStreamUrl()) &&
             ((it.tags?.lowercase()?.contains("electronic") == true) ||
@@ -290,10 +328,7 @@ class SmartSwitchCoordinator(
              it.name.contains("Lofi Cafe", ignoreCase = true))
         }
 
-        return electronicStations.sortedWith(
-            compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
-                .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
-        ).firstOrNull()
+        return pickBestCandidateFromList(electronicStations, excludeStation, currentMinute)
     }
 
     /**
