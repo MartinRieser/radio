@@ -32,9 +32,10 @@ class RadioPlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
 
-        // 1. Configure PCM Audio Tap for Speech / Commercial Detection
+        // 1. Configure PCM Audio Tap for Speech / Commercial Detection & Signal Mining
         val pcmTap = PcmTapAudioProcessor { buffer, sampleRate, channelCount ->
             AudioBridge.classifier?.processPcmBuffer(buffer, sampleRate, channelCount)
+            AudioBridge.signalCollector?.processPcmBuffer(buffer, sampleRate, channelCount)
         }
 
         val renderersFactory = object : DefaultRenderersFactory(this) {

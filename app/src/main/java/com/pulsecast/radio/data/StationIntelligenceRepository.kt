@@ -50,6 +50,7 @@ class StationIntelligenceRepository(context: Context) {
     private val pureMusicOverrides = mutableMapOf<String, Boolean>()
     private val learnedPreRolls = mutableMapOf<String, Boolean>()
     private val learnedNewsWindows = mutableMapOf<String, String>()
+    private val learnedJingles = mutableMapOf<String, String>()
 
     // Observable flow for pure music changes so UI updates live
     private val _pureMusicUpdateCounter = MutableStateFlow(0)
@@ -111,6 +112,18 @@ class StationIntelligenceRepository(context: Context) {
                 val type = object : TypeToken<Map<String, String>>() {}.type
                 val map: Map<String, String> = gson.fromJson(newsJson, type) ?: emptyMap()
                 learnedNewsWindows.putAll(map)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        // Load Learned Jingles
+        val jinglesJson = prefs.getString("learned_jingles", null)
+        if (jinglesJson != null) {
+            try {
+                val type = object : TypeToken<Map<String, String>>() {}.type
+                val map: Map<String, String> = gson.fromJson(jinglesJson, type) ?: emptyMap()
+                learnedJingles.putAll(map)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -249,6 +262,17 @@ class StationIntelligenceRepository(context: Context) {
             .putString("hourly_heatmaps", gson.toJson(serializedMap))
             .putString("learned_news_windows", gson.toJson(learnedNewsWindows))
             .apply()
+    }
+
+    fun recordLearnedJingleSignature(station: Station, fingerprint: String) {
+        val key = getStationKey(station)
+        learnedJingles[key] = fingerprint
+        prefs.edit().putString("learned_jingles", gson.toJson(learnedJingles)).apply()
+    }
+
+    fun getLearnedJingleSignature(station: Station): String? {
+        val key = getStationKey(station)
+        return learnedJingles[key]
     }
 
     fun getLearnedNewsWindow(station: Station): String? {

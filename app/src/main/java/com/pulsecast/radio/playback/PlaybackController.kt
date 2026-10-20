@@ -17,6 +17,7 @@ import com.pulsecast.radio.data.StationIntelligenceRepository
 import com.pulsecast.radio.model.Station
 import com.pulsecast.radio.playback.audio.AudioBridge
 import com.pulsecast.radio.playback.audio.AudioContentClassifier
+import com.pulsecast.radio.playback.audio.StationSignalCollector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -40,6 +41,7 @@ class PlaybackController(
     private var timerJob: Job? = null
 
     val audioClassifier = AudioContentClassifier(context)
+    val signalCollector = StationSignalCollector(intelligenceRepository)
     val smartSwitchCoordinator = SmartSwitchCoordinator(
         context = context,
         repository = repository,
@@ -71,6 +73,7 @@ class PlaybackController(
 
     init {
         AudioBridge.classifier = audioClassifier
+        AudioBridge.signalCollector = signalCollector
         connectToService()
     }
 
@@ -132,6 +135,7 @@ class PlaybackController(
 
         _currentStation.value = station
         smartSwitchCoordinator.onCurrentStationChanged(station)
+        signalCollector.onStationChanged(station)
         _trackTitle.value = ""
         _liveSeconds.value = 0
         stationListeningSeconds = 0

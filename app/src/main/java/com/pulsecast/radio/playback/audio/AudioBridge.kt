@@ -7,4 +7,7 @@ package com.pulsecast.radio.playback.audio
 object AudioBridge {
     @Volatile
     var classifier: AudioContentClassifier? = null
+
+    @Volatile
+    var signalCollector: StationSignalCollector? = null
 }
