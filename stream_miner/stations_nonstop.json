@@ -1,0 +1,241 @@
+[
+  {
+    "stationuuid": "av-2000er-vorarlberg-001",
+    "name": "AV 2000er Hits",
+    "url": "https://web.radio.antennevorarlberg.at/av-2000er",
+    "country": "Austria",
+    "tags": "2000s, pop, hits, nonstop, vorarlberg",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "av-classicrock-vorarlberg-001",
+    "name": "AV Classic Rock",
+    "url": "https://web.radio.antennevorarlberg.at/av-classicrock/stream/mp3",
+    "country": "Austria",
+    "tags": "rock, classic rock, nonstop, vorarlberg",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "ab-greatesthits-001",
+    "name": "AB Greatest Hits",
+    "url": "https://stream.antenne.de/greatest-hits/stream/mp3",
+    "country": "Germany",
+    "tags": "pop, greatest hits, nonstop, bayern",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "ra-classicperlen-001",
+    "name": "Rock Antenne Classic Perlen",
+    "url": "https://stream.rockantenne.de/classic-perlen/stream/mp3",
+    "country": "Germany",
+    "tags": "rock, classic rock, nonstop, rockantenne",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "9621b06f-0601-11e8-ae97-52543be04c81",
+    "name": "Rock Antenne Heavy Metal",
+    "url": "https://stream.rockantenne.de/heavy-metal/stream/mp3",
+    "country": "Germany",
+    "tags": "metal, heavy metal, rock, hard rock",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "96085a6a-0601-11e8-ae97-52543be04c81",
+    "name": "SomaFM Groove Salad",
+    "url": "https://ice1.somafm.com/groovesalad-256-mp3",
+    "country": "United States",
+    "tags": "ambient, chillout, electronic, downtempo, somafm",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "960959ee-0601-11e8-ae97-52543be04c81",
+    "name": "SomaFM Secret Agent",
+    "url": "https://ice6.somafm.com/secretagent-128-aac",
+    "country": "United States",
+    "tags": "lounge, spy, electronic, cool, somafm",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "somafm-indiepop-001",
+    "name": "SomaFM Indie Pop Rocks!",
+    "url": "https://ice1.somafm.com/indiepop-128-mp3",
+    "country": "United States",
+    "tags": "indie, pop, rock, alternative, somafm",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "somafm-lush-001",
+    "name": "SomaFM Lush",
+    "url": "https://ice1.somafm.com/lush-128-mp3",
+    "country": "United States",
+    "tags": "electronic, female vocals, chillout, somafm",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "960b7dc9-0601-11e8-ae97-52543be04c81",
+    "name": "SomaFM Drone Zone",
+    "url": "https://ice5.somafm.com/dronezone-128-mp3",
+    "country": "United States",
+    "tags": "ambient, drone, atmospheric, deep chill, somafm",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "top100station-de-001",
+    "name": "Top 100 Station",
+    "url": "http://streamhq.top100station.com/top100station-high.mp3",
+    "country": "Germany",
+    "tags": "top 100, charts, pop, dance, hits, nonstop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "ilovetop100-de-001",
+    "name": "I Love Top 100 Charts",
+    "url": "https://streams.ilovemusic.de/iloveradio9.mp3",
+    "country": "Germany",
+    "tags": "top 100, charts, hits, pop, nonstop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "av-top40-vorarlberg-001",
+    "name": "AV Top 40",
+    "url": "https://web.radio.antennevorarlberg.at/av-top40",
+    "country": "Austria",
+    "tags": "top 40, charts, pop, hits, nonstop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "ab-top40-bayern-001",
+    "name": "AB Top 40",
+    "url": "https://stream.antenne.de/top-40/stream/mp3",
+    "country": "Germany",
+    "tags": "top 40, charts, pop, hits, nonstop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "ahfm-trance-nl-001",
+    "name": "AH.FM Trance (NL)",
+    "url": "https://eu.ah.fm/live",
+    "country": "Netherlands",
+    "tags": "trance, progressive trance, uplifting trance, electronic, nl",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "intenseradio-nl-001",
+    "name": "Intense Radio Trance (NL)",
+    "url": "https://secure.live-streams.nl/main",
+    "country": "Netherlands",
+    "tags": "trance, dance, electronic, holland, nl",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "timeout-trance-nl-001",
+    "name": "Radio Time Out Trance (NL)",
+    "url": "https://s3.slotex.pl/shoutcast/7056/stream",
+    "country": "Netherlands",
+    "tags": "trance, vocal trance, electronic, nl",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "cdance-retro-nl-001",
+    "name": "C-Dance Retro Trance (NL)",
+    "url": "http://s45.myradiostream.com:18304/",
+    "country": "Netherlands",
+    "tags": "trance, retro, dance, electronic, nl",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "heart80s-uk-001",
+    "name": "Heart 80s (UK)",
+    "url": "https://media-ssl.musicradio.com/Heart80sMP3",
+    "country": "United Kingdom",
+    "tags": "80s, pop, classic hits, uk, london"
+  },
+  {
+    "stationuuid": "181fm-awesome80s-us-001",
+    "name": "181.FM Awesome 80s (US)",
+    "url": "http://listen.181fm.com/181-awesome80s_128k.mp3",
+    "country": "United States",
+    "tags": "80s, pop, rock, retro, usa",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "977-80s-us-001",
+    "name": ".977 80s Hits (US)",
+    "url": "http://26433.live.streamtheworld.com:3690/977_80_SC",
+    "country": "United States",
+    "tags": "80s, pop, rock, classic hits, usa",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "somafm-u80s-us-001",
+    "name": "SomaFM Underground 80s (US)",
+    "url": "https://ice6.somafm.com/u80s-128-mp3",
+    "country": "United States",
+    "tags": "80s, synthpop, new wave, uk 80s, somafm",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "100radio80-fr-001",
+    "name": "100% Radio 80 (FR)",
+    "url": "http://100radio-80.ice.infomaniak.ch/100radio-80-128.mp3",
+    "country": "France",
+    "tags": "80s, pop, disco, france, nonstop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "chantefrance80s-fr-001",
+    "name": "Chante France 80s (FR)",
+    "url": "http://stream1.chantefrance.com/cf-80",
+    "country": "France",
+    "tags": "80s, french pop, retro, france",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "maxi80-fr-001",
+    "name": "Maxi 80 (FR)",
+    "url": "http://audio1.maxi80.com/",
+    "country": "France",
+    "tags": "80s, new wave, funk, disco, france",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "181fm-star90s-us-001",
+    "name": "181.FM Star 90s (US)",
+    "url": "http://listen.181fm.com/181-star90s_128k.mp3",
+    "country": "United States",
+    "tags": "90s, pop, hits, chart, usa",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "181fm-90sdance-us-001",
+    "name": "181.FM 90s Dance (US)",
+    "url": "http://listen.181fm.com/181-90sdance_128k.mp3",
+    "country": "United States",
+    "tags": "90s, eurodance, dance, club, usa",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "allzic90s-fr-001",
+    "name": "Allzic Radio 90s (FR)",
+    "url": "http://allzic07.ice.infomaniak.ch/allzic07.mp3",
+    "country": "France",
+    "tags": "90s, pop, dance, france, nonstop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "av-90er-vorarlberg-001",
+    "name": "AV 90er Hits",
+    "url": "https://web.radio.antennevorarlberg.at/av-90er",
+    "country": "Austria",
+    "tags": "90s, pop, hits, nonstop, vorarlberg",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "ra-90errock-001",
+    "name": "Rock Antenne 90er Rock",
+    "url": "https://stream.rockantenne.de/90er-rock/stream/mp3",
+    "country": "Germany",
+    "tags": "90s, rock, grunge, alternative, nonstop",
+    "is_pure_music": true
+  }
+]

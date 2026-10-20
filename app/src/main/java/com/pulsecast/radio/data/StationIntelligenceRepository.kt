@@ -23,7 +23,17 @@ data class StationTrainingStatus(
     val learnedNewsWindow: String?
 )
 
-class StationIntelligenceRepository(context: Context) {
+data class PrebuiltIntelligence(
+    val version: Int? = null,
+    val generated_at: String? = null,
+    val hourly_heatmaps: Map<String, List<Float>>? = null,
+    val learned_news_windows: Map<String, String>? = null,
+    val learned_jingles: Map<String, String>? = null,
+    val pure_music_overrides: Map<String, Boolean>? = null,
+    val learned_prerolls: Map<String, Boolean>? = null
+)
+
+class StationIntelligenceRepository(private val context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences("pulse_station_intel", Context.MODE_PRIVATE)
     private val gson = Gson()
@@ -74,6 +84,9 @@ class StationIntelligenceRepository(context: Context) {
     }
 
     private fun loadData() {
+        // 0. Load Prebuilt PC Training Intelligence from assets/station_intelligence.json
+        loadPrebuiltIntelligence()
+
         // Load Heatmaps
         val heatmapsJson = prefs.getString("hourly_heatmaps", null)
         if (heatmapsJson != null) {
@@ -137,6 +150,49 @@ class StationIntelligenceRepository(context: Context) {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun loadPrebuiltIntelligence() {
+        try {
+            val inputStream = context.assets.open("station_intelligence.json")
+            val json = inputStream.bufferedReader().use { it.readText() }
+            val root = gson.fromJson(json, PrebuiltIntelligence::class.java) ?: return
+
+            root.hourly_heatmaps?.forEach { (k, list) ->
+                val arr = FloatArray(60)
+                list.take(60).forEachIndexed { index, fl -> arr[index] = fl }
+                hourlyHeatmaps[k] = arr
+            }
+
+            root.pure_music_overrides?.forEach { (k, isPure) ->
+                pureMusicOverrides[k] = isPure
+            }
+
+            root.learned_prerolls?.forEach { (k, hasPre) ->
+                learnedPreRolls[k] = hasPre
+            }
+
+            root.learned_news_windows?.forEach { (k, win) ->
+                learnedNewsWindows[k] = win
+            }
+
+            root.learned_jingles?.forEach { (k, jingle) ->
+                learnedJingles[k] = jingle
+            }
+        } catch (_: Exception) {
+            // Asset file might not be bundled or present yet
+        }
+    }
+
+    fun reloadPrebuiltIntelligence(): Boolean {
+        hourlyHeatmaps.clear()
+        pureMusicOverrides.clear()
+        learnedPreRolls.clear()
+        learnedNewsWindows.clear()
+        learnedJingles.clear()
+        loadData()
+        _pureMusicUpdateCounter.value++
+        return true
     }
 
     fun setSmartSwitchEnabled(enabled: Boolean) {

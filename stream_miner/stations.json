@@ -1,0 +1,217 @@
+[
+  {
+    "stationuuid": "av-live-vorarlberg-001",
+    "name": "Antenne Vorarlberg",
+    "url": "https://web.radio.antennevorarlberg.at/av-live",
+    "country": "Austria",
+    "tags": "pop, hits, vorarlberg, news, austria"
+  },
+  {
+    "stationuuid": "96181736-0601-11e8-ae97-52543be04c81",
+    "name": "Antenne Bayern",
+    "url": "https://stream.antenne.de/antenne/stream/mp3",
+    "country": "Germany",
+    "tags": "pop, chart, hits, news, bayern"
+  },
+  {
+    "stationuuid": "961726a4-0601-11e8-ae97-52543be04c81",
+    "name": "SWR3",
+    "url": "https://liveradio.swr.de/sw282p3/swr3/play.mp3",
+    "country": "Germany",
+    "tags": "pop, hits, news, comedy, swr"
+  },
+  {
+    "stationuuid": "bcb91573-5557-456d-afb2-ee1462efbd25",
+    "name": "Hitradio Ö3",
+    "url": "https://orf-live.ors-shoutcast.at/oe3-q2a",
+    "country": "Austria",
+    "tags": "pop, hits, chart, news, austria"
+  },
+  {
+    "stationuuid": "radio7-ulm-001",
+    "name": "Radio 7",
+    "url": "https://streams.radio7.de/dab/mp3-192/web/",
+    "country": "Germany",
+    "tags": "pop, hits, chart, ulm, baden-wuerttemberg, news"
+  },
+  {
+    "stationuuid": "radiotop-ch-001",
+    "name": "Radio TOP (CH)",
+    "url": "https://radiotop.ice.infomaniak.ch/radiotop96.aac",
+    "country": "Switzerland",
+    "tags": "pop, hits, news, winterthur, zürich, ostschweiz"
+  },
+  {
+    "stationuuid": "0de82079-04e7-407b-b616-e0726eba5244",
+    "name": "Bayern 3 (BR3)",
+    "url": "https://dispatcher.rndfnk.com/br/br3/live/mp3/mid",
+    "country": "Germany",
+    "tags": "pop, rock, hits, chart, bayern"
+  },
+  {
+    "stationuuid": "radiogong-963-001",
+    "name": "Radio Gong 96.3",
+    "url": "http://mp3.radiogong963.c.nmdn.net/ps-radiogong963/livestream.mp3",
+    "country": "Germany",
+    "tags": "pop, hits, chart, münchen, bayern, news"
+  },
+  {
+    "stationuuid": "radiogalaxy-bayern-001",
+    "name": "Radio Galaxy Bayern",
+    "url": "https://frontend.streamonkey.net/fhn-radiogalaxy/stream/mp3",
+    "country": "Germany",
+    "tags": "pop, chart, urban, youth, bayern, news"
+  },
+  {
+    "stationuuid": "tippfm-ireland-001",
+    "name": "Tipp FM (Irland)",
+    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/TIPP_FM.mp3",
+    "country": "Ireland",
+    "tags": "pop, hits, classic hits, tipperary, ireland, news"
+  },
+  {
+    "stationuuid": "rockantenne-de-001",
+    "name": "Rock Antenne",
+    "url": "https://stream.rockantenne.de/rockantenne/stream/mp3",
+    "country": "Germany",
+    "tags": "rock, classic rock, hard rock, modern rock"
+  },
+  {
+    "stationuuid": "961350a4-0601-11e8-ae97-52543be04c81",
+    "name": "N-JOY (NDR)",
+    "url": "https://icecast.ndr.de/ndr/njoy/live/mp3/128/stream.mp3",
+    "country": "Germany",
+    "tags": "pop, chart, hits, electronic, youth, ndr"
+  },
+  {
+    "stationuuid": "hitradio-ffh-001",
+    "name": "Hit Radio FFH",
+    "url": "https://mp3.ffh.de/radioffh/hqlivestream.mp3",
+    "country": "Germany",
+    "tags": "pop, chart, hits, news, comedy, hessen"
+  },
+  {
+    "stationuuid": "orf-vorarlberg-001",
+    "name": "Radio Vorarlberg (ORF)",
+    "url": "https://orf-live.ors-shoutcast.at/vbg-q2a",
+    "country": "Austria",
+    "tags": "pop, regional, news, vorarlberg, orf"
+  },
+  {
+    "stationuuid": "energy-zuerich-001",
+    "name": "Energy Zürich (CH)",
+    "url": "https://energyzuerich.ice.infomaniak.ch/energyzuerich-high.mp3",
+    "country": "Switzerland",
+    "tags": "pop, hits, chart, zürich, nrj"
+  },
+  {
+    "stationuuid": "067388ea-bff2-41b5-869a-766b2f7b4a47",
+    "name": "Radio Swiss Pop (CH)",
+    "url": "https://stream.srg-ssr.ch/srgssr/rsp/mp3/128",
+    "country": "Switzerland",
+    "tags": "pop, hits, english, soft-pop",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "a7b3c2d1-e4f5-4a6b-8c9d-0e1f2a3b4c5d",
+    "name": "Radio Swiss Classic (CH)",
+    "url": "https://stream.srg-ssr.ch/m/rsc_de/mp3_128",
+    "country": "Switzerland",
+    "tags": "classical, orchestra, symphony, opera",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "b8c4d3e2-f5a6-4b7c-9d0e-1f2a3b4c5d6e",
+    "name": "Radio Swiss Jazz (CH)",
+    "url": "https://stream.srg-ssr.ch/srgssr/rsj/mp3/128",
+    "country": "Switzerland",
+    "tags": "jazz, swing, blues, soul",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "206f93c5-5f3c-4ba1-82c2-19a42582fcc2",
+    "name": "FM4 (ORF)",
+    "url": "https://orf-live.ors-shoutcast.at/fm4-q2a",
+    "country": "Austria",
+    "tags": "alternative, indie, electronic, hiphop, news"
+  },
+  {
+    "stationuuid": "da91ea37-2a84-4180-fce1-a85511370707",
+    "name": "Bayern 1 (BR)",
+    "url": "https://dispatcher.rndfnk.com/br/br1/obb/mp3/mid",
+    "country": "Germany",
+    "tags": "oldies, pop, hits, news, br"
+  },
+  {
+    "stationuuid": "fc130c59-4ca6-43a2-1e03-ca7733590909",
+    "name": "SWR1 BW",
+    "url": "https://liveradio.swr.de/sw282p3/swr1bw/play.mp3",
+    "country": "Germany",
+    "tags": "pop, rock, hits, news, swr"
+  },
+  {
+    "stationuuid": "9618a804-0601-11e8-ae97-52543be04c81",
+    "name": "1LIVE (WDR)",
+    "url": "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3",
+    "country": "Germany",
+    "tags": "pop, chart, electronic, youth, wdr"
+  },
+  {
+    "stationuuid": "7a35e4d1-c42e-4b2a-96e5-4299bb710101",
+    "name": "WDR 2 Rheinland",
+    "url": "https://wdr-wdr2-rheinland.icecastssl.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3",
+    "country": "Germany",
+    "tags": "pop, news, information, talk, wdr"
+  },
+  {
+    "stationuuid": "regenbogen-bw-001",
+    "name": "Radio Regenbogen",
+    "url": "https://stream.regenbogen.de/live/mp3-128/",
+    "country": "Germany",
+    "tags": "pop, hits, chart, baden-wuerttemberg, news"
+  },
+  {
+    "stationuuid": "dasding-swr-001",
+    "name": "DASDING (SWR)",
+    "url": "https://liveradio.swr.de/sw282p3/dasding/play.mp3",
+    "country": "Germany",
+    "tags": "pop, chart, urban, youth, swr"
+  },
+  {
+    "stationuuid": "liferadio-at-001",
+    "name": "Life Radio (AT)",
+    "url": "https://stream.liferadio.at/live/mp3-128/",
+    "country": "Austria",
+    "tags": "pop, hits, chart, austria, news"
+  },
+  {
+    "stationuuid": "be79c815-0862-4f6e-dac9-8633ff150505",
+    "name": "Radio BOB!",
+    "url": "https://streams.radiobob.de/bob-live/mp3-192/streams.radiobob.de/",
+    "country": "Germany",
+    "tags": "rock, classic rock, hard rock, alternative"
+  },
+  {
+    "stationuuid": "cf80d926-1973-407f-ebd0-974400260606",
+    "name": "Sunshine Live",
+    "url": "https://stream.sunshine-live.de/live/mp3-128/stream.sunshine-live.de/",
+    "country": "Germany",
+    "tags": "electronic, techno, trance, edm"
+  },
+  {
+    "stationuuid": "60324838-89c0-4351-a1e6-b6903d6d53eb",
+    "name": "FIP (Radio France)",
+    "url": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+    "country": "France",
+    "tags": "eclectic, jazz, rock, world, adfree",
+    "is_pure_music": true
+  },
+  {
+    "stationuuid": "51745fc9-9d58-450a-bc01-e737c35a646c",
+    "name": "Lofi Cafe Radio",
+    "url": "https://streams.ilovemusic.de/iloveradio17.mp3",
+    "country": "Germany",
+    "tags": "lo-fi, chillout, beats, study, relaxing",
+    "is_pure_music": true
+  }
+]

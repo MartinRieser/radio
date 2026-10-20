@@ -17,3 +17,8 @@ app/build/
 local.properties
 *.apk
 *.aab
+
+__pycache__/
+*.pyc
+stream_miner/training_checkpoint_active_*.json
+*.tmp.*

@@ -12,6 +12,7 @@ import com.pulsecast.radio.data.CuratedStations
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
 import com.pulsecast.radio.data.StationIntelligenceRepository
 import com.pulsecast.radio.model.Station
+import com.pulsecast.radio.playback.audio.AudioBridge
 import com.pulsecast.radio.playback.audio.AudioContentClassifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -133,17 +134,22 @@ class SmartSwitchCoordinator(
                     continue
                 }
 
-                // Sync dynamic speech sensitivity to audio classifier
-                audioClassifier.sensitivityThreshold = intelligenceRepository.speechSensitivity.value
-
                 val minuteOfHour = Calendar.getInstance().get(Calendar.MINUTE)
+                val stationPrior = intelligenceRepository.getSpeechProbabilityAtMinute(station, minuteOfHour)
+
+                // Sync dynamic speech sensitivity and PC-learned minute heatmap prior to audio classifier
+                audioClassifier.sensitivityThreshold = intelligenceRepository.speechSensitivity.value
+                audioClassifier.stationMinutePrior = stationPrior
+
                 val isSpeech = audioClassifier.isSpeechDetected
+                val isJingleMatched = AudioBridge.signalCollector?.isJingleMatched == true
 
                 // Self-learning update in background
                 intelligenceRepository.recordSpeechSample(station, minuteOfHour, isSpeech)
 
-                if (isSpeech) {
-                    consecutiveSpeechSeconds++
+                if (isSpeech || (isJingleMatched && stationPrior >= 0.45f)) {
+                    // If PC-learned jingle signature matched right before/during speech, accelerate switch by +2s
+                    consecutiveSpeechSeconds += if (isJingleMatched) 2 else 1
                     consecutiveMusicSeconds = 0
                     _speechSeconds.value = consecutiveSpeechSeconds
                     val tolerance = intelligenceRepository.speechToleranceSeconds.value

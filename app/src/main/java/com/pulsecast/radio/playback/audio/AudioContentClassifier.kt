@@ -50,6 +50,9 @@ class AudioContentClassifier(context: Context? = null) {
     var sensitivityThreshold: Float = 0.50f
 
     @Volatile
+    var stationMinutePrior: Float? = null
+
+    @Volatile
     var speechConfidence: Float = 0.1f
         private set
 
@@ -272,15 +275,17 @@ class AudioContentClassifier(context: Context? = null) {
             metadataAdScore = -0.20f
         }
 
-        // --- 3. Minute-of-Hour Temporal Prior ---
+        // --- 3. Minute-of-Hour Temporal Prior (from PC-learned heatmap or default heuristic) ---
         val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
-        var timePrior = 0.0f
-        if (currentMinute in 57..59 || currentMinute in 0..4) {
-            // Top of the hour: prime commercial and news window
-            timePrior = 0.20f
+        val learnedPrior = stationMinutePrior
+        var timePrior = if (learnedPrior != null) {
+            (learnedPrior * 0.35f).coerceIn(0.0f, 0.35f)
+        } else if (currentMinute in 57..59 || currentMinute in 0..4) {
+            0.20f
         } else if (currentMinute in 29..32) {
-            // Half hour news window
-            timePrior = 0.10f
+            0.10f
+        } else {
+            0.0f
         }
 
         var rawSpeech = if (isTfliteLoaded && (latestAiSpeechScore > 0f || latestAiMusicScore > 0f)) {
