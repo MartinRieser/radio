@@ -38,6 +38,12 @@ class StationIntelligenceRepository(context: Context) {
     private val _speechResetHoldSeconds = MutableStateFlow(prefs.getInt("speech_reset_hold_seconds", 3))
     val speechResetHoldSeconds: StateFlow<Int> = _speechResetHoldSeconds.asStateFlow()
 
+    private val _smartSwitchStrategy = MutableStateFlow(prefs.getString("smart_switch_strategy", "favorites_first") ?: "favorites_first")
+    val smartSwitchStrategy: StateFlow<String> = _smartSwitchStrategy.asStateFlow()
+
+    private val _specificFallbackKey = MutableStateFlow(prefs.getString("specific_fallback_key", null))
+    val specificFallbackKey: StateFlow<String?> = _specificFallbackKey.asStateFlow()
+
     // In-memory caches for fast lookup
     // Key: station identifier (UUID or Stream URL)
     private val hourlyHeatmaps = mutableMapOf<String, FloatArray>()
@@ -138,6 +144,16 @@ class StationIntelligenceRepository(context: Context) {
         val clamped = seconds.coerceIn(1, 10)
         _speechResetHoldSeconds.value = clamped
         prefs.edit().putInt("speech_reset_hold_seconds", clamped).apply()
+    }
+
+    fun setSmartSwitchStrategy(strategy: String) {
+        _smartSwitchStrategy.value = strategy
+        prefs.edit().putString("smart_switch_strategy", strategy).apply()
+    }
+
+    fun setSpecificFallbackKey(key: String?) {
+        _specificFallbackKey.value = key
+        prefs.edit().putString("specific_fallback_key", key).apply()
     }
 
     /**

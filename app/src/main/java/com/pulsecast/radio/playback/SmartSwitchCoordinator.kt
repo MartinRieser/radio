@@ -213,25 +213,67 @@ class SmartSwitchCoordinator(
     }
 
     private fun findBestCandidateStation(excludeStation: Station): Station? {
+        val strategy = intelligenceRepository.smartSwitchStrategy.value
         val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
-
-        // 1. Prioritize Favorites
+        val curated = CuratedStations.load(context)
         val favorites = repository.favorites.value.filter {
             it.stationuuid != excludeStation.stationuuid && it.getStreamUrl() != excludeStation.getStreamUrl()
         }
 
+        when (strategy) {
+            "favorites_only" -> {
+                if (favorites.isEmpty()) return null
+                val ranked = favorites.sortedWith(
+                    compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
+                        .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
+                        .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
+                )
+                return ranked.firstOrNull { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) < 0.70f }
+                    ?: ranked.firstOrNull()
+            }
+
+            "specific" -> {
+                val specificKey = intelligenceRepository.specificFallbackKey.value
+                if (!specificKey.isNullOrBlank()) {
+                    val candidate = (curated + favorites).firstOrNull {
+                        (it.stationuuid == specificKey || it.getStreamUrl() == specificKey) &&
+                        (it.stationuuid != excludeStation.stationuuid && it.getStreamUrl() != excludeStation.getStreamUrl())
+                    }
+                    if (candidate != null) return candidate
+                }
+            }
+
+            "same_genre" -> {
+                val currentTags = excludeStation.tags?.lowercase()?.split(",")?.map { it.trim() } ?: emptyList()
+                if (currentTags.isNotEmpty()) {
+                    val matchingGenreStations = (curated + favorites).filter { st ->
+                        st.stationuuid != excludeStation.stationuuid && st.getStreamUrl() != excludeStation.getStreamUrl() &&
+                        st.tags?.lowercase()?.split(",")?.any { tag -> currentTags.contains(tag.trim()) } == true
+                    }
+                    if (matchingGenreStations.isNotEmpty()) {
+                        val ranked = matchingGenreStations.sortedWith(
+                            compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
+                                .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
+                                .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
+                        )
+                        return ranked.firstOrNull()
+                    }
+                }
+            }
+        }
+
+        // Default: "favorites_first"
         if (favorites.isNotEmpty()) {
             val ranked = favorites.sortedWith(
                 compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
                     .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
                     .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
             )
-            // Filter out favorites that have a very high speech probability at this exact minute
             val bestFav = ranked.firstOrNull { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) < 0.70f }
             if (bestFav != null) return bestFav
         }
 
-        // 2. Electronic Genre Fallback
+        // Electronic / Pure Music Fallback
         return getCuratedElectronicFallback(excludeStation)
     }
 

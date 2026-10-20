@@ -1,6 +1,7 @@
 package com.pulsecast.radio.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,11 +49,13 @@ fun SmartSwitchDialog(
     bounceBackMinutes: Int,
     speechSensitivity: Float,
     speechResetHoldSeconds: Int,
+    smartSwitchStrategy: String,
     onEnabledChanged: (Boolean) -> Unit,
     onToleranceChanged: (Int) -> Unit,
     onBounceBackChanged: (Int) -> Unit,
     onSensitivityChanged: (Float) -> Unit,
     onResetHoldChanged: (Int) -> Unit,
+    onStrategyChanged: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -270,6 +273,49 @@ fun SmartSwitchDialog(
                                 text = if (h == 3) "${h}s (Std)" else "${h}s",
                                 color = if (isSelected) BgMain else TextSecondary,
                                 fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Fallback Strategy Option
+                Text(
+                    text = "Ausweich-Ziel (Welcher Sender wird gewählt?)",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Bestimmt, wohin bei Sprache/Werbung gewechselt wird.",
+                    color = TextMuted,
+                    fontSize = 11.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(
+                        "favorites_first" to "Favoriten bevorzugen, sonst Musiksender",
+                        "favorites_only" to "Nur eigene Favoriten-Liste",
+                        "same_genre" to "Anderer Sender im selben Genre"
+                    ).forEach { (stratKey, label) ->
+                        val isSelected = smartSwitchStrategy == stratKey
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) AccentPrimary.copy(alpha = 0.2f) else Color(0xFF0F1523))
+                                .border(1.dp, if (isSelected) AccentPrimary else BorderSubtle, RoundedCornerShape(8.dp))
+                                .clickable { onStrategyChanged(stratKey) }
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = label,
+                                color = if (isSelected) TextPrimary else TextSecondary,
+                                fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
