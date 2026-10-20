@@ -22,7 +22,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val repository = HistoryAndFavoritesRepository(application)
     val playbackController = PlaybackController(application, repository)
 
-    private val _activeCategory = MutableStateFlow("featured")
+    private val _activeCategory = MutableStateFlow("trained")
     val activeCategory: StateFlow<String> = _activeCategory.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -49,7 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var searchJob: Job? = null
 
     init {
-        loadCategory("featured")
+        loadCategory("trained")
     }
 
     fun selectCategory(category: String) {
@@ -65,7 +65,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             delay(400) // Debounce
             if (query.isBlank()) {
                 if (_activeCategory.value == "search") {
-                    _activeCategory.value = "featured"
+                    _activeCategory.value = "trained"
                 }
                 loadCategory(_activeCategory.value)
             } else {
@@ -80,7 +80,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun clearSearch() {
         _searchQuery.value = ""
         if (_activeCategory.value == "search") {
-            _activeCategory.value = "featured"
+            _activeCategory.value = "trained"
         }
         loadCategory(_activeCategory.value)
     }
@@ -91,18 +91,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _errorMessage.value = null
             try {
                 when (category) {
-                    "featured" -> {
+                    "trained", "featured" -> {
                         _stations.value = CuratedStations.load(getApplication())
-                    }
-                    "puremusic" -> {
-                        val curated = CuratedStations.load(getApplication())
-                        val apiStations = try {
-                            ApiClient.getApi().getTopClickStations(40)
-                        } catch (e: Exception) {
-                            emptyList()
-                        }
-                        val combined = (curated + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
-                        _stations.value = combined.filter { playbackController.intelligenceRepository.isStationPureMusic(it) }
                     }
                     "adfree" -> {
                         val curated = CuratedStations.load(getApplication())
@@ -119,9 +109,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     "history" -> {
                         _stations.value = repository.history.value
-                    }
-                    "topclick" -> {
-                        _stations.value = ApiClient.getApi().getTopClickStations(50)
                     }
                     else -> {
                         // Tag based
@@ -144,38 +131,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _isLoading.value = true
         _errorMessage.value = null
         try {
+            val q = query.lowercase().trim()
             if (_activeCategory.value == "history") {
-                val q = query.lowercase().trim()
                 _stations.value = repository.history.value.filter {
                     it.name.lowercase().contains(q) ||
                     (it.tags?.lowercase()?.contains(q) == true) ||
                     (it.country?.lowercase()?.contains(q) == true)
                 }
             } else if (_activeCategory.value == "favorites") {
-                val q = query.lowercase().trim()
                 _stations.value = repository.favorites.value.filter {
                     it.name.lowercase().contains(q) ||
                     (it.tags?.lowercase()?.contains(q) == true) ||
                     (it.country?.lowercase()?.contains(q) == true)
                 }
-            } else if (_activeCategory.value == "puremusic") {
-                val q = query.lowercase().trim()
+            } else {
                 val curated = CuratedStations.load(getApplication())
+                val curatedMatches = curated.filter {
+                    it.name.lowercase().contains(q) ||
+                    (it.tags?.lowercase()?.contains(q) == true) ||
+                    (it.country?.lowercase()?.contains(q) == true)
+                }
                 val apiStations = try {
                     ApiClient.getApi().searchStations(query, 50)
                 } catch (e: Exception) {
                     emptyList()
                 }
-                _stations.value = (curated + apiStations)
-                    .distinctBy { it.stationuuid ?: it.getStreamUrl() }
-                    .filter { playbackController.intelligenceRepository.isStationPureMusic(it) }
-                    .filter {
-                        it.name.lowercase().contains(q) ||
-                        (it.tags?.lowercase()?.contains(q) == true) ||
-                        (it.country?.lowercase()?.contains(q) == true)
-                    }
-            } else {
-                _stations.value = ApiClient.getApi().searchStations(query, 50)
+                _stations.value = (curatedMatches + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -247,9 +228,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun togglePureMusic(station: Station) {
         playbackController.intelligenceRepository.togglePureMusic(station)
-        if (_activeCategory.value == "puremusic") {
-            loadCategory("puremusic")
-        }
+        loadCategory(_activeCategory.value)
     }
 
     fun isStationPureMusic(station: Station): Boolean {

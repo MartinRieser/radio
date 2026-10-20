@@ -494,12 +494,10 @@ private fun CategoryTabs(
     onSelectCategory: (String) -> Unit
 ) {
     val tabs = listOf(
-        "featured" to "Featured",
-        "puremusic" to "🎵 100% Musik",
+        "trained" to "🧠 Smart Radio",
         "adfree" to "🛡️ Werbefrei",
         "favorites" to "❤️ Favoriten ($favCount)",
-        "history" to "🕒 Verlauf ($historyCount)",
-        "topclick" to "Trending"
+        "history" to "🕒 Verlauf ($historyCount)"
     )
 
     val selectedIndex = tabs.indexOfFirst { it.first == activeCategory }.let {
@@ -567,12 +565,10 @@ private fun SectionHeader(
 
     val title = when (activeCategory) {
         "search" -> "Suchergebnisse"
-        "featured" -> "Featured Sender"
-        "puremusic" -> "🎵 100% Musik (Keine News / Werbung)"
+        "trained" -> "🧠 Smart Radio (Trainierte Sender)"
         "adfree" -> "Werbefreie Sender"
         "favorites" -> "Gespeicherte Favoriten"
         "history" -> "Zuletzt gespielt (Verlauf)"
-        "topclick" -> "Trending Streams"
         else -> genresMap[activeCategory]?.let { "Genre: $it" }
             ?: "${activeCategory.replaceFirstChar { it.uppercase() }} Sender"
     }
@@ -661,7 +657,7 @@ private fun EmptyStateView(
 
         val title = when {
             query.isNotBlank() -> "Keine Sender gefunden"
-            category == "puremusic" -> "Keine 100% Musik-Sender"
+            category == "trained" -> "Keine trainierten Sender gefunden"
             category == "favorites" -> "Noch keine Favoriten"
             category == "history" -> "Kein Verlauf vorhanden"
             else -> "Keine Sender verfügbar"
@@ -669,7 +665,7 @@ private fun EmptyStateView(
 
         val desc = when {
             query.isNotBlank() -> "Versuche einen anderen Suchbegriff oder ein anderes Genre."
-            category == "puremusic" -> "Hier findest du Sender, die durchgehend Musik spielen und keine Nachrichten- oder Werbeblöcke senden."
+            category == "trained" -> "Hier findest du alle Sender mit erlernten Jingle-Signaturen und KI-gestützter Erkennung."
             category == "favorites" -> "Tippe auf das Herz-Symbol bei einem Sender, um ihn hier zu speichern."
             category == "history" -> "Radiosender werden hier automatisch gespeichert, sobald du sie mindestens 1 Minute lang hörst."
             else -> "Bitte prüfe deine Internetverbindung."
