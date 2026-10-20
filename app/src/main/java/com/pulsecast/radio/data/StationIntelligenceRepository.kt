@@ -17,6 +17,12 @@ import java.util.Calendar
  * 3. Pre-roll ad detection history
  * 4. User preferences (Tolerance delay, 7-min Bounce-Back, Smart-Switch toggle)
  */
+data class StationTrainingStatus(
+    val hasLearnedJingle: Boolean,
+    val jingleFingerprint: String?,
+    val learnedNewsWindow: String?
+)
+
 class StationIntelligenceRepository(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences("pulse_station_intel", Context.MODE_PRIVATE)
@@ -278,6 +284,16 @@ class StationIntelligenceRepository(context: Context) {
     fun getLearnedNewsWindow(station: Station): String? {
         val key = getStationKey(station)
         return learnedNewsWindows[key] ?: station.learnedNewsWindow
+    }
+
+    fun getTrainingStatus(station: Station): StationTrainingStatus {
+        val jingle = getLearnedJingleSignature(station)
+        val newsWin = getLearnedNewsWindow(station)
+        return StationTrainingStatus(
+            hasLearnedJingle = !jingle.isNullOrBlank(),
+            jingleFingerprint = jingle,
+            learnedNewsWindow = newsWin
+        )
     }
 
     companion object {
