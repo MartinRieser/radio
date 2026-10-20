@@ -69,10 +69,7 @@ app/src/main/java/com/pulsecast/radio/
 ## 📱 Projekt in Android Studio öffnen & bauen
 
 1. Starten Sie **Android Studio**.
-2. Wählen Sie **File > Open** und öffnen Sie den Ordner:
-   ```
-   c:\Users\Martin Rieser\radio
-   ```
+2. Wählen Sie **File > Open** und wählen Sie das geklonte Projektverzeichnis `radio` aus.
 3. Android Studio erkennt das Gradle-Projekt automatisch und lädt die Abhängigkeiten herunter.
 4. Schließen Sie Ihr Android-Smartphone per USB an (mit aktiviertem **USB-Debugging**) oder starten Sie einen Emulator.
 5. Drücken Sie den grünen **Play-Button (Run 'app')** in Android Studio.
@@ -104,3 +101,10 @@ Wenn Java / JDK auf Ihrem Rechner installiert ist:
      ```
    - Öffnen Sie am Smartphone-Browser: `http://<IP-Ihres-PCs>:8088/app/build/outputs/apk/debug/app-debug.apk`.
    - Datei antippen und installieren.
+
+
+---
+
+## 📄 Lizenz
+
+Dieses Projekt ist unter der **Apache 2.0 Lizenz** lizenziert – siehe die [LICENSE](LICENSE) Datei für Details.

@@ -86,7 +86,7 @@ stream_miner/
 
 1. Das Tool speichert das Ergebnis automatisch in:
    `app/src/main/assets/station_intelligence.json`
-2. Beim nächsten Bauen oder Starten der App lädt [`StationIntelligenceRepository`](file:///c:/Users/Martin%20Rieser/radio/app/src/main/java/com/pulsecast/radio/data/StationIntelligenceRepository.kt) diese Daten automatisch ein.
+2. Beim nächsten Bauen oder Starten der App lädt [`StationIntelligenceRepository`](../app/src/main/java/com/pulsecast/radio/data/StationIntelligenceRepository.kt) diese Daten automatisch ein.
 3. Die App weiß sofort:
    - Wann welcher Sender typischerweise Nachrichten oder Werbung sendet.
    - Welche Jingle-Muster vor den Nachrichten ertönen.

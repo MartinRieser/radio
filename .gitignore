@@ -22,3 +22,19 @@ __pycache__/
 *.pyc
 stream_miner/training_checkpoint_active_*.json
 *.tmp.*
+
+# Keystores & Signing Keys
+*.jks
+*.keystore
+*.key
+*.pem
+
+# Environment & Credentials
+.env
+.env.*
+secrets.properties
+google-services.json
+
+# Local logs & caches
+*.log
+.pytest_cache/
