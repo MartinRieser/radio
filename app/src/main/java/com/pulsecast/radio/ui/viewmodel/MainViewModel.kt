@@ -48,8 +48,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var searchJob: Job? = null
 
+    // OTA Intelligence & App Updater
+    val appUpdateManager = com.pulsecast.radio.updater.AppUpdateManager(application)
+    val appUpdateState = appUpdateManager.updateState
+
+    val intelligenceSyncState = playbackController.intelligenceRepository.syncState
+    val activeGeneratedAt = playbackController.intelligenceRepository.activeGeneratedAt
+    val trainedStationCount: Int
+        get() = playbackController.intelligenceRepository.trainedStationCount
+
     init {
         loadCategory("trained")
+        checkForAppUpdate()
+    }
+
+    fun syncIntelligence(forced: Boolean = true) {
+        viewModelScope.launch {
+            val updated = playbackController.intelligenceRepository.syncRemoteIntelligence(forced)
+            if (updated && _activeCategory.value == "trained") {
+                _stations.value = CuratedStations.load(getApplication())
+            }
+        }
+    }
+
+    fun checkForAppUpdate() {
+        appUpdateManager.checkForUpdate(viewModelScope)
+    }
+
+    fun startAppUpdate(activity: android.app.Activity, downloadUrl: String) {
+        appUpdateManager.startDownloadAndInstall(activity, downloadUrl, viewModelScope)
+    }
+
+    fun dismissAppUpdate() {
+        appUpdateManager.dismissUpdate()
     }
 
     fun selectCategory(category: String) {

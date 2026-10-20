@@ -32,7 +32,11 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
+import com.pulsecast.radio.ui.components.AppUpdateDialog
 import com.pulsecast.radio.ui.components.SmartSwitchDialog
+import com.pulsecast.radio.updater.AppUpdateState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -107,6 +111,11 @@ fun HomeScreen(viewModel: MainViewModel) {
     val smartSwitchStrategy by viewModel.smartSwitchStrategy.collectAsState()
     val miningMode by viewModel.miningMode.collectAsState()
     var showSmartSwitchDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val appUpdateState by viewModel.appUpdateState.collectAsState()
+    val intelligenceSyncState by viewModel.intelligenceSyncState.collectAsState()
+    val activeGeneratedAt by viewModel.activeGeneratedAt.collectAsState()
 
     Scaffold(
         containerColor = BgMain,
@@ -223,6 +232,10 @@ fun HomeScreen(viewModel: MainViewModel) {
             speechResetHoldSeconds = speechResetHoldSeconds,
             smartSwitchStrategy = smartSwitchStrategy,
             miningMode = miningMode,
+            syncState = intelligenceSyncState,
+            trainedStationCount = viewModel.trainedStationCount,
+            activeGeneratedAt = activeGeneratedAt,
+            onSyncIntelligenceClick = { viewModel.syncIntelligence(forced = true) },
             onEnabledChanged = { viewModel.setSmartSwitchEnabled(it) },
             onToleranceChanged = { viewModel.setSpeechToleranceSeconds(it) },
             onBounceBackChanged = { viewModel.setBounceBackMinutes(it) },
@@ -231,6 +244,19 @@ fun HomeScreen(viewModel: MainViewModel) {
             onStrategyChanged = { viewModel.setSmartSwitchStrategy(it) },
             onMiningModeChanged = { viewModel.setMiningMode(it) },
             onDismiss = { showSmartSwitchDialog = false }
+        )
+    }
+
+    if (appUpdateState is AppUpdateState.Available || appUpdateState is AppUpdateState.Downloading) {
+        AppUpdateDialog(
+            state = appUpdateState,
+            onUpdateClick = { url ->
+                val activity = context as? Activity
+                if (activity != null) {
+                    viewModel.startAppUpdate(activity, url)
+                }
+            },
+            onDismiss = { viewModel.dismissAppUpdate() }
         )
     }
 }

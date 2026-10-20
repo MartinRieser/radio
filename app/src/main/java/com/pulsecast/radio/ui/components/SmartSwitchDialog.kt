@@ -51,6 +51,10 @@ fun SmartSwitchDialog(
     speechResetHoldSeconds: Int,
     smartSwitchStrategy: String,
     miningMode: String,
+    syncState: com.pulsecast.radio.data.IntelligenceSyncState = com.pulsecast.radio.data.IntelligenceSyncState.Idle,
+    trainedStationCount: Int = 0,
+    activeGeneratedAt: String? = null,
+    onSyncIntelligenceClick: () -> Unit = {},
     onEnabledChanged: (Boolean) -> Unit,
     onToleranceChanged: (Int) -> Unit,
     onBounceBackChanged: (Int) -> Unit,
@@ -409,6 +413,73 @@ fun SmartSwitchDialog(
                                 color = if (isSelected) Color.White else TextSecondary,
                                 fontSize = 11.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // OTA Intelligence Training Sync Card
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF0F1523))
+                        .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
+                        .padding(12.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "📡 KI-Trainingsdaten (OTA)",
+                                    color = TextPrimary,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                val dateStr = activeGeneratedAt?.take(16)?.replace("T", " ") ?: "Lokal"
+                                Text(
+                                    text = "$trainedStationCount Sender • Stand: $dateStr",
+                                    color = TextMuted,
+                                    fontSize = 11.sp
+                                )
+                            }
+
+                            val isChecking = syncState is com.pulsecast.radio.data.IntelligenceSyncState.Checking
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(if (isChecking) TextMuted.copy(alpha = 0.2f) else AccentPrimary.copy(alpha = 0.2f))
+                                    .clickable(enabled = !isChecking, onClick = onSyncIntelligenceClick)
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = if (isChecking) "Prüfe…" else "🔄 Sync",
+                                    color = if (isChecking) TextMuted else AccentPrimary,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        if (syncState is com.pulsecast.radio.data.IntelligenceSyncState.Success) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "✅ ${syncState.message} (${syncState.stationCount} Sender)",
+                                color = Color(0xFF4ADE80),
+                                fontSize = 11.sp
+                            )
+                        } else if (syncState is com.pulsecast.radio.data.IntelligenceSyncState.Error) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "⚠️ ${syncState.error}",
+                                color = Color(0xFFFF6B6B),
+                                fontSize = 11.sp
                             )
                         }
                     }

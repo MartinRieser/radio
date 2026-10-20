@@ -1,6 +1,6 @@
 # 📡 PulseCast GPU Stream Mining & Broadcast-KI Report
 
-- **Generiert am**: `2026-10-20 21:07:15`
+- **Generiert am**: `2026-10-20 21:14:51`
 - **Ausgewertete Sender**: 30
 - **KI-Pipeline**: Silero VAD v5 + 3-Band FFT Spektralanalyse + Faster-Whisper (RTX 4070 Ti CUDA FP16)
 
@@ -10,36 +10,36 @@
 
 | Sender | Typ | Beobachtet | Sprach-Anteil | News-Fenster | Jingle | Erkannte Inhalte (KI) | Pre-Roll |
 |---|---|---|---|---|---|---|---|
-| **Antenne Vorarlberg** | 📻 Regulär | 83.4 Min | 16.3% | :55 - :58 | `f27095b01f` | 📢24 🌦️6 🚗7 🎙️135 | ⚠️ Ja |
-| **Antenne Bayern** | 📻 Regulär | 83.4 Min | 17.2% | :58 - :03 | `d2510591e4` | 📰2 📢13 🌦️11 🚗33 🎙️127 | 🛡️ Nein |
-| **SWR3** | 📻 Regulär | 82.2 Min | 24.6% | :59 - :03 | `c12a4e3fd8` | 📢18 🌦️12 🚗26 🎙️198 | 🛡️ Nein |
-| **Hitradio Ö3** | 📻 Regulär | 83.1 Min | 19.8% | :58 - :03 | `d2d1fe7941` | 📰1 📢15 🌦️19 🚗24 🎙️148 | 🛡️ Nein |
-| **Radio 7** | 📻 Regulär | 83.0 Min | 11.8% | :00 - :02 | `70cb411072` | 📰1 📢5 🌦️4 🚗4 🎙️94 | 🛡️ Nein |
-| **Radio TOP (CH)** | 🎵 100% Musik | 82.4 Min | 1.2% | - | `006e38f80e` | 🎙️10 | ⚠️ Ja |
-| **Bayern 3 (BR3)** | 📻 Regulär | 82.2 Min | 21.7% | :59 - :04 | `e3af01ed09` | 📰2 📢14 🌦️14 🚗17 🎙️191 | 🛡️ Nein |
-| **Radio Gong 96.3** | 📻 Regulär | 82.4 Min | 19.0% | :58 - :03 | `7035422e2f` | 📰1 📢31 🌦️4 🚗7 🎙️167 | 🛡️ Nein |
-| **Radio Galaxy Bayern** | 📻 Regulär | 83.3 Min | 6.6% | :00 - :03 | `d0b9aed0f6` | 📰1 📢5 🌦️8 🚗4 🎙️51 | ⚠️ Ja |
-| **Tipp FM (Irland)** | 📻 Regulär | 82.4 Min | 27.3% | :58 - :03 | `417b4a0623` | 📢5 🎙️216 | ⚠️ Ja |
-| **Rock Antenne** | 📻 Regulär | 83.4 Min | 10.6% | :58 - :01 | `027bdd96b0` | 📰1 📢6 🚗2 🎙️90 | 🛡️ Nein |
-| **N-JOY (NDR)** | 📻 Regulär | 82.2 Min | 17.2% | :59 - :03 | `f0ec6000f2` | 📢11 🌦️13 🚗14 🎙️125 | 🛡️ Nein |
-| **Hit Radio FFH** | 📻 Regulär | 82.4 Min | 17.1% | :55 - :58 | `b0c405c520` | 📢19 🌦️12 🚗6 🎙️138 | 🛡️ Nein |
-| **Radio Vorarlberg (ORF)** | 📻 Regulär | 83.1 Min | 59.0% | :58 - :04 | `0297fdf17a` | 📰2 📢11 🌦️14 🚗10 🎙️598 | ⚠️ Ja |
-| **Energy Zürich (CH)** | 📻 Regulär | 82.4 Min | 3.6% | :02 - :03 | `194d6e2de9` | 📢1 🌦️1 🎙️32 | ⚠️ Ja |
-| **Radio Swiss Pop (CH)** | 🎵 100% Musik | 82.2 Min | 0.2% | - | `10290693b7` | 🎙️1 | 🛡️ Nein |
-| **Radio Swiss Classic (CH)** | 🎵 100% Musik | 82.2 Min | 2.0% | - | `31002f0125` | 📢1 🎙️21 | 🛡️ Nein |
-| **Radio Swiss Jazz (CH)** | 📻 Regulär | 82.2 Min | 4.3% | - | `24f8da2e10` | 🌦️3 🎙️41 | 🛡️ Nein |
-| **FM4 (ORF)** | 📻 Regulär | 83.1 Min | 19.8% | :58 - :59 | `4ffe51510f` | 📢9 🌦️3 🎙️181 | ⚠️ Ja |
-| **Bayern 1 (BR)** | 📻 Regulär | 82.2 Min | 29.8% | :59 - :04 | `3726ef343f` | 📰3 📢18 🌦️19 🚗20 🎙️219 | ⚠️ Ja |
-| **SWR1 BW** | 📻 Regulär | 82.2 Min | 21.8% | :59 - :03 | `0b3b05dcc1` | 📰1 📢12 🌦️11 🚗11 🎙️189 | 🛡️ Nein |
-| **1LIVE (WDR)** | 📻 Regulär | 82.2 Min | 25.7% | :00 - :03 | `60ec07000e` | 📢11 🌦️7 🚗24 🎙️222 | 🛡️ Nein |
-| **WDR 2 Rheinland** | 📻 Regulär | 82.2 Min | 27.6% | :59 - :03 | `02059df199` | 📢13 🌦️20 🚗27 🎙️227 | ⚠️ Ja |
-| **Radio Regenbogen** | 📻 Regulär | 83.0 Min | 4.3% | :02 - :03 | `f00a0f556e` | 📢8 🌦️1 🎙️24 | ⚠️ Ja |
-| **DASDING (SWR)** | 📻 Regulär | 82.2 Min | 17.7% | :00 - :03 | `2274fe402f` | 🎙️183 | ⚠️ Ja |
-| **Life Radio (AT)** | 📻 Regulär | 82.9 Min | 16.9% | :56 - :58 | `16ec5b4152` | 📢18 🌦️7 🚗20 🎙️119 | ⚠️ Ja |
-| **Radio BOB!** | 📻 Regulär | 82.6 Min | 14.4% | :59 - :03 | `9110f0ecd0` | 📰1 📢11 🌦️3 🚗2 🎙️144 | 🛡️ Nein |
-| **Sunshine Live** | 📻 Regulär | 83.0 Min | 32.9% | :58 - :01 | `debf15290d` | 📢17 🌦️1 🚗1 🎙️351 | 🛡️ Nein |
-| **FIP (Radio France)** | 📻 Regulär | 82.2 Min | 11.4% | - | `e861b29841` | 🌦️1 🎙️89 | ⚠️ Ja |
-| **Lofi Cafe Radio** | 🎵 100% Musik | 82.4 Min | 2.2% | - | `60ef69e71f` | 📢7 🎙️13 | 🛡️ Nein |
+| **Antenne Vorarlberg** | 📻 Regulär | 91.0 Min | 14.9% | :55 - :58 | `f27095b01f` | 📢24 🌦️6 🚗7 🎙️135 | ⚠️ Ja |
+| **Antenne Bayern** | 📻 Regulär | 91.0 Min | 16.0% | :58 - :03 | `d2510591e4` | 📰2 📢13 🌦️11 🚗35 🎙️128 | 🛡️ Nein |
+| **SWR3** | 📻 Regulär | 89.8 Min | 24.2% | :59 - :03 | `c12a4e3fd8` | 📢19 🌦️12 🚗26 🎙️217 | 🛡️ Nein |
+| **Hitradio Ö3** | 📻 Regulär | 90.7 Min | 19.5% | :58 - :03 | `d2d1fe7941` | 📰1 📢15 🌦️19 🚗24 🎙️162 | 🛡️ Nein |
+| **Radio 7** | 📻 Regulär | 90.6 Min | 10.8% | :00 - :02 | `70cb411072` | 📰1 📢5 🌦️4 🚗4 🎙️94 | 🛡️ Nein |
+| **Radio TOP (CH)** | 🎵 100% Musik | 90.0 Min | 1.3% | - | `006e38f80e` | 🎙️12 | ⚠️ Ja |
+| **Bayern 3 (BR3)** | 📻 Regulär | 89.8 Min | 20.8% | :59 - :04 | `e3af01ed09` | 📰2 📢14 🌦️14 🚗21 🎙️194 | 🛡️ Nein |
+| **Radio Gong 96.3** | 📻 Regulär | 90.0 Min | 18.3% | :58 - :03 | `7035422e2f` | 📰1 📢31 🌦️4 🚗7 🎙️177 | 🛡️ Nein |
+| **Radio Galaxy Bayern** | 📻 Regulär | 90.9 Min | 6.0% | :00 - :03 | `d0b9aed0f6` | 📰1 📢5 🌦️8 🚗4 🎙️51 | ⚠️ Ja |
+| **Tipp FM (Irland)** | 📻 Regulär | 90.0 Min | 26.5% | :58 - :03 | `417b4a0623` | 📢5 🎙️234 | ⚠️ Ja |
+| **Rock Antenne** | 📻 Regulär | 91.0 Min | 10.9% | :58 - :01 | `027bdd96b0` | 📰1 📢7 🚗2 🎙️102 | 🛡️ Nein |
+| **N-JOY (NDR)** | 📻 Regulär | 89.8 Min | 15.8% | :59 - :03 | `f0ec6000f2` | 📢11 🌦️13 🚗14 🎙️125 | 🛡️ Nein |
+| **Hit Radio FFH** | 📻 Regulär | 90.0 Min | 15.7% | :55 - :58 | `b0c405c520` | 📢19 🌦️12 🚗6 🎙️138 | 🛡️ Nein |
+| **Radio Vorarlberg (ORF)** | 📻 Regulär | 90.7 Min | 54.0% | :58 - :04 | `0297fdf17a` | 📰2 📢11 🌦️14 🚗10 🎙️598 | ⚠️ Ja |
+| **Energy Zürich (CH)** | 📻 Regulär | 90.0 Min | 3.3% | :02 - :03 | `194d6e2de9` | 📢1 🌦️1 🎙️32 | ⚠️ Ja |
+| **Radio Swiss Pop (CH)** | 🎵 100% Musik | 89.8 Min | 0.2% | - | `10290693b7` | 🎙️1 | 🛡️ Nein |
+| **Radio Swiss Classic (CH)** | 🎵 100% Musik | 89.8 Min | 2.5% | - | `31002f0125` | 📢1 🎙️28 | 🛡️ Nein |
+| **Radio Swiss Jazz (CH)** | 📻 Regulär | 89.8 Min | 4.7% | - | `24f8da2e10` | 🌦️3 🎙️49 | 🛡️ Nein |
+| **FM4 (ORF)** | 📻 Regulär | 90.7 Min | 24.2% | :58 - :59 | `4ffe51510f` | 📰1 📢9 🌦️3 🚗1 🎙️252 | ⚠️ Ja |
+| **Bayern 1 (BR)** | 📻 Regulär | 89.8 Min | 28.0% | :59 - :04 | `3726ef343f` | 📰3 📢18 🌦️19 🚗24 🎙️222 | ⚠️ Ja |
+| **SWR1 BW** | 📻 Regulär | 89.8 Min | 22.6% | :59 - :03 | `1f481031c2` | 📰1 📢12 🌦️11 🚗11 🎙️221 | 🛡️ Nein |
+| **1LIVE (WDR)** | 📻 Regulär | 89.8 Min | 25.6% | :00 - :03 | `60ec07000e` | 📢11 🌦️7 🚗24 🎙️247 | 🛡️ Nein |
+| **WDR 2 Rheinland** | 📻 Regulär | 89.8 Min | 26.9% | :59 - :03 | `02059df199` | 📢14 🌦️20 🚗27 🎙️246 | ⚠️ Ja |
+| **Radio Regenbogen** | 📻 Regulär | 90.6 Min | 3.9% | :02 - :03 | `f00a0f556e` | 📢8 🌦️1 🎙️24 | ⚠️ Ja |
+| **DASDING (SWR)** | 📻 Regulär | 89.8 Min | 17.6% | :00 - :03 | `2274fe402f` | 🎙️197 | ⚠️ Ja |
+| **Life Radio (AT)** | 📻 Regulär | 90.5 Min | 17.9% | :56 - :58 | `16ec5b4152` | 📢22 🌦️8 🚗20 🎙️143 | ⚠️ Ja |
+| **Radio BOB!** | 📻 Regulär | 90.2 Min | 13.6% | :59 - :03 | `9110f0ecd0` | 📰1 📢11 🌦️3 🚗2 🎙️149 | 🛡️ Nein |
+| **Sunshine Live** | 📻 Regulär | 90.6 Min | 37.2% | :58 - :01 | `debf15290d` | 📢19 🌦️1 🚗1 🎙️436 | 🛡️ Nein |
+| **FIP (Radio France)** | 📻 Regulär | 89.8 Min | 10.5% | - | `e861b29841` | 🌦️1 🎙️89 | ⚠️ Ja |
+| **Lofi Cafe Radio** | 🎵 100% Musik | 90.0 Min | 2.0% | - | `60ef69e71f` | 📢7 🎙️13 | 🛡️ Nein |
 
 ---
 

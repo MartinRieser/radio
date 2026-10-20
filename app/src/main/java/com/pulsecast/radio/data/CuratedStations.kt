@@ -4,17 +4,37 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pulsecast.radio.model.Station
+import java.io.File
 
 object CuratedStations {
 
     fun load(context: Context): List<Station> {
         return try {
-            val jsonString = context.assets.open("curated_stations.json").bufferedReader().use { it.readText() }
+            val cachedFile = File(context.filesDir, "curated_stations.json")
+            val jsonString = if (cachedFile.exists() && cachedFile.length() > 0) {
+                cachedFile.bufferedReader().use { it.readText() }
+            } else {
+                context.assets.open("curated_stations.json").bufferedReader().use { it.readText() }
+            }
             val listType = object : TypeToken<List<Station>>() {}.type
             Gson().fromJson<List<Station>>(jsonString, listType) ?: fallbackStations()
         } catch (e: Exception) {
             e.printStackTrace()
             fallbackStations()
+        }
+    }
+
+    fun updateCachedStations(context: Context, jsonString: String): Boolean {
+        return try {
+            val listType = object : TypeToken<List<Station>>() {}.type
+            val parsed: List<Station> = Gson().fromJson(jsonString, listType) ?: return false
+            if (parsed.isEmpty()) return false
+            val file = File(context.filesDir, "curated_stations.json")
+            file.writeText(jsonString)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

@@ -5,9 +5,17 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pulsecast.radio.model.Station
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.Calendar
 
 /**
@@ -16,6 +24,7 @@ import java.util.Calendar
  * 2. Pure Music ("100% Musik") tags & user overrides
  * 3. Pre-roll ad detection history
  * 4. User preferences (Tolerance delay, 7-min Bounce-Back, Smart-Switch toggle)
+ * 5. Over-The-Air (OTA) Intelligence synchronisation with GitHub
  */
 data class StationTrainingStatus(
     val hasLearnedJingle: Boolean,
@@ -26,12 +35,20 @@ data class StationTrainingStatus(
 data class PrebuiltIntelligence(
     val version: Int? = null,
     val generated_at: String? = null,
+    val station_count: Int? = null,
     val hourly_heatmaps: Map<String, List<Float>>? = null,
     val learned_news_windows: Map<String, String>? = null,
     val learned_jingles: Map<String, String>? = null,
     val pure_music_overrides: Map<String, Boolean>? = null,
     val learned_prerolls: Map<String, Boolean>? = null
 )
+
+sealed class IntelligenceSyncState {
+    object Idle : IntelligenceSyncState()
+    object Checking : IntelligenceSyncState()
+    data class Success(val message: String, val stationCount: Int, val timestamp: String) : IntelligenceSyncState()
+    data class Error(val error: String) : IntelligenceSyncState()
+}
 
 class StationIntelligenceRepository(private val context: Context) {
 
@@ -75,8 +92,23 @@ class StationIntelligenceRepository(private val context: Context) {
     private val _pureMusicUpdateCounter = MutableStateFlow(0)
     val pureMusicUpdateCounter: StateFlow<Int> = _pureMusicUpdateCounter.asStateFlow()
 
+    // OTA Synchronization state
+    private val _syncState = MutableStateFlow<IntelligenceSyncState>(IntelligenceSyncState.Idle)
+    val syncState: StateFlow<IntelligenceSyncState> = _syncState.asStateFlow()
+
+    private val _activeGeneratedAt = MutableStateFlow<String?>(prefs.getString("last_intelligence_generated_at", null))
+    val activeGeneratedAt: StateFlow<String?> = _activeGeneratedAt.asStateFlow()
+
+    val trainedStationCount: Int
+        get() = hourlyHeatmaps.size
+
     init {
         loadData()
+        // Silently check for intelligence updates in background 3s after startup
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(3000)
+            syncRemoteIntelligence(forced = false)
+        }
     }
 
     private fun getStationKey(station: Station): String {
@@ -84,7 +116,7 @@ class StationIntelligenceRepository(private val context: Context) {
     }
 
     private fun loadData() {
-        // 0. Load Prebuilt PC Training Intelligence from assets/station_intelligence.json
+        // 0. Load Prebuilt PC Training Intelligence (from internal cache or assets)
         loadPrebuiltIntelligence()
 
         // Load Heatmaps
@@ -154,9 +186,15 @@ class StationIntelligenceRepository(private val context: Context) {
 
     private fun loadPrebuiltIntelligence() {
         try {
-            val inputStream = context.assets.open("station_intelligence.json")
-            val json = inputStream.bufferedReader().use { it.readText() }
+            val cachedFile = File(context.filesDir, "station_intelligence.json")
+            val json = if (cachedFile.exists() && cachedFile.length() > 0) {
+                cachedFile.bufferedReader().use { it.readText() }
+            } else {
+                context.assets.open("station_intelligence.json").bufferedReader().use { it.readText() }
+            }
             val root = gson.fromJson(json, PrebuiltIntelligence::class.java) ?: return
+
+            _activeGeneratedAt.value = root.generated_at
 
             root.hourly_heatmaps?.forEach { (k, list) ->
                 val arr = FloatArray(60)
@@ -193,6 +231,81 @@ class StationIntelligenceRepository(private val context: Context) {
         loadData()
         _pureMusicUpdateCounter.value++
         return true
+    }
+
+    suspend fun syncRemoteIntelligence(forced: Boolean = false): Boolean = withContext(Dispatchers.IO) {
+        _syncState.value = IntelligenceSyncState.Checking
+        try {
+            val remoteUrl = "https://raw.githubusercontent.com/MartinRieser/radio/android-native/app/src/main/assets/station_intelligence.json"
+            val connection = URL(remoteUrl).openConnection() as HttpURLConnection
+            connection.connectTimeout = 8000
+            connection.readTimeout = 12000
+            connection.setRequestProperty("User-Agent", "PulseCast-Android")
+            connection.requestMethod = "GET"
+
+            if (connection.responseCode != 200) {
+                _syncState.value = IntelligenceSyncState.Error("HTTP ${connection.responseCode}")
+                return@withContext false
+            }
+
+            val remoteJson = connection.inputStream.bufferedReader().use { it.readText() }
+            val remoteRoot = gson.fromJson(remoteJson, PrebuiltIntelligence::class.java)
+                ?: run {
+                    _syncState.value = IntelligenceSyncState.Error("Ungültige Daten empfangen")
+                    return@withContext false
+                }
+
+            val remoteDate = remoteRoot.generated_at ?: ""
+            val localDate = _activeGeneratedAt.value ?: ""
+
+            val isNewer = forced || remoteDate.compareTo(localDate) > 0 || hourlyHeatmaps.isEmpty()
+
+            if (isNewer) {
+                // Save intelligence to local cache
+                val targetFile = File(context.filesDir, "station_intelligence.json")
+                targetFile.writeText(remoteJson)
+
+                // Also try syncing curated_stations.json
+                try {
+                    val stationsUrl = "https://raw.githubusercontent.com/MartinRieser/radio/android-native/app/src/main/assets/curated_stations.json"
+                    val stConn = URL(stationsUrl).openConnection() as HttpURLConnection
+                    stConn.connectTimeout = 6000
+                    stConn.readTimeout = 8000
+                    stConn.setRequestProperty("User-Agent", "PulseCast-Android")
+                    if (stConn.responseCode == 200) {
+                        val stJson = stConn.inputStream.bufferedReader().use { it.readText() }
+                        CuratedStations.updateCachedStations(context, stJson)
+                    }
+                } catch (_: Exception) {
+                    // Ignore station catalogue sync failure
+                }
+
+                // Reload memory
+                reloadPrebuiltIntelligence()
+                prefs.edit().putString("last_intelligence_generated_at", remoteDate).apply()
+                _activeGeneratedAt.value = remoteDate
+
+                val count = remoteRoot.station_count ?: hourlyHeatmaps.size
+                _syncState.value = IntelligenceSyncState.Success(
+                    message = "Trainingsdaten aktualisiert",
+                    stationCount = count,
+                    timestamp = remoteDate
+                )
+                return@withContext true
+            } else {
+                val count = remoteRoot.station_count ?: hourlyHeatmaps.size
+                _syncState.value = IntelligenceSyncState.Success(
+                    message = "Bereits auf dem neuesten Stand",
+                    stationCount = count,
+                    timestamp = localDate
+                )
+                return@withContext false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _syncState.value = IntelligenceSyncState.Error(e.message ?: "Verbindungsfehler")
+            return@withContext false
+        }
     }
 
     fun setSmartSwitchEnabled(enabled: Boolean) {
@@ -326,7 +439,7 @@ class StationIntelligenceRepository(private val context: Context) {
             learnedNewsWindows[key] = ":00 - :04"
         }
 
-        // Save periodically (e.g. on every sample or debounce)
+        // Save periodically
         val serializedMap = hourlyHeatmaps.mapValues { it.value.toList() }
         prefs.edit()
             .putString("hourly_heatmaps", gson.toJson(serializedMap))
