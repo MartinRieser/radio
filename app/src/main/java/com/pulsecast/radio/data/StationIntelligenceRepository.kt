@@ -50,6 +50,9 @@ class StationIntelligenceRepository(context: Context) {
     private val _specificFallbackKey = MutableStateFlow(prefs.getString("specific_fallback_key", null))
     val specificFallbackKey: StateFlow<String?> = _specificFallbackKey.asStateFlow()
 
+    private val _miningMode = MutableStateFlow(prefs.getString("mining_mode", "continuous") ?: "continuous")
+    val miningMode: StateFlow<String> = _miningMode.asStateFlow()
+
     // In-memory caches for fast lookup
     // Key: station identifier (UUID or Stream URL)
     private val hourlyHeatmaps = mutableMapOf<String, FloatArray>()
@@ -173,6 +176,11 @@ class StationIntelligenceRepository(context: Context) {
     fun setSpecificFallbackKey(key: String?) {
         _specificFallbackKey.value = key
         prefs.edit().putString("specific_fallback_key", key).apply()
+    }
+
+    fun setMiningMode(mode: String) {
+        _miningMode.value = mode
+        prefs.edit().putString("mining_mode", mode).apply()
     }
 
     /**

@@ -35,14 +35,19 @@ class StationSignalCollector(
      */
     fun processPcmBuffer(buffer: ByteBuffer, sampleRate: Int, channelCount: Int) {
         val station = activeStation ?: return
+        val mode = intelligenceRepository.miningMode.value
         val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
-        val currentSecond = Calendar.getInstance().get(Calendar.SECOND)
 
-        // Automatically activate mining window around top-of-hour (:59:40 to :00:15)
-        val inMiningWindow = (currentMinute == 59 && currentSecond >= 40) || (currentMinute == 0 && currentSecond <= 15)
+        // Configurable Mining Window: Continuous (100%), Broad (:55-:05 & :27-:33), Standard (:57-:03)
+        val inMiningWindow = when (mode) {
+            "continuous" -> true // Continuous training (100% of the time while listening)
+            "window_broad" -> (currentMinute in 55..59 || currentMinute in 0..5 || currentMinute in 27..33)
+            else -> (currentMinute in 57..59 || currentMinute in 0..3)
+        }
+
         if (!inMiningWindow) {
             if (isMiningActive && frameEnergyHistory.isNotEmpty()) {
-                // Finalize mining session for this hour
+                // Finalize mining session for this period
                 finalizeMiningSession(station)
             }
             isMiningActive = false

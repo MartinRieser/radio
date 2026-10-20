@@ -105,6 +105,7 @@ fun HomeScreen(viewModel: MainViewModel) {
     val speechSensitivity by viewModel.speechSensitivity.collectAsState()
     val speechResetHoldSeconds by viewModel.speechResetHoldSeconds.collectAsState()
     val smartSwitchStrategy by viewModel.smartSwitchStrategy.collectAsState()
+    val miningMode by viewModel.miningMode.collectAsState()
     var showSmartSwitchDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -221,12 +222,14 @@ fun HomeScreen(viewModel: MainViewModel) {
             speechSensitivity = speechSensitivity,
             speechResetHoldSeconds = speechResetHoldSeconds,
             smartSwitchStrategy = smartSwitchStrategy,
+            miningMode = miningMode,
             onEnabledChanged = { viewModel.setSmartSwitchEnabled(it) },
             onToleranceChanged = { viewModel.setSpeechToleranceSeconds(it) },
             onBounceBackChanged = { viewModel.setBounceBackMinutes(it) },
             onSensitivityChanged = { viewModel.setSpeechSensitivity(it) },
             onResetHoldChanged = { viewModel.setSpeechResetHoldSeconds(it) },
             onStrategyChanged = { viewModel.setSmartSwitchStrategy(it) },
+            onMiningModeChanged = { viewModel.setMiningMode(it) },
             onDismiss = { showSmartSwitchDialog = false }
         )
     }

@@ -260,6 +260,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val speechResetHoldSeconds = playbackController.intelligenceRepository.speechResetHoldSeconds
     val smartSwitchStrategy = playbackController.intelligenceRepository.smartSwitchStrategy
     val specificFallbackKey = playbackController.intelligenceRepository.specificFallbackKey
+    val miningMode = playbackController.intelligenceRepository.miningMode
 
     fun setSmartSwitchEnabled(enabled: Boolean) {
         playbackController.intelligenceRepository.setSmartSwitchEnabled(enabled)
@@ -287,6 +288,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setSpecificFallbackKey(key: String?) {
         playbackController.intelligenceRepository.setSpecificFallbackKey(key)
+    }
+
+    fun setMiningMode(mode: String) {
+        playbackController.intelligenceRepository.setMiningMode(mode)
     }
 
     fun returnToOriginalStation() {

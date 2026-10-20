@@ -50,12 +50,14 @@ fun SmartSwitchDialog(
     speechSensitivity: Float,
     speechResetHoldSeconds: Int,
     smartSwitchStrategy: String,
+    miningMode: String,
     onEnabledChanged: (Boolean) -> Unit,
     onToleranceChanged: (Int) -> Unit,
     onBounceBackChanged: (Int) -> Unit,
     onSensitivityChanged: (Float) -> Unit,
     onResetHoldChanged: (Int) -> Unit,
     onStrategyChanged: (String) -> Unit,
+    onMiningModeChanged: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -316,6 +318,52 @@ fun SmartSwitchDialog(
                                 text = label,
                                 color = if (isSelected) TextPrimary else TextSecondary,
                                 fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Mining Window Option
+                Text(
+                    text = "Signal-Mining & Jingle-Training Modus",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "Bestimmt, wie oft die KI Jingle-Fingerabdrücke im Hintergrund lernt.",
+                    color = TextMuted,
+                    fontSize = 11.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(
+                        "continuous" to "Durchgehend 100%",
+                        "window_broad" to "Breit (:55 - :05)",
+                        "window_std" to "Standard (:57 - :03)"
+                    ).forEach { (modeKey, label) ->
+                        val isSelected = miningMode == modeKey
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) Color(0xFF8B5CF6) else Color(0xFF0F1523))
+                                .clickable { onMiningModeChanged(modeKey) }
+                                .padding(vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label,
+                                color = if (isSelected) Color.White else TextSecondary,
+                                fontSize = 10.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
