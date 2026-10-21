@@ -19,11 +19,18 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Restrict ABIs to 64-bit ARM (physical phones) and 64-bit x86 (emulators)
+        // This removes legacy 32-bit TensorFlow binaries and reduces APK size dramatically!
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
