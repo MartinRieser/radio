@@ -1,6 +1,6 @@
 # 📡 PulseCast GPU Stream Mining & Broadcast-KI Report
 
-- **Generiert am**: `2026-10-21 20:36:21`
+- **Generiert am**: `2026-10-21 20:41:21`
 - **Ausgewertete Sender**: 111
 - **KI-Pipeline**: Silero VAD v5 + 3-Band FFT Spektralanalyse + Faster-Whisper (RTX 4070 Ti CUDA FP16)
 
@@ -40,87 +40,87 @@
 | **Sunshine Live** | 📻 Regulär | 149.2 Min | 25.7% | :00 - :03 | `7df4f7ff0f` | 📢20 🌦️3 🚗1 🎙️497 | 🛡️ Nein |
 | **FIP (Radio France)** | 📻 Regulär | 148.2 Min | 9.5% | - | `e3eef06349` | 🌦️4 🎙️147 | ⚠️ Ja |
 | **Lofi Cafe Radio** | 🎵 100% Musik | 148.4 Min | 2.3% | - | `8211f438a1` | 📢9 🎙️32 | 🛡️ Nein |
-| **Rock Antenne - Heavy Metal** | 📻 Regulär | 46.0 Min | 4.1% | :01 - :03 | `5050cf467e` | 📢4 🌦️1 🎙️20 | ⚠️ Ja |
-| **TranceBase.FM - AAC HD 256k** | 📻 Regulär | 45.5 Min | 4.3% | :02 - :03 | `2e0f20ca32` | 📰1 🌦️2 🚗2 🎙️20 | 🛡️ Nein |
-| **ORF Radio Wien** | 📻 Regulär | 45.7 Min | 83.1% | :55 - :04 | `7f0519053e` | 📰1 📢15 🌦️4 🚗16 🎙️460 | ⚠️ Ja |
+| **Rock Antenne - Heavy Metal** | 📻 Regulär | 51.0 Min | 3.7% | :01 - :03 | `5050cf467e` | 📢4 🌦️1 🎙️20 | ⚠️ Ja |
+| **TranceBase.FM - AAC HD 256k** | 📻 Regulär | 50.5 Min | 3.9% | :02 - :03 | `2e0f20ca32` | 📰1 🌦️2 🚗2 🎙️20 | 🛡️ Nein |
+| **ORF Radio Wien** | 📻 Regulär | 50.8 Min | 74.9% | :55 - :04 | `7f0519053e` | 📰1 📢15 🌦️4 🚗16 🎙️460 | ⚠️ Ja |
 | **1.FM - Deep Techno & Deep House** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **__TRANCE__ by rautemusik (rm.fm)** | 📻 Regulär | 45.6 Min | 2.2% | :00 - :03 | `b424c343e3` | 🎙️13 | 🛡️ Nein |
-| **1LIVE** | 📻 Regulär | 45.6 Min | 19.6% | :00 - :03 | `48d870e9b0` | 📢8 🌦️4 🚗12 🎙️92 | ⚠️ Ja |
+| **__TRANCE__ by rautemusik (rm.fm)** | 📻 Regulär | 50.6 Min | 2.3% | :00 - :03 | `b424c343e3` | 🎙️15 | 🛡️ Nein |
+| **1LIVE** | 📻 Regulär | 50.6 Min | 23.0% | :00 - :03 | `48d870e9b0` | 📢9 🌦️4 🚗12 🎙️127 | ⚠️ Ja |
 | **1.FM - High Voltage Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **- 0 N - 70s on Radio** | 📻 Regulär | 45.5 Min | 1.0% | :01 - :03 | `4fd3d19319` | 📢2 🎙️4 | 🛡️ Nein |
-| **MANGORADIO** | 📻 Regulär | 45.7 Min | 11.5% | :01 - :03 | `4e7b66f2b1` | 📰2 🌦️9 🚗2 🎙️56 | ⚠️ Ja |
-| **CITY23** | 📻 Regulär | 45.5 Min | 2.7% | :58 - :03 | `a5f93f4f32` | 🎙️9 | ⚠️ Ja |
+| **- 0 N - 70s on Radio** | 📻 Regulär | 50.5 Min | 1.4% | :01 - :03 | `4fd3d19319` | 📢2 🎙️7 | 🛡️ Nein |
+| **MANGORADIO** | 📻 Regulär | 50.7 Min | 10.4% | :01 - :03 | `4e7b66f2b1` | 📰2 🌦️9 🚗2 🎙️56 | ⚠️ Ja |
+| **CITY23** | 📻 Regulär | 50.5 Min | 2.4% | :58 - :03 | `a5f93f4f32` | 🎙️9 | ⚠️ Ja |
 | **1.FM - Blues Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **Arabella Austropop** | 📻 Regulär | 45.9 Min | 9.1% | :58 - :03 | `1f512a2b4d` | 🎙️50 | ⚠️ Ja |
-| **- 0 N - 80s on Radio** | 📻 Regulär | 45.5 Min | 3.6% | :58 - :03 | `0f0fc0e4f8` | 📢3 🎙️20 | 🛡️ Nein |
-| **DrumandBass.FM** | 📻 Regulär | 45.7 Min | 0.4% | :01 - :03 | `70f9001e11` | 🎙️1 | ⚠️ Ja |
-| **Best Of Rock.FM Alternative Rock** | 📻 Regulär | 45.8 Min | 7.4% | :59 - :03 | `f323b7b5ee` | 📢1 🎙️43 | ⚠️ Ja |
+| **Arabella Austropop** | 📻 Regulär | 50.9 Min | 8.2% | :58 - :03 | `1f512a2b4d` | 🎙️50 | ⚠️ Ja |
+| **- 0 N - 80s on Radio** | 📻 Regulär | 50.5 Min | 3.3% | :58 - :03 | `0f0fc0e4f8` | 📢3 🎙️20 | 🛡️ Nein |
+| **DrumandBass.FM** | 📻 Regulär | 50.7 Min | 0.4% | :01 - :03 | `70f9001e11` | 🎙️1 | ⚠️ Ja |
+| **Best Of Rock.FM Alternative Rock** | 📻 Regulär | 50.8 Min | 7.8% | :59 - :03 | `f323b7b5ee` | 📢1 🎙️52 | ⚠️ Ja |
 | **1.FM - Alternative Rock X Hits Radio** | 📻 Regulär | 0.2 Min | 85.8% | :58 - :03 | - | 🎙️1 | ⚠️ Ja |
 | **Radio Swiss Pop** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **Antenne Kärnten Partyhitmix** | 📻 Regulär | 45.8 Min | 2.7% | :01 - :03 | `d0089c0b88` | 📢3 🎙️14 | ⚠️ Ja |
+| **Antenne Kärnten Partyhitmix** | 📻 Regulär | 50.8 Min | 2.4% | :01 - :03 | `d0089c0b88` | 📢3 🎙️14 | ⚠️ Ja |
 | **1.FM - Deep House Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **Total instrumental** | 📻 Regulär | 45.9 Min | 1.3% | :00 - :03 | `308211f10c` | 📢1 🎙️3 | ⚠️ Ja |
+| **Total instrumental** | 📻 Regulär | 50.9 Min | 1.2% | :00 - :03 | `308211f10c` | 📢1 🎙️3 | ⚠️ Ja |
 | **1.FM - Bombay Beats India Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **90s90s Dance HQ** | 📻 Regulär | 45.8 Min | 3.0% | :01 - :03 | `b6adcd7229` | 📢6 🎙️11 | 🛡️ Nein |
-| **Eurodance-X-Press** | 📻 Regulär | 45.5 Min | 13.3% | :00 - :02 | `656b1d0198` | 📰1 📢9 🌦️7 🚗1 🎙️62 | ⚠️ Ja |
+| **90s90s Dance HQ** | 📻 Regulär | 50.8 Min | 2.7% | :01 - :03 | `b6adcd7229` | 📢6 🎙️11 | 🛡️ Nein |
+| **Eurodance-X-Press** | 📻 Regulär | 50.5 Min | 12.0% | :00 - :02 | `656b1d0198` | 📰1 📢9 🌦️7 🚗1 🎙️62 | ⚠️ Ja |
 | **ORF Hitradio Ö3 | HQ** | 📻 Regulär | 0.2 Min | 45.6% | :58 - :03 | - | 🎙️1 | ⚠️ Ja |
 | **FM4 | ORF | HQ** | 📻 Regulär | 0.2 Min | 86.4% | :58 - :03 | - | 🎙️1 | ⚠️ Ja |
-| **80s80s Radio** | 📻 Regulär | 45.8 Min | 5.3% | :58 - :00 | `8191305410` | 📢1 🌦️5 🚗1 🎙️24 | ⚠️ Ja |
-| **Radio Vorarlberg** | 📻 Regulär | 45.7 Min | 22.9% | :00 - :05 | `12cf8f0f17` | 📰1 📢8 🌦️8 🚗7 🎙️112 | ⚠️ Ja |
-| **Mountain Reggae Radio** | 📻 Regulär | 45.9 Min | 18.2% | :58 - :03 | `0270102d9f` | 🌦️5 🚗1 🎙️114 | ⚠️ Ja |
+| **80s80s Radio** | 📻 Regulär | 50.8 Min | 4.8% | :58 - :00 | `8191305410` | 📢1 🌦️5 🚗1 🎙️24 | ⚠️ Ja |
+| **Radio Vorarlberg** | 📻 Regulär | 50.7 Min | 21.2% | :00 - :05 | `12cf8f0f17` | 📰1 📢8 🌦️8 🚗7 🎙️115 | ⚠️ Ja |
+| **Mountain Reggae Radio** | 📻 Regulär | 50.9 Min | 18.5% | :58 - :03 | `0270102d9f` | 🌦️5 🚗1 🎙️130 | ⚠️ Ja |
 | **SRF 3** | 📻 Regulär | 0.2 Min | 15.7% | :58 - :03 | `1331f01dfe` | - | ⚠️ Ja |
-| **Reggae Radio Rastamusic.com** | 📻 Regulär | 45.7 Min | 23.3% | :58 - :03 | `ca00118c74` | 🌦️1 🎙️131 | ⚠️ Ja |
-| **radio 88.6** | 📻 Regulär | 45.9 Min | 14.4% | :01 - :03 | `c5e7256431` | 📢10 🌦️5 🚗2 🎙️65 | ⚠️ Ja |
-| **ORF Radio Niederösterreich | HQ** | 📻 Regulär | 45.8 Min | 16.6% | :59 - :03 | `0d203e7406` | 📢5 🌦️6 🚗2 🎙️88 | 🛡️ Nein |
-| **ORF Tirol HQ** | 📻 Regulär | 45.8 Min | 14.7% | :59 - :03 | `11af1470cf` | 📢4 🌦️7 🎙️71 | ⚠️ Ja |
+| **Reggae Radio Rastamusic.com** | 📻 Regulär | 50.7 Min | 26.7% | :58 - :03 | `ca00118c74` | 🌦️1 🎙️168 | ⚠️ Ja |
+| **radio 88.6** | 📻 Regulär | 50.9 Min | 13.1% | :01 - :03 | `c5e7256431` | 📢10 🌦️5 🚗2 🎙️65 | ⚠️ Ja |
+| **ORF Radio Niederösterreich | HQ** | 📻 Regulär | 50.8 Min | 15.0% | :59 - :03 | `0d203e7406` | 📢5 🌦️6 🚗2 🎙️88 | 🛡️ Nein |
+| **ORF Tirol HQ** | 📻 Regulär | 50.9 Min | 13.3% | :59 - :03 | `11af1470cf` | 📢4 🌦️7 🎙️71 | ⚠️ Ja |
 | **1.FM - Amsterdam Trance Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
 | **1.FM - Cafe Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
 | **1.FM - BOM Psytrance Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
 | **RTS La Première** | 📻 Regulär | 0.2 Min | 87.3% | :58 - :03 | - | 🎙️1 | ⚠️ Ja |
-| **Sunshine Live - Die 90er** | 📻 Regulär | 45.8 Min | 1.5% | :01 - :03 | `06f0b0928c` | 📢3 🎙️8 | ⚠️ Ja |
+| **Sunshine Live - Die 90er** | 📻 Regulär | 50.8 Min | 1.3% | :01 - :03 | `06f0b0928c` | 📢3 🎙️8 | ⚠️ Ja |
 | **1.FM - Chillout Lounge Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
 | **Antenne Bayern** | 📻 Regulär | 0.2 Min | 87.7% | :58 - :03 | - | 🌦️2 | ⚠️ Ja |
 | **ORF Hitradio Ö3** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **Hit Radio FFH - 80er** | 📻 Regulär | 45.6 Min | 0.4% | :01 - :03 | `c10a006202` | 🎙️2 | ⚠️ Ja |
-| **Austrian Rock Radio** | 📻 Regulär | 45.8 Min | 0.9% | :01 - :03 | `f05e05be21` | 📢1 🎙️5 | 🛡️ Nein |
+| **Hit Radio FFH - 80er** | 📻 Regulär | 50.6 Min | 0.7% | :01 - :03 | `c10a006202` | 📢2 🎙️3 | ⚠️ Ja |
+| **Austrian Rock Radio** | 📻 Regulär | 50.8 Min | 0.8% | :01 - :03 | `f05e05be21` | 📢1 🎙️5 | 🛡️ Nein |
 | **Rock Antenne** | 📻 Regulär | 0.2 Min | 20.4% | :58 - :03 | `b8edf1d38b` | - | ⚠️ Ja |
-| **88.6 Hard Rock** | 📻 Regulär | 45.9 Min | 1.0% | :59 - :01 | `cc7ec30c7f` | 🎙️6 | 🛡️ Nein |
-| **ORF Radio Steiermark | HQ** | 📻 Regulär | 45.8 Min | 31.8% | :59 - :03 | `2289db1b53` | 📰1 📢8 🌦️6 🚗3 🎙️178 | ⚠️ Ja |
-| **Hit Radio FFH - Eurodance** | 📻 Regulär | 45.6 Min | 2.6% | :00 - :03 | `f6df805402` | 📢5 🚗1 🎙️9 | ⚠️ Ja |
+| **88.6 Hard Rock** | 📻 Regulär | 50.9 Min | 1.0% | :59 - :01 | `cc7ec30c7f` | 🎙️6 | 🛡️ Nein |
+| **ORF Radio Steiermark | HQ** | 📻 Regulär | 50.8 Min | 32.5% | :59 - :03 | `2289db1b53` | 📰1 📢8 🌦️6 🚗4 🎙️204 | ⚠️ Ja |
+| **Hit Radio FFH - Eurodance** | 📻 Regulär | 50.6 Min | 2.5% | :00 - :03 | `f6df805402` | 📢5 🚗1 🎙️11 | ⚠️ Ja |
 | **Sunshine Live** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **KroneHit Radio** | 📻 Regulär | 45.5 Min | 14.4% | :59 - :03 | `ee3c0a7c4e` | 📢4 🌦️7 🚗2 🎙️70 | ⚠️ Ja |
-| **Radio U1 Tirol** | 📻 Regulär | 45.6 Min | 32.5% | :01 - :03 | `1182358eae` | 📢14 🌦️3 🚗1 🎙️169 | 🛡️ Nein |
+| **KroneHit Radio** | 📻 Regulär | 50.6 Min | 13.2% | :59 - :03 | `ee3c0a7c4e` | 📢4 🌦️7 🚗2 🎙️72 | ⚠️ Ja |
+| **Radio U1 Tirol** | 📻 Regulär | 50.6 Min | 29.2% | :01 - :03 | `1182358eae` | 📢14 🌦️3 🚗1 🎙️169 | 🛡️ Nein |
 | **Hit Radio FFH** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **Radino - Mein Kinderradio Wien 103,2** | 📻 Regulär | 45.6 Min | 36.4% | :58 - :03 | `11f822da2f` | 📰1 📢5 🌦️13 🎙️211 | 🛡️ Nein |
-| **1000 ELECTRONIC DANCE MUSIC** | 📻 Regulär | 45.9 Min | 0.8% | :01 - :03 | `67154ec0e3` | 🌦️2 🎙️2 | ⚠️ Ja |
-| **Energy NRJ Innsbruck** | 📻 Regulär | 45.5 Min | 8.2% | :58 - :03 | `d11a548716` | 📢7 🎙️42 | 🛡️ Nein |
+| **Radino - Mein Kinderradio Wien 103,2** | 📻 Regulär | 50.6 Min | 33.2% | :58 - :03 | `11f822da2f` | 📰1 📢5 🌦️13 🎙️214 | 🛡️ Nein |
+| **1000 ELECTRONIC DANCE MUSIC** | 📻 Regulär | 50.9 Min | 0.7% | :01 - :03 | `67154ec0e3` | 🌦️2 🎙️2 | ⚠️ Ja |
+| **Energy NRJ Innsbruck** | 📻 Regulär | 50.5 Min | 7.5% | :58 - :03 | `d11a548716` | 📢7 🎙️44 | 🛡️ Nein |
 | **1.FM - Absolute Country Hits Radio** | 📻 Regulär | 0.2 Min | 0.0% | :58 - :03 | - | - | 🛡️ Nein |
-| **Sunshine Live - Techno** | 📻 Regulär | 45.8 Min | 1.2% | :59 - :03 | `e76e8e1043` | 📢3 🌦️1 🎙️4 | 🛡️ Nein |
-| **90s90s Hits** | 📻 Regulär | 45.9 Min | 5.0% | :00 - :02 | `9b7a242040` | 📢1 🌦️6 🚗1 🎙️21 | ⚠️ Ja |
-| **KroneHit Digital** | 📻 Regulär | 45.6 Min | 15.4% | :00 - :03 | `5ea1d70003` | 📢7 🌦️7 🚗2 🎙️79 | ⚠️ Ja |
-| **Darksynth Radio** | 📻 Regulär | 45.7 Min | 0.3% | :01 - :03 | `5e29c249e5` | - | ⚠️ Ja |
-| **- 0 N - Chillout on Radio** | 📻 Regulär | 45.5 Min | 0.8% | :58 - :03 | `85eaf4e26f` | 🎙️4 | ⚠️ Ja |
-| **Radio Grün Weiß** | 📻 Regulär | 45.6 Min | 21.2% | :58 - :03 | `b3bd30d33e` | 📢7 🌦️7 🎙️110 | ⚠️ Ja |
-| **Radio Burgenland HQ** | 📻 Regulär | 45.7 Min | 10.0% | :59 - :03 | `568af29de0` | 📢4 🌦️4 🎙️51 | 🛡️ Nein |
-| **ORF Radio Kärnten** | 📻 Regulär | 45.6 Min | 43.2% | :00 - :03 | `01181a96da` | 📰1 📢10 🌦️6 🚗1 🎙️248 | ⚠️ Ja |
-| **0nlineradio SOFT ROCK** | 📻 Regulär | 45.4 Min | 2.0% | :01 - :03 | `46ce3c2fda` | 📢1 🚗1 🎙️7 | ⚠️ Ja |
-| **RADIO BOB! BOBs Alternative Rock** | 📻 Regulär | 45.6 Min | 3.1% | :01 - :03 | `fe0b0047d7` | 🎙️19 | 🛡️ Nein |
-| **Antenne Bayern - Top 40** | 📻 Regulär | 45.8 Min | 4.2% | :01 - :03 | `8f327e53d7` | 📢2 🌦️2 🚗1 🎙️21 | 🛡️ Nein |
-| **ORF Radio Wien | HQ** | 📻 Regulär | 45.7 Min | 83.7% | :55 - :04 | `2dea033acf` | 📰1 📢14 🌦️3 🚗18 🎙️461 | ⚠️ Ja |
-| **Radio Xmas** | 📻 Regulär | 45.6 Min | 9.8% | :01 - :03 | `c02032ba2b` | 🌦️1 🎙️60 | ⚠️ Ja |
-| **Laut.FM 1000 Oldies** | 📻 Regulär | 45.7 Min | 4.2% | :59 - :00 | `5dee1128ec` | 📢1 🎙️21 | ⚠️ Ja |
-| **Life Radio** | 📻 Regulär | 45.4 Min | 14.0% | :56 - :59 | `f5328240dd` | 📢9 🌦️3 🚗5 🎙️71 | ⚠️ Ja |
-| **RADIO BOB! BOBs Metal** | 📻 Regulär | 45.6 Min | 0.0% | :01 - :03 | - | - | 🛡️ Nein |
-| **98.8 Kiss FM** | 📻 Regulär | 45.4 Min | 6.2% | :01 - :03 | `2fc17da2b2` | 🌦️2 🎙️39 | 🛡️ Nein |
-| **i love radio - hip hop turnup** | 📻 Regulär | 45.4 Min | 32.0% | :58 - :03 | `f749aa2900` | 📢4 🌦️6 🚗1 🎙️201 | ⚠️ Ja |
-| **- 0 N - 90s on Radio** | 📻 Regulär | 45.3 Min | 2.4% | :01 - :03 | `95eaf5f06e` | 📢2 🎙️13 | 🛡️ Nein |
-| **Antenne Vorarlberg Partymix** | 📻 Regulär | 45.8 Min | 4.8% | :00 - :03 | `0f5c4441e5` | 📢7 🎙️20 | ⚠️ Ja |
-| **Radio Arabella Oberösterreich** | 📻 Regulär | 45.8 Min | 15.9% | :58 - :03 | `8231111081` | 📰1 📢15 🌦️11 🚗6 🎙️65 | ⚠️ Ja |
-| **Life Radio Chill Out** | 📻 Regulär | 45.4 Min | 4.6% | :01 - :03 | `9640501850` | 📢3 🌦️1 🎙️23 | ⚠️ Ja |
-| **- 0 N - Indie on Radio** | 📻 Regulär | 45.3 Min | 4.9% | :01 - :03 | `f0ff3aac60` | 📢3 🎙️26 | ⚠️ Ja |
-| **Sunshine Live - Lounge** | 📻 Regulär | 45.6 Min | 1.0% | :01 - :03 | `f0052f53a3` | 📢1 🎙️5 | 🛡️ Nein |
-| **Freies Radio Salzkammergut** | 📻 Regulär | 45.3 Min | 10.3% | :00 - :03 | `1f636ee5e0` | 🚗1 🎙️65 | ⚠️ Ja |
-| **Technolovers DEEP HOUSE** | 📻 Regulär | 45.4 Min | 0.0% | :01 - :03 | - | - | 🛡️ Nein |
+| **Sunshine Live - Techno** | 📻 Regulär | 50.8 Min | 1.1% | :59 - :03 | `e76e8e1043` | 📢3 🌦️1 🎙️4 | 🛡️ Nein |
+| **90s90s Hits** | 📻 Regulär | 50.9 Min | 5.6% | :00 - :02 | `9b7a242040` | 📢1 🌦️6 🚗1 🎙️30 | ⚠️ Ja |
+| **KroneHit Digital** | 📻 Regulär | 50.6 Min | 13.8% | :00 - :03 | `5ea1d70003` | 📢7 🌦️7 🚗2 🎙️79 | ⚠️ Ja |
+| **Darksynth Radio** | 📻 Regulär | 50.7 Min | 0.3% | :01 - :03 | `5e29c249e5` | - | ⚠️ Ja |
+| **- 0 N - Chillout on Radio** | 📻 Regulär | 50.5 Min | 0.7% | :58 - :03 | `85eaf4e26f` | 🎙️4 | ⚠️ Ja |
+| **Radio Grün Weiß** | 📻 Regulär | 50.6 Min | 19.9% | :58 - :03 | `b3bd30d33e` | 📢7 🌦️7 🎙️114 | ⚠️ Ja |
+| **Radio Burgenland HQ** | 📻 Regulär | 50.7 Min | 9.0% | :59 - :03 | `568af29de0` | 📢4 🌦️4 🎙️51 | 🛡️ Nein |
+| **ORF Radio Kärnten** | 📻 Regulär | 50.6 Min | 39.5% | :00 - :03 | `01181a96da` | 📰1 📢10 🌦️6 🚗1 🎙️251 | ⚠️ Ja |
+| **0nlineradio SOFT ROCK** | 📻 Regulär | 50.4 Min | 1.8% | :01 - :03 | `46ce3c2fda` | 📢1 🚗1 🎙️7 | ⚠️ Ja |
+| **RADIO BOB! BOBs Alternative Rock** | 📻 Regulär | 50.6 Min | 2.8% | :01 - :03 | `fe0b0047d7` | 🎙️19 | 🛡️ Nein |
+| **Antenne Bayern - Top 40** | 📻 Regulär | 50.8 Min | 4.0% | :01 - :03 | `8f327e53d7` | 📢2 🌦️2 🚗1 🎙️23 | 🛡️ Nein |
+| **ORF Radio Wien | HQ** | 📻 Regulär | 50.7 Min | 75.4% | :55 - :04 | `2dea033acf` | 📰1 📢14 🌦️3 🚗18 🎙️461 | ⚠️ Ja |
+| **Radio Xmas** | 📻 Regulär | 50.6 Min | 8.8% | :01 - :03 | `c02032ba2b` | 🌦️1 🎙️60 | ⚠️ Ja |
+| **Laut.FM 1000 Oldies** | 📻 Regulär | 50.7 Min | 4.0% | :59 - :00 | `5dee1128ec` | 📢1 🎙️22 | ⚠️ Ja |
+| **Life Radio** | 📻 Regulär | 50.4 Min | 14.5% | :56 - :59 | `f5328240dd` | 📢10 🌦️3 🚗5 🎙️83 | ⚠️ Ja |
+| **RADIO BOB! BOBs Metal** | 📻 Regulär | 50.6 Min | 0.0% | :01 - :03 | - | - | 🛡️ Nein |
+| **98.8 Kiss FM** | 📻 Regulär | 50.4 Min | 5.9% | :01 - :03 | `2fc17da2b2` | 🌦️2 🎙️42 | 🛡️ Nein |
+| **i love radio - hip hop turnup** | 📻 Regulär | 50.4 Min | 32.6% | :58 - :03 | `f749aa2900` | 📢7 🌦️6 🚗1 🎙️225 | ⚠️ Ja |
+| **- 0 N - 90s on Radio** | 📻 Regulär | 50.3 Min | 2.1% | :01 - :03 | `95eaf5f06e` | 📢2 🎙️13 | 🛡️ Nein |
+| **Antenne Vorarlberg Partymix** | 📻 Regulär | 50.8 Min | 6.4% | :00 - :03 | `0f5c4441e5` | 📢8 🎙️35 | ⚠️ Ja |
+| **Radio Arabella Oberösterreich** | 📻 Regulär | 50.9 Min | 14.3% | :58 - :03 | `8231111081` | 📰1 📢15 🌦️11 🚗6 🎙️65 | ⚠️ Ja |
+| **Life Radio Chill Out** | 📻 Regulär | 50.4 Min | 4.1% | :01 - :03 | `9640501850` | 📢3 🌦️1 🎙️23 | ⚠️ Ja |
+| **- 0 N - Indie on Radio** | 📻 Regulär | 50.3 Min | 4.4% | :01 - :03 | `f0ff3aac60` | 📢3 🎙️26 | ⚠️ Ja |
+| **Sunshine Live - Lounge** | 📻 Regulär | 50.6 Min | 0.9% | :01 - :03 | `f0052f53a3` | 📢1 🎙️5 | 🛡️ Nein |
+| **Freies Radio Salzkammergut** | 📻 Regulär | 50.3 Min | 9.3% | :00 - :03 | `1f636ee5e0` | 🚗1 🎙️65 | ⚠️ Ja |
+| **Technolovers DEEP HOUSE** | 📻 Regulär | 50.4 Min | 0.0% | :01 - :03 | - | - | 🛡️ Nein |
 
 ---
 
