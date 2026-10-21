@@ -65,6 +65,14 @@ class AudioContentClassifier(context: Context? = null) {
         private set
 
     @Volatile
+    var isPureSpeech: Boolean = false
+        private set
+
+    @Volatile
+    var hasAdMetadata: Boolean = false
+        private set
+
+    @Volatile
     var detectionReason: String = "Musik"
         private set
 
@@ -203,8 +211,8 @@ class AudioContentClassifier(context: Context? = null) {
         val hasAdKeyword = adKeywords.any { keyword ->
             title.contains("\\b$keyword\\b".toRegex()) || title == keyword
         }
+        hasAdMetadata = hasAdKeyword
 
-        // Strong sign: ICY title is clearly an artist - track format
         val isSongPattern = title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")
 
         if (hasAdKeyword) {
@@ -212,11 +220,24 @@ class AudioContentClassifier(context: Context? = null) {
             speechConfidence = 0.95f
             musicConfidence = 0.05f
             isSpeechDetected = true
+            isPureSpeech = true
             detectionReason = "Werbung / News (Metadaten)"
             return
         }
 
-        // --- 2. Acoustic & AI Classification ---
+        // --- 2. Song Pattern Protection (Prevents Vocal/Singing False-Positives During Active Songs) ---
+        if (isSongPattern && (latestAiMusicScore >= latestAiSpeechScore || latestAiSpeechScore < 0.65f)) {
+            // Track metadata indicates a song and AI confirms music or non-extreme speech -> Force Music!
+            smoothedSpeechScore = (0.80f * smoothedSpeechScore) + (0.20f * 0.05f)
+            speechConfidence = smoothedSpeechScore
+            musicConfidence = 1.0f - speechConfidence
+            isSpeechDetected = false
+            isPureSpeech = false
+            detectionReason = "Musik ($currentTrackTitle)"
+            return
+        }
+
+        // --- 3. Acoustic & AI Classification ---
         val avgRms = subFrameRms.average().toFloat()
         if (avgRms < 0.005f) {
             // Near silence / stream pause -> don't trigger speech false-positive
@@ -224,6 +245,7 @@ class AudioContentClassifier(context: Context? = null) {
             speechConfidence = smoothedSpeechScore
             musicConfidence = 1.0f - speechConfidence
             isSpeechDetected = false
+            isPureSpeech = false
             detectionReason = if (isSongPattern) "Musik ($currentTrackTitle)" else "Stille / Pause"
             return
         }
@@ -255,27 +277,23 @@ class AudioContentClassifier(context: Context? = null) {
         val rmsStdDev = sqrt(rmsVarianceSum / windowSize)
         val rmsCoeffVar = if (avgRms > 0.001f) (rmsStdDev / avgRms) else 0f
 
-        // Robust Feature Combination (Prevents Drum/Beat False Positives)
-        // Speech (with or without background music) requires BOTH syllabic RMS variation AND consonant zero-crossing dynamics
         val hasSpeechEnvelope = (rmsCoeffVar >= 0.28f) || (lowEnergyRate >= 0.28f) || (rmsCoeffVar >= 0.22f && lowEnergyRate >= 0.20f)
         val hasSpeechConsonants = (zcrVariance >= 0.0035f) || (avgZcr >= 0.16f && zcrVariance >= 0.002f)
 
         var acousticSpeechScore = 0.0f
         if (hasSpeechEnvelope && hasSpeechConsonants) {
-            acousticSpeechScore = 0.85f // Clear speech (with or without music bed)
+            acousticSpeechScore = 0.85f
         } else if (hasSpeechEnvelope) {
-            acousticSpeechScore = 0.35f // Moderate modulation (e.g. dynamic track or intro)
+            acousticSpeechScore = 0.35f
         } else if (hasSpeechConsonants) {
             acousticSpeechScore = 0.25f
         }
 
-        // Only apply song pattern discount if acoustic speech score is low
         var metadataAdScore = 0.0f
         if (isSongPattern && acousticSpeechScore < 0.35f) {
             metadataAdScore = -0.20f
         }
 
-        // --- 3. Minute-of-Hour Temporal Prior (from PC-learned heatmap or default heuristic) ---
         val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
         val learnedPrior = stationMinutePrior
         var timePrior = if (learnedPrior != null) {
@@ -302,13 +320,11 @@ class AudioContentClassifier(context: Context? = null) {
 
         rawSpeech = rawSpeech.coerceIn(0.0f, 1.0f)
 
-        // Exponential Moving Average (EMA) smoothing to eliminate single-frame UI flickering
         smoothedSpeechScore = (0.75f * smoothedSpeechScore) + (0.25f * rawSpeech)
 
         speechConfidence = smoothedSpeechScore
         musicConfidence = 1.0f - smoothedSpeechScore
 
-        // Hysteresis State Machine (Anti-Flicker) with dynamic Sensitivity:
         val onThreshold = sensitivityThreshold.coerceIn(0.25f, 0.75f)
         val offThreshold = (onThreshold - 0.15f).coerceAtLeast(0.15f)
 
@@ -318,10 +334,12 @@ class AudioContentClassifier(context: Context? = null) {
             smoothedSpeechScore >= onThreshold
         }
 
+        isPureSpeech = (latestAiSpeechScore >= 0.60f && latestAiMusicScore < 0.25f)
+
         detectionReason = when {
             hasAdKeyword -> "Werbung / News (Metadaten)"
+            isPureSpeech -> "Nachrichten / Talk (Reine Sprache)"
             isTfliteLoaded && latestAiSpeechScore >= 0.20f -> "Sprache / Talk (YAMNet AI)"
-            isSpeechDetected && (currentMinute in 57..59 || currentMinute in 0..4) -> "Nachrichten / Talk (:00)"
             isSpeechDetected -> "Sprache / Talk"
             isSongPattern -> "Musik ($currentTrackTitle)"
             else -> "Musik"
@@ -342,6 +360,8 @@ class AudioContentClassifier(context: Context? = null) {
         speechConfidence = 0.1f
         musicConfidence = 0.9f
         isSpeechDetected = false
+        isPureSpeech = false
+        hasAdMetadata = false
         detectionReason = "Musik"
     }
 }

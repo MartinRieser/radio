@@ -138,6 +138,7 @@ class SmartSwitchCoordinator(
                 audioClassifier.stationMinutePrior = stationPrior
 
                 val isSpeech = audioClassifier.isSpeechDetected
+                val isPureSpeechOrAd = audioClassifier.isPureSpeech || audioClassifier.hasAdMetadata
                 val isJingleMatched = AudioBridge.signalCollector?.isJingleMatched == true
 
                 intelligenceRepository.recordSpeechSample(station, minuteOfHour, isSpeech)
@@ -146,9 +147,15 @@ class SmartSwitchCoordinator(
                     consecutiveSpeechSeconds += if (isJingleMatched) 2 else 1
                     consecutiveMusicSeconds = 0
                     _speechSeconds.value = consecutiveSpeechSeconds
-                    val tolerance = intelligenceRepository.speechToleranceSeconds.value
 
-                    if (consecutiveSpeechSeconds >= tolerance) {
+                    val baseTolerance = intelligenceRepository.speechToleranceSeconds.value
+                    val requiredTolerance = when {
+                        isPureSpeechOrAd -> 2 // Fast switch (2 seconds) on pure news/ads
+                        isJingleMatched -> (baseTolerance / 2).coerceAtLeast(2)
+                        else -> baseTolerance // Standard tolerance for DJ comments
+                    }
+
+                    if (consecutiveSpeechSeconds >= requiredTolerance) {
                         triggerSmartSwitch()
                         consecutiveSpeechSeconds = 0
                         consecutiveMusicSeconds = 0
@@ -156,7 +163,7 @@ class SmartSwitchCoordinator(
                     } else {
                         _status.value = SmartSwitchStatus.SpeechDetected(
                             elapsedSeconds = consecutiveSpeechSeconds,
-                            maxSeconds = tolerance
+                            maxSeconds = requiredTolerance
                         )
                     }
                 } else {
