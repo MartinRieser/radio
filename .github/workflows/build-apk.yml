@@ -23,10 +23,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK 35 & NDK
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;26.1.10909125" || true
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -36,13 +32,7 @@ jobs:
           chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew :app:assembleDebug -x lint -x test --stacktrace
-        env:
-          ANDROID_HOME: /usr/local/lib/android/sdk
-          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-
-      - name: Copy APK to root
-        run: cp app/build/outputs/apk/debug/app-debug.apk PulseCast-debug.apk
+        run: ./gradlew :app:assembleDebug --stacktrace
 
       - name: Read version from version.json
         id: version
@@ -58,7 +48,6 @@ jobs:
           name: ${{ steps.version.outputs.name }}
           body: "Automated Release - PulseCast Live Radio & Streams Android App"
           files: |
-            PulseCast-debug.apk
             app/build/outputs/apk/debug/app-debug.apk
           draft: false
           prerelease: false
