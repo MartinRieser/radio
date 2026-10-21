@@ -62,9 +62,6 @@ class StationIntelligenceRepository(private val context: Context) {
     private val _speechToleranceSeconds = MutableStateFlow(prefs.getInt("speech_tolerance_seconds", 10))
     val speechToleranceSeconds: StateFlow<Int> = _speechToleranceSeconds.asStateFlow()
 
-    private val _bounceBackMinutes = MutableStateFlow(prefs.getInt("bounce_back_minutes", 7))
-    val bounceBackMinutes: StateFlow<Int> = _bounceBackMinutes.asStateFlow()
-
     private val _speechSensitivity = MutableStateFlow(prefs.getFloat("speech_sensitivity", 0.50f))
     val speechSensitivity: StateFlow<Float> = _speechSensitivity.asStateFlow()
 
@@ -317,12 +314,6 @@ class StationIntelligenceRepository(private val context: Context) {
         val clamped = seconds.coerceIn(5, 30)
         _speechToleranceSeconds.value = clamped
         prefs.edit().putInt("speech_tolerance_seconds", clamped).apply()
-    }
-
-    fun setBounceBackMinutes(minutes: Int) {
-        val clamped = minutes.coerceIn(1, 15)
-        _bounceBackMinutes.value = clamped
-        prefs.edit().putInt("bounce_back_minutes", clamped).apply()
     }
 
     fun setSpeechSensitivity(sensitivity: Float) {

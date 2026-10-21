@@ -215,6 +215,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun playPrevious() {
+        val original = playbackController.smartSwitchCoordinator.originalSwitchedStation.value
+        if (original != null) {
+            playbackController.smartSwitchCoordinator.returnToOriginalStationAndIgnoreSpeech()
+            return
+        }
         val list = _stations.value
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
@@ -271,6 +276,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val smartSwitchStrategy = playbackController.intelligenceRepository.smartSwitchStrategy
     val specificFallbackKey = playbackController.intelligenceRepository.specificFallbackKey
     val miningMode = playbackController.intelligenceRepository.miningMode
+    val originalSwitchedStation = playbackController.smartSwitchCoordinator.originalSwitchedStation
 
     fun setSmartSwitchEnabled(enabled: Boolean) {
         playbackController.intelligenceRepository.setSmartSwitchEnabled(enabled)
@@ -278,10 +284,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setSpeechToleranceSeconds(seconds: Int) {
         playbackController.intelligenceRepository.setSpeechToleranceSeconds(seconds)
-    }
-
-    fun setBounceBackMinutes(minutes: Int) {
-        playbackController.intelligenceRepository.setBounceBackMinutes(minutes)
     }
 
     fun setSpeechSensitivity(sensitivity: Float) {
@@ -305,11 +307,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun returnToOriginalStation() {
-        playbackController.smartSwitchCoordinator.returnToOriginalStation()
-    }
-
-    fun cancelBounceBack() {
-        playbackController.smartSwitchCoordinator.cancelBounceBack()
+        playbackController.smartSwitchCoordinator.returnToOriginalStationAndIgnoreSpeech()
     }
 
     override fun onCleared() {

@@ -48,7 +48,6 @@ import com.pulsecast.radio.ui.theme.TextSecondary
 fun SmartSwitchDialog(
     isEnabled: Boolean,
     toleranceSeconds: Int,
-    bounceBackMinutes: Int,
     speechSensitivity: Float,
     speechResetHoldSeconds: Int,
     smartSwitchStrategy: String,
@@ -59,7 +58,6 @@ fun SmartSwitchDialog(
     onSyncIntelligenceClick: () -> Unit = {},
     onEnabledChanged: (Boolean) -> Unit,
     onToleranceChanged: (Int) -> Unit,
-    onBounceBackChanged: (Int) -> Unit,
     onSensitivityChanged: (Float) -> Unit,
     onResetHoldChanged: (Int) -> Unit,
     onStrategyChanged: (String) -> Unit,
@@ -447,50 +445,6 @@ fun SmartSwitchDialog(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = BorderSubtle)
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Bounce-Back
-                Text(
-                    text = "Rückkehr zum Hauptsender (Bounce-Back)",
-                    color = TextPrimary,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "Kehrt nach ca. $bounceBackMinutes Minuten automatisch zurück, sobald der Hauptsender wieder Musik spielt.",
-                    color = TextMuted,
-                    fontSize = 11.sp
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    listOf(3, 5, 7, 10).forEach { m ->
-                        val isSelected = bounceBackMinutes == m
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(if (isSelected) Color(0xFF6366F1) else Color(0xFF0F1523))
-                                .clickable { onBounceBackChanged(m) }
-                                .padding(vertical = 6.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = if (m == 7) "${m} Min (Std)" else "${m} Min",
-                                color = if (isSelected) Color.White else TextSecondary,
-                                fontSize = 11.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Learning & Fallback Explanatory Info Card
                 Box(
@@ -512,7 +466,7 @@ fun SmartSwitchDialog(
                             text = "• 1. Priorität: Favoriten mit '100% Musik' & ohne News.\n" +
                                    "• 2. Priorität: Elektronische Musiksender (SomaFM, Lofi Cafe, Ibiza).\n" +
                                    "• Stumme Vorab-Prüfung: Wartet Pre-Roll Werbung stumm ab, bevor Ton wechselt.\n" +
-                                   "• Selbstlernend: Merkt sich feste Nachrichtenzeiten (:00 / :30) jedes Senders.",
+                                   "• Manuelle Rückkehr: Mit dem Zurück-Knopf kehrst du sofort zum Hauptsender zurück und ignorierst dessen Sprache.",
                             color = TextSecondary,
                             fontSize = 10.sp,
                             lineHeight = 14.sp

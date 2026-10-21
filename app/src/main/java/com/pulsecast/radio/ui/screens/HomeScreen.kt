@@ -71,6 +71,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pulsecast.radio.model.Station
+import com.pulsecast.radio.playback.SmartSwitchStatus
 import com.pulsecast.radio.ui.components.AppUpdateDialog
 import com.pulsecast.radio.ui.components.PlayerBar
 import com.pulsecast.radio.ui.components.SleepTimerDialog
@@ -108,9 +109,9 @@ fun HomeScreen(viewModel: MainViewModel) {
     var showSleepDialog by remember { mutableStateOf(false) }
 
     val smartSwitchStatus by viewModel.playbackController.smartSwitchCoordinator.status.collectAsState()
+    val originalSwitchedStation by viewModel.originalSwitchedStation.collectAsState()
     val isSmartSwitchEnabled by viewModel.playbackController.intelligenceRepository.isSmartSwitchEnabled.collectAsState()
     val speechToleranceSeconds by viewModel.playbackController.intelligenceRepository.speechToleranceSeconds.collectAsState()
-    val bounceBackMinutes by viewModel.playbackController.intelligenceRepository.bounceBackMinutes.collectAsState()
     val speechSensitivity by viewModel.speechSensitivity.collectAsState()
     val speechResetHoldSeconds by viewModel.speechResetHoldSeconds.collectAsState()
     val smartSwitchStrategy by viewModel.smartSwitchStrategy.collectAsState()
@@ -135,12 +136,10 @@ fun HomeScreen(viewModel: MainViewModel) {
                 isBuffering = isBuffering,
                 liveSeconds = liveSeconds,
                 trackTitle = trackTitle,
-                smartSwitchStatus = smartSwitchStatus,
+                hasOriginalSwitchedStation = (originalSwitchedStation != null),
                 onPlayPauseClick = { viewModel.togglePlayPause() },
                 onNextClick = { viewModel.playNext() },
-                onPrevClick = { viewModel.playPrevious() },
-                onReturnNowClick = { viewModel.returnToOriginalStation() },
-                onStayHereClick = { viewModel.cancelBounceBack() }
+                onPrevClick = { viewModel.playPrevious() }
             )
         }
     ) { paddingValues ->
@@ -162,6 +161,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                     HeaderView(
                         sleepMinutes = sleepMinutes,
                         isSmartSwitchEnabled = isSmartSwitchEnabled,
+                        smartSwitchStatus = smartSwitchStatus,
                         onSleepClick = { showSleepDialog = true },
                         onSmartSwitchClick = { showSmartSwitchDialog = true }
                     )
@@ -226,6 +226,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                 HeaderView(
                     sleepMinutes = sleepMinutes,
                     isSmartSwitchEnabled = isSmartSwitchEnabled,
+                    smartSwitchStatus = smartSwitchStatus,
                     onSleepClick = { showSleepDialog = true },
                     onSmartSwitchClick = { showSmartSwitchDialog = true }
                 )
@@ -288,7 +289,6 @@ fun HomeScreen(viewModel: MainViewModel) {
         SmartSwitchDialog(
             isEnabled = isSmartSwitchEnabled,
             toleranceSeconds = speechToleranceSeconds,
-            bounceBackMinutes = bounceBackMinutes,
             speechSensitivity = speechSensitivity,
             speechResetHoldSeconds = speechResetHoldSeconds,
             smartSwitchStrategy = smartSwitchStrategy,
@@ -299,7 +299,6 @@ fun HomeScreen(viewModel: MainViewModel) {
             onSyncIntelligenceClick = { viewModel.syncIntelligence(forced = true) },
             onEnabledChanged = { viewModel.setSmartSwitchEnabled(it) },
             onToleranceChanged = { viewModel.setSpeechToleranceSeconds(it) },
-            onBounceBackChanged = { viewModel.setBounceBackMinutes(it) },
             onSensitivityChanged = { viewModel.setSpeechSensitivity(it) },
             onResetHoldChanged = { viewModel.setSpeechResetHoldSeconds(it) },
             onStrategyChanged = { viewModel.setSmartSwitchStrategy(it) },
@@ -326,9 +325,31 @@ fun HomeScreen(viewModel: MainViewModel) {
 private fun HeaderView(
     sleepMinutes: Int,
     isSmartSwitchEnabled: Boolean,
+    smartSwitchStatus: SmartSwitchStatus,
     onSleepClick: () -> Unit,
     onSmartSwitchClick: () -> Unit
 ) {
+    val buttonBgColor = when {
+        !isSmartSwitchEnabled -> BgSurfaceCard
+        smartSwitchStatus is SmartSwitchStatus.SpeechDetected -> Color(0xFFF59E0B).copy(alpha = 0.25f)
+        smartSwitchStatus is SmartSwitchStatus.Switched -> Color(0xFF6366F1).copy(alpha = 0.25f)
+        else -> AccentPrimary.copy(alpha = 0.2f)
+    }
+
+    val buttonTextColor = when {
+        !isSmartSwitchEnabled -> TextSecondary
+        smartSwitchStatus is SmartSwitchStatus.SpeechDetected -> Color(0xFFF59E0B)
+        smartSwitchStatus is SmartSwitchStatus.Switched -> Color(0xFFA5B4FC)
+        else -> AccentPrimary
+    }
+
+    val buttonText = when {
+        !isSmartSwitchEnabled -> "Aus"
+        smartSwitchStatus is SmartSwitchStatus.SpeechDetected -> "Rede"
+        smartSwitchStatus is SmartSwitchStatus.Switched -> "Gewechselt"
+        else -> "Smart"
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -373,11 +394,11 @@ private fun HeaderView(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Smart Switch Button
+            // Smart Switch Button with Dynamic State Color
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
-                    .background(if (isSmartSwitchEnabled) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard)
+                    .background(buttonBgColor)
                     .clickable(onClick = onSmartSwitchClick)
                     .padding(horizontal = 10.dp, vertical = 6.dp),
                 contentAlignment = Alignment.Center
@@ -386,13 +407,13 @@ private fun HeaderView(
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,
                         contentDescription = "Smart Switch",
-                        tint = if (isSmartSwitchEnabled) AccentPrimary else TextSecondary,
+                        tint = buttonTextColor,
                         modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = if (isSmartSwitchEnabled) "Smart" else "Aus",
-                        color = if (isSmartSwitchEnabled) AccentPrimary else TextSecondary,
+                        text = buttonText,
+                        color = buttonTextColor,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
                     )
