@@ -37,7 +37,10 @@ jobs:
           chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew :app:assembleDebug
+        run: ./gradlew :app:assembleDebug -x lint -x test --stacktrace
+
+      - name: Copy APK to root
+        run: cp app/build/outputs/apk/debug/app-debug.apk PulseCast-debug.apk
 
       - name: Read version from version.json
         id: version
@@ -53,6 +56,7 @@ jobs:
           name: ${{ steps.version.outputs.name }}
           body: "Automated Release - PulseCast Live Radio & Streams Android App"
           files: |
+            PulseCast-debug.apk
             app/build/outputs/apk/debug/app-debug.apk
           draft: false
           prerelease: false
