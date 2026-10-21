@@ -1,0 +1,422 @@
+[
+  {
+    "stationuuid": "78012206-1aa1-11e9-a80b-52543be04c81",
+    "name": "MANGORADIO",
+    "url": "https://mangoradio.stream.laut.fm/mangoradio",
+    "country": "Germany",
+    "tags": "music,variety"
+  },
+  {
+    "stationuuid": "960cca40-0601-11e8-ae97-52543be04c81",
+    "name": "Rock Antenne - Heavy Metal",
+    "url": "http://mp3channels.webradio.rockantenne.de/heavy-metal",
+    "country": "Germany",
+    "tags": "heavy metal,metal"
+  },
+  {
+    "stationuuid": "9606f727-0601-11e8-ae97-52543be04c81",
+    "name": "1LIVE",
+    "url": "http://wdr-1live-live.icecast.wdr.de/wdr/1live/live/mp3/128/stream.mp3",
+    "country": "Germany",
+    "tags": "ard,public radio,rock,top 40,wdr"
+  },
+  {
+    "stationuuid": "9637a1b2-0601-11e8-ae97-52543be04c81",
+    "name": "90s90s Hits",
+    "url": "http://streams.90s90s.de/pop/mp3-192/streams.90s90s.de/",
+    "country": "Germany",
+    "tags": "90s,hits,pop"
+  },
+  {
+    "stationuuid": "962c0376-0601-11e8-ae97-52543be04c81",
+    "name": "Sunshine Live - Die 90er",
+    "url": "http://stream.sunshine-live.de/90er/mp3-192/stream.sunshine-live.de",
+    "country": "Germany",
+    "tags": "90s,dance,electronica,eurodance"
+  },
+  {
+    "stationuuid": "960594a6-0601-11e8-ae97-52543be04c81",
+    "name": "Rock Antenne",
+    "url": "http://mp3channels.webradio.rockantenne.de/rockantenne",
+    "country": "Germany",
+    "tags": "rock"
+  },
+  {
+    "stationuuid": "342a0e53-ab9b-11e9-88f4-52543be04c81",
+    "name": "TranceBase.FM - AAC HD 256k",
+    "url": "http://listen.trancebase.fm/tunein-aac-hd-pls",
+    "country": "Germany",
+    "tags": "electronic,techno,trance"
+  },
+  {
+    "stationuuid": "9605739a-0601-11e8-ae97-52543be04c81",
+    "name": "Antenne Bayern",
+    "url": "http://mp3channels.webradio.antenne.de/antenne",
+    "country": "Germany",
+    "tags": "top 40"
+  },
+  {
+    "stationuuid": "9627c2e6-0601-11e8-ae97-52543be04c81",
+    "name": "Sunshine Live - Techno",
+    "url": "http://stream.sunshine-live.de/techno/mp3-192/stream.sunshine-live.de/",
+    "country": "Germany",
+    "tags": "dance,electronic,minimal,techno"
+  },
+  {
+    "stationuuid": "960d063e-0601-11e8-ae97-52543be04c81",
+    "name": "Sunshine Live",
+    "url": "http://stream.sunshine-live.de/live/mp3-192/stream.sunshine-live.de/",
+    "country": "Germany",
+    "tags": "dance,trance"
+  },
+  {
+    "stationuuid": "b7e7bb7b-b41a-11e8-afe1-52543be04c81",
+    "name": "90s90s Dance HQ",
+    "url": "http://streams.90s90s.de/eurodance/mp3-192/radiode/",
+    "country": "Germany",
+    "tags": "90s"
+  },
+  {
+    "stationuuid": "6cddaca1-f2c1-11e8-a471-52543be04c81",
+    "name": "- 0 N - 70s on Radio",
+    "url": "https://0n-70s.radionetz.de/0n-70s.mp3",
+    "country": "Germany",
+    "tags": "70er,70s,oldies,pop"
+  },
+  {
+    "stationuuid": "ca2d0aa2-6fc8-4761-beb6-ce692a4a9bf5",
+    "name": "Best Of Rock.FM Alternative Rock",
+    "url": "https://bestofrockfm.stream.vip/altrock/mp3-256/bestofrock.fm/",
+    "country": "Germany",
+    "tags": "alternative metal,alternative rock,grunge,indie rock,punkrock,rock"
+  },
+  {
+    "stationuuid": "8a41b60c-f115-11e8-a471-52543be04c81",
+    "name": "- 0 N - 80s on Radio",
+    "url": "https://0n-80s.radionetz.de/0n-80s.mp3",
+    "country": "Germany",
+    "tags": "80er,80s,oldies,pop"
+  },
+  {
+    "stationuuid": "960ebc25-0601-11e8-ae97-52543be04c81",
+    "name": "Reggae Radio Rastamusic.com",
+    "url": "http://origin-rastamusic.streamguys1.com/rastamusic.mp3",
+    "country": "Germany",
+    "tags": "reggae"
+  },
+  {
+    "stationuuid": "96056147-0601-11e8-ae97-52543be04c81",
+    "name": "Hit Radio FFH",
+    "url": "http://mp3.ffh.de/radioffh/hqlivestream.mp3",
+    "country": "Germany",
+    "tags": "pop,top 40"
+  },
+  {
+    "stationuuid": "1b762b21-2ec6-412a-a231-fa34a96f4f99",
+    "name": "80s80s Radio",
+    "url": "http://regiocast.streamabc.net/regc-80s80smweb2517500-mp3-192-1672667?sABC=6nq36rn3%230%236q8s7o7o3p7411o9n0871834qs5r90so%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1792241315",
+    "country": "Germany",
+    "tags": "80s,new wave,pop,rock"
+  },
+  {
+    "stationuuid": "96154a1e-0601-11e8-ae97-52543be04c81",
+    "name": "Total instrumental",
+    "url": "http://stream.laut.fm/total-instrumental",
+    "country": "Germany",
+    "tags": "ambient,dance,electronic,instrumental"
+  },
+  {
+    "stationuuid": "9605d022-0601-11e8-ae97-52543be04c81",
+    "name": "Hit Radio FFH - 80er",
+    "url": "http://mp3.ffh.de/ffhchannels/hq80er.mp3",
+    "country": "Germany",
+    "tags": "80s"
+  },
+  {
+    "stationuuid": "8f1e8acf-2ce6-4542-a423-bc29ea514e4a",
+    "name": "__TRANCE__ by rautemusik (rm.fm)",
+    "url": "https://trance-high.rautemusik.fm/?ref=radiobrowser",
+    "country": "Germany",
+    "tags": "electro,electro house,electronic,hits,progressive psytrance,progressive trance,psytrance,trance,voca"
+  },
+  {
+    "stationuuid": "960567ca-0601-11e8-ae97-52543be04c81",
+    "name": "Hit Radio FFH - Eurodance",
+    "url": "http://mp3.ffh.de/ffhchannels/hqeurodance.mp3?aw_0_req.gdpr=true",
+    "country": "Germany",
+    "tags": "eurodance"
+  },
+  {
+    "stationuuid": "96057c18-0601-11e8-ae97-52543be04c81",
+    "name": "Austrian Rock Radio",
+    "url": "http://live.antenne.at/arr",
+    "country": "Austria",
+    "tags": "rock"
+  },
+  {
+    "stationuuid": "8a3685e2-711e-4764-9080-6fa143c33014",
+    "name": "ORF Radio Wien",
+    "url": "http://orf-live.ors-shoutcast.at/wie-q1a",
+    "country": "Austria",
+    "tags": "orf"
+  },
+  {
+    "stationuuid": "96061367-0601-11e8-ae97-52543be04c81",
+    "name": "KroneHit Digital",
+    "url": "http://onair-ha1.krone.at/kronehit1058.mp3",
+    "country": "Austria",
+    "tags": ""
+  },
+  {
+    "stationuuid": "206f93c5-5f3c-4ba1-82c2-19a42582fcc2",
+    "name": "FM4 | ORF",
+    "url": "https://orf-live.ors-shoutcast.at/fm4-q1a",
+    "country": "Austria",
+    "tags": "orf,alternative mainstream,electronic,pop,rock,public radio"
+  },
+  {
+    "stationuuid": "9647d94c-0601-11e8-ae97-52543be04c81",
+    "name": "KroneHit Radio",
+    "url": "http://onair-ha1.krone.at/kronehit64.aac",
+    "country": "Austria",
+    "tags": "adult contemporary"
+  },
+  {
+    "stationuuid": "d0d9c01c-5e0d-11ea-be63-52543be04c81",
+    "name": "88.6 Hard Rock",
+    "url": "http://radio886.at/streams/88.6_Hard_Rock/mp3",
+    "country": "Austria",
+    "tags": "hard rock"
+  },
+  {
+    "stationuuid": "e723f7f8-0db1-4bc5-a64c-64d8377f9f9a",
+    "name": "ORF Hitradio Ö3 | HQ",
+    "url": "https://orf-live.ors-shoutcast.at/oe3-q2a",
+    "country": "Austria",
+    "tags": "orf,pop"
+  },
+  {
+    "stationuuid": "1e13ed4e-daa9-4728-8550-e08d89c1c8e7",
+    "name": "FM4 | ORF | HQ",
+    "url": "https://orf-live.ors-shoutcast.at/fm4-q2a",
+    "country": "Austria",
+    "tags": "orf,alternative mainstream,electronic,pop,rock,public radio"
+  },
+  {
+    "stationuuid": "9620cfc5-0601-11e8-ae97-52543be04c81",
+    "name": "Radino - Mein Kinderradio Wien 103,2",
+    "url": "http://stream01.zogl.net:8906/stream",
+    "country": "Austria",
+    "tags": "children,dab+,kids"
+  },
+  {
+    "stationuuid": "af1d60c9-5e0d-11ea-be63-52543be04c81",
+    "name": "radio 88.6",
+    "url": "http://radio886.at/streams/radio_88.6/mp3",
+    "country": "Austria",
+    "tags": "rock"
+  },
+  {
+    "stationuuid": "54b85bd0-8b71-11e9-ad01-52543be04c81",
+    "name": "Darksynth Radio",
+    "url": "http://stream.laut.fm/darksynthradio",
+    "country": "Austria",
+    "tags": "80s,darkwave,electronic,electropop,gothic,industrial,minimal wave,synthpop"
+  },
+  {
+    "stationuuid": "17142ca0-4faf-11e9-a4d7-52543be04c81",
+    "name": "CITY23",
+    "url": "http://live.radiomax.technology/city23",
+    "country": "Austria",
+    "tags": "dab+,easy listening"
+  },
+  {
+    "stationuuid": "394c0c15-b64b-4d82-8be3-4e54afa0d475",
+    "name": "1000 ELECTRONIC DANCE MUSIC",
+    "url": "http://stream.laut.fm/1000-electronic-dance-music",
+    "country": "Austria",
+    "tags": "dance & electronic,edm,hardstyle"
+  },
+  {
+    "stationuuid": "c4a15de4-ce45-401f-bfb1-f98f818a74f0",
+    "name": "ORF Radio Niederösterreich | HQ",
+    "url": "http://orf-live.ors-shoutcast.at/noe-q2a",
+    "country": "Austria",
+    "tags": "orf"
+  },
+  {
+    "stationuuid": "c64828ba-99b9-407b-bb7f-3f1c184447d2",
+    "name": "Radio U1 Tirol",
+    "url": "https://live.u1-radio.at/",
+    "country": "Austria",
+    "tags": ""
+  },
+  {
+    "stationuuid": "0d37b24b-204c-47f9-84df-4dcbfa97ba33",
+    "name": "Radio Vorarlberg",
+    "url": "https://orf-live.ors-shoutcast.at/vbg-q1a",
+    "country": "Austria",
+    "tags": "orf"
+  },
+  {
+    "stationuuid": "e58e609b-3712-4136-86cf-5ac872192918",
+    "name": "Eurodance-X-Press",
+    "url": "https://secureonair.krone.at/eurodance.aac",
+    "country": "Austria",
+    "tags": "90s,dance,eurodance,top40"
+  },
+  {
+    "stationuuid": "31858a05-51df-4ff4-9d62-4f0a22fad870",
+    "name": "DrumandBass.FM",
+    "url": "http://stream.laut.fm/drumandbass_fm",
+    "country": "Austria",
+    "tags": ""
+  },
+  {
+    "stationuuid": "477d5e54-24b0-48dd-97f0-5cf4f047eb55",
+    "name": "ORF Tirol HQ",
+    "url": "http://orf-live.ors-shoutcast.at/tir-q2a",
+    "country": "Austria",
+    "tags": "orf,local radio,volkstümlich"
+  },
+  {
+    "stationuuid": "c1ca7ee1-2534-4188-ae4d-be40836b59b0",
+    "name": "Mountain Reggae Radio",
+    "url": "https://mountainreggaeradio.stream.laut.fm/mountainreggaeradio",
+    "country": "Austria",
+    "tags": "hip-hop,reggae"
+  },
+  {
+    "stationuuid": "964de587-0601-11e8-ae97-52543be04c81",
+    "name": "Antenne Kärnten Partyhitmix",
+    "url": "http://live.antenne.at/ost",
+    "country": "Austria",
+    "tags": "dance,party"
+  },
+  {
+    "stationuuid": "bbd3a015-9cff-4afb-8aed-b011555a4538",
+    "name": "Arabella Austropop",
+    "url": "https://frontend.streams.arabella.at/arabella-austropop/stream/mp3?aggregator=arabella-playlistfile",
+    "country": "Austria",
+    "tags": "austrian music,austropop"
+  },
+  {
+    "stationuuid": "96087c49-0601-11e8-ae97-52543be04c81",
+    "name": "Energy NRJ Innsbruck",
+    "url": "http://stream1.energy.at:8000/ibk",
+    "country": "Austria",
+    "tags": "pop"
+  },
+  {
+    "stationuuid": "f0787305-4e27-4494-b5ae-8f9082301f1a",
+    "name": "ORF Radio Steiermark | HQ",
+    "url": "http://orf-live.ors-shoutcast.at/stm-q2a",
+    "country": "Austria",
+    "tags": "orf"
+  },
+  {
+    "stationuuid": "63bb901a-e09a-478b-9c5e-b7f6a1f9efc4",
+    "name": "ORF Hitradio Ö3",
+    "url": "https://ors-sn03.ors-shoutcast.at/oe3-q1a",
+    "country": "Austria",
+    "tags": "orf,pop"
+  },
+  {
+    "stationuuid": "962a748b-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Deep House Radio",
+    "url": "http://strm112.1.fm/deephouse_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "deep house,techno"
+  },
+  {
+    "stationuuid": "962a61bf-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Amsterdam Trance Radio",
+    "url": "http://strm112.1.fm/atr_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "trance"
+  },
+  {
+    "stationuuid": "962a63f2-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Absolute Country Hits Radio",
+    "url": "http://strm112.1.fm/acountry_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "country"
+  },
+  {
+    "stationuuid": "961fb4b2-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Chillout Lounge Radio",
+    "url": "http://strm112.1.fm/chilloutlounge_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "chillout,lounge"
+  },
+  {
+    "stationuuid": "9617ccb4-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Blues Radio",
+    "url": "http://strm112.1.fm/blues_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "blues"
+  },
+  {
+    "stationuuid": "96154673-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Cafe Radio",
+    "url": "http://strm112.1.fm/caferadio_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "latin,pop,world music"
+  },
+  {
+    "stationuuid": "962a6c2f-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Bombay Beats India Radio",
+    "url": "http://strm112.1.fm/bombaybeats_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "bollywood"
+  },
+  {
+    "stationuuid": "0ac7f5db-6f86-428f-8bb2-66ecce89ad1a",
+    "name": "1.FM - Deep Techno & Deep House",
+    "url": "http://strm112.1.fm/deeptech_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "deep house,techno"
+  },
+  {
+    "stationuuid": "962a73d1-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - High Voltage Radio",
+    "url": "http://strm112.1.fm/highvoltage_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "alternative rock,metal,rock"
+  },
+  {
+    "stationuuid": "961ac635-0601-11e8-ae97-52543be04c81",
+    "name": "Radio Swiss Pop",
+    "url": "http://stream.srg-ssr.ch/m/rsp/mp3_128",
+    "country": "Switzerland",
+    "tags": "pop,public radio,srg ssr"
+  },
+  {
+    "stationuuid": "962a67c2-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - Alternative Rock X Hits Radio",
+    "url": "http://strm112.1.fm/x_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "alternative rock"
+  },
+  {
+    "stationuuid": "961f1da4-0601-11e8-ae97-52543be04c81",
+    "name": "SRF 3",
+    "url": "http://stream.srg-ssr.ch/m/drs3/mp3_128",
+    "country": "Switzerland",
+    "tags": "pop,public radio,srg ssr"
+  },
+  {
+    "stationuuid": "962a8356-0601-11e8-ae97-52543be04c81",
+    "name": "1.FM - BOM Psytrance Radio",
+    "url": "http://strm112.1.fm/psytrance_mobile_mp3",
+    "country": "Switzerland",
+    "tags": "full-on,progressive psytrance,psytrance"
+  },
+  {
+    "stationuuid": "9608efd5-0601-11e8-ae97-52543be04c81",
+    "name": "RTS La Première",
+    "url": "http://stream.srg-ssr.ch/m/la-1ere/mp3_128",
+    "country": "Switzerland",
+    "tags": "public radio,srg ssr"
+  }
+]
