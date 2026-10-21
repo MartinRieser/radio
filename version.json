@@ -1,7 +1,7 @@
 {
-  "version_code": 3,
-  "version_name": "1.1.1",
-  "generated_at": "2026-10-21T07:45:00",
-  "changelog": "Fast-Track 2s Umschalten bei echten Nachrichten & Schutz vor Fehlauslösungen bei Gesang/Musik-Metadaten",
+  "version_code": 4,
+  "version_name": "1.1.2",
+  "generated_at": "2026-10-21T08:18:00",
+  "changelog": "Fokussierte StationCards (nur Land & Bitrate) & Filter für Streams über 320 kbps",
   "apk_url": "https://raw.githubusercontent.com/MartinRieser/radio/android-native/PulseCast-debug.apk"
 }

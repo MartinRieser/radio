@@ -116,14 +116,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         loadCategory(_activeCategory.value)
     }
 
+    private fun filterMaxBitrate(stations: List<Station>): List<Station> {
+        return stations.filter { it.bitrate <= 320 }
+    }
+
     private fun loadCategory(category: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
             try {
-                when (category) {
+                val loadedList = when (category) {
                     "trained", "featured" -> {
-                        _stations.value = CuratedStations.load(getApplication())
+                        CuratedStations.load(getApplication())
                     }
                     "adfree" -> {
                         val curated = CuratedStations.load(getApplication())
@@ -132,25 +136,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         } catch (e: Exception) {
                             emptyList()
                         }
-                        val combined = (curated + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
-                        _stations.value = combined.filter { it.isAdFree() }
+                        (curated + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }.filter { it.isAdFree() }
                     }
                     "favorites" -> {
-                        _stations.value = repository.favorites.value
+                        repository.favorites.value
                     }
                     "history" -> {
-                        _stations.value = repository.history.value
+                        repository.history.value
                     }
                     else -> {
                         // Tag based
-                        _stations.value = ApiClient.getApi().getStationsByTag(category, 50)
+                        ApiClient.getApi().getStationsByTag(category, 50)
                     }
                 }
+                _stations.value = filterMaxBitrate(loadedList)
             } catch (e: Exception) {
                 e.printStackTrace()
                 _errorMessage.value = "Fehler beim Laden der Sender. Bitte Internetverbindung prüfen."
                 if (_stations.value.isEmpty()) {
-                    _stations.value = CuratedStations.load(getApplication())
+                    _stations.value = filterMaxBitrate(CuratedStations.load(getApplication()))
                 }
             } finally {
                 _isLoading.value = false
@@ -163,14 +167,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _errorMessage.value = null
         try {
             val q = query.lowercase().trim()
-            if (_activeCategory.value == "history") {
-                _stations.value = repository.history.value.filter {
+            val matches = if (_activeCategory.value == "history") {
+                repository.history.value.filter {
                     it.name.lowercase().contains(q) ||
                     (it.tags?.lowercase()?.contains(q) == true) ||
                     (it.country?.lowercase()?.contains(q) == true)
                 }
             } else if (_activeCategory.value == "favorites") {
-                _stations.value = repository.favorites.value.filter {
+                repository.favorites.value.filter {
                     it.name.lowercase().contains(q) ||
                     (it.tags?.lowercase()?.contains(q) == true) ||
                     (it.country?.lowercase()?.contains(q) == true)
@@ -187,8 +191,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 } catch (e: Exception) {
                     emptyList()
                 }
-                _stations.value = (curatedMatches + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
+                (curatedMatches + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
             }
+            _stations.value = filterMaxBitrate(matches)
         } catch (e: Exception) {
             e.printStackTrace()
             _errorMessage.value = "Suche fehlgeschlagen."

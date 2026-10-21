@@ -48,13 +48,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
 import com.pulsecast.radio.model.Station
-import com.pulsecast.radio.ui.theme.AccentAdFree
 import com.pulsecast.radio.ui.theme.AccentFav
 import com.pulsecast.radio.ui.theme.AccentHistory
-import com.pulsecast.radio.ui.theme.AccentPreRoll
 import com.pulsecast.radio.ui.theme.AccentPrimary
 import com.pulsecast.radio.ui.theme.BgSurfaceCard
-import com.pulsecast.radio.ui.theme.BorderAccent
 import com.pulsecast.radio.ui.theme.BorderSubtle
 import com.pulsecast.radio.ui.theme.TextMuted
 import com.pulsecast.radio.ui.theme.TextPrimary
@@ -149,6 +146,7 @@ fun StationCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
+                    // Country & Flag
                     Text(
                         text = "${station.getCountryFlag()} ${station.country ?: "Global"}",
                         color = TextSecondary,
@@ -156,42 +154,15 @@ fun StationCard(
                         maxLines = 1
                     )
 
-                    val tags = station.tags?.split(",")?.take(2)?.joinToString(", ") { it.trim() }
-                    if (!tags.isNullOrBlank()) {
+                    // Bitrate (if > 0 and <= 320)
+                    if (station.bitrate in 1..320) {
                         Text(text = "•", color = TextMuted, fontSize = 10.sp)
                         Text(
-                            text = tags,
+                            text = "${station.bitrate} kbps",
                             color = TextMuted,
                             fontSize = 12.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            maxLines = 1
                         )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    // 100% Music Badge (No News)
-                    if (station.isPureMusicStation()) {
-                        BadgeView("🎵 100% Musik", Color(0xFF00E5FF))
-                    } else if (!station.learnedNewsWindow.isNullOrBlank()) {
-                        BadgeView("📰 News ${station.learnedNewsWindow}", Color(0xFFFFB74D))
-                    }
-
-                    // Pre-roll Ad Badge
-                    if (station.isAdFree()) {
-                        BadgeView("🛡️ Werbefrei", AccentAdFree)
-                    } else {
-                        BadgeView("⚠️ Pre-Roll", AccentPreRoll)
-                    }
-
-                    // Bitrate
-                    if (station.bitrate > 0) {
-                        BadgeView("${station.bitrate} kbps", TextSecondary)
                     }
 
                     // History Timestamp (only in History View)
@@ -220,23 +191,6 @@ fun StationCard(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun BadgeView(text: String, color: Color) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(color.copy(alpha = 0.12f))
-            .padding(horizontal = 5.dp, vertical = 2.dp)
-    ) {
-        Text(
-            text = text,
-            color = color,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
