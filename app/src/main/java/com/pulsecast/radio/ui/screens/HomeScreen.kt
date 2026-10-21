@@ -1,5 +1,7 @@
 package com.pulsecast.radio.ui.screens
 
+import android.app.Activity
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,17 +12,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -32,11 +38,6 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
-import android.app.Activity
-import androidx.compose.ui.platform.LocalContext
-import com.pulsecast.radio.ui.components.AppUpdateDialog
-import com.pulsecast.radio.ui.components.SmartSwitchDialog
-import com.pulsecast.radio.updater.AppUpdateState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -52,6 +53,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,24 +65,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pulsecast.radio.model.Station
+import com.pulsecast.radio.ui.components.AppUpdateDialog
 import com.pulsecast.radio.ui.components.PlayerBar
 import com.pulsecast.radio.ui.components.SleepTimerDialog
+import com.pulsecast.radio.ui.components.SmartSwitchDialog
 import com.pulsecast.radio.ui.components.StationCard
-import com.pulsecast.radio.ui.theme.AccentFav
-import com.pulsecast.radio.ui.theme.AccentHistory
 import com.pulsecast.radio.ui.theme.AccentPrimary
 import com.pulsecast.radio.ui.theme.AccentSecondary
 import com.pulsecast.radio.ui.theme.BgMain
-import com.pulsecast.radio.ui.theme.BgSurface
 import com.pulsecast.radio.ui.theme.BgSurfaceCard
 import com.pulsecast.radio.ui.theme.BorderSubtle
 import com.pulsecast.radio.ui.theme.TextMuted
 import com.pulsecast.radio.ui.theme.TextPrimary
 import com.pulsecast.radio.ui.theme.TextSecondary
 import com.pulsecast.radio.ui.viewmodel.MainViewModel
+import com.pulsecast.radio.updater.AppUpdateState
 
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
@@ -117,8 +122,12 @@ fun HomeScreen(viewModel: MainViewModel) {
     val intelligenceSyncState by viewModel.intelligenceSyncState.collectAsState()
     val activeGeneratedAt by viewModel.activeGeneratedAt.collectAsState()
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Scaffold(
         containerColor = BgMain,
+        contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
             PlayerBar(
                 station = currentStation,
@@ -135,81 +144,133 @@ fun HomeScreen(viewModel: MainViewModel) {
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // 1. App Header
-            HeaderView(
-                sleepMinutes = sleepMinutes,
-                isSmartSwitchEnabled = isSmartSwitchEnabled,
-                onSleepClick = { showSleepDialog = true },
-                onSmartSwitchClick = { showSmartSwitchDialog = true }
-            )
-
-            // 2. Search & Genre Filter Bar
-            SearchAndFilterBar(
-                query = searchQuery,
-                activeCategory = activeCategory,
-                onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                onClear = { viewModel.clearSearch() },
-                onSelectCategory = { viewModel.selectCategory(it) }
-            )
-
-            // 3. Category Tabs
-            CategoryTabs(
-                activeCategory = activeCategory,
-                favCount = favorites.size,
-                historyCount = history.size,
-                onSelectCategory = { viewModel.selectCategory(it) }
-            )
-
-            // 4. Section Header
-            SectionHeader(
-                activeCategory = activeCategory,
-                count = stations.size,
-                onClearHistory = { viewModel.clearHistory() }
-            )
-
-            // 5. Stations List / Empty State / Loading
-            Box(
+        if (isLandscape) {
+            // Landscape Layout: 2-Column Split View
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = AccentPrimary
+                // Left Column: Controls & Category Navigation
+                Column(
+                    modifier = Modifier
+                        .width(310.dp)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 8.dp)
+                ) {
+                    HeaderView(
+                        sleepMinutes = sleepMinutes,
+                        isSmartSwitchEnabled = isSmartSwitchEnabled,
+                        onSleepClick = { showSleepDialog = true },
+                        onSmartSwitchClick = { showSmartSwitchDialog = true }
                     )
-                } else if (stations.isEmpty()) {
-                    EmptyStateView(
-                        category = activeCategory,
-                        query = searchQuery
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(stations, key = { it.stationuuid ?: it.getStreamUrl() }) { station ->
-                            val isActive = currentStation?.stationuuid == station.stationuuid ||
-                                    currentStation?.getStreamUrl() == station.getStreamUrl()
-                            val isFav = favorites.any { it.stationuuid == station.stationuuid || it.getStreamUrl() == station.getStreamUrl() }
 
-                            StationCard(
-                                station = station,
-                                isActive = isActive,
-                                isPlaying = isPlaying,
-                                isFavorite = isFav,
-                                isHistoryView = (activeCategory == "history"),
-                                onCardClick = { viewModel.playStation(station) },
-                                onFavoriteClick = { viewModel.toggleFavorite(station) }
-                            )
-                        }
-                    }
+                    SearchAndFilterBar(
+                        query = searchQuery,
+                        activeCategory = activeCategory,
+                        onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                        onClear = { viewModel.clearSearch() },
+                        onSelectCategory = { viewModel.selectCategory(it) }
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    CategoryListLandscape(
+                        activeCategory = activeCategory,
+                        favCount = favorites.size,
+                        historyCount = history.size,
+                        onSelectCategory = { viewModel.selectCategory(it) }
+                    )
+                }
+
+                VerticalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = BorderSubtle,
+                    thickness = 1.dp
+                )
+
+                // Right Column: Station List (Takes remaining width and full height!)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
+                    SectionHeader(
+                        activeCategory = activeCategory,
+                        count = stations.size,
+                        onClearHistory = { viewModel.clearHistory() }
+                    )
+
+                    StationListContent(
+                        isLoading = isLoading,
+                        stations = stations,
+                        activeCategory = activeCategory,
+                        searchQuery = searchQuery,
+                        favorites = favorites,
+                        currentStation = currentStation,
+                        isPlaying = isPlaying,
+                        onPlayStation = { viewModel.playStation(it) },
+                        onToggleFavorite = { viewModel.toggleFavorite(it) }
+                    )
+                }
+            }
+        } else {
+            // Portrait Layout: Single Column View
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                // 1. App Header
+                HeaderView(
+                    sleepMinutes = sleepMinutes,
+                    isSmartSwitchEnabled = isSmartSwitchEnabled,
+                    onSleepClick = { showSleepDialog = true },
+                    onSmartSwitchClick = { showSmartSwitchDialog = true }
+                )
+
+                // 2. Search & Genre Filter Bar
+                SearchAndFilterBar(
+                    query = searchQuery,
+                    activeCategory = activeCategory,
+                    onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                    onClear = { viewModel.clearSearch() },
+                    onSelectCategory = { viewModel.selectCategory(it) }
+                )
+
+                // 3. Category Tabs
+                CategoryTabs(
+                    activeCategory = activeCategory,
+                    favCount = favorites.size,
+                    historyCount = history.size,
+                    onSelectCategory = { viewModel.selectCategory(it) }
+                )
+
+                // 4. Section Header
+                SectionHeader(
+                    activeCategory = activeCategory,
+                    count = stations.size,
+                    onClearHistory = { viewModel.clearHistory() }
+                )
+
+                // 5. Stations List / Empty State / Loading
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    StationListContent(
+                        isLoading = isLoading,
+                        stations = stations,
+                        activeCategory = activeCategory,
+                        searchQuery = searchQuery,
+                        favorites = favorites,
+                        currentStation = currentStation,
+                        isPlaying = isPlaying,
+                        onPlayStation = { viewModel.playStation(it) },
+                        onToggleFavorite = { viewModel.toggleFavorite(it) }
+                    )
                 }
             }
         }
@@ -567,6 +628,78 @@ private fun CategoryTabs(
 }
 
 @Composable
+private fun CategoryListLandscape(
+    activeCategory: String,
+    favCount: Int,
+    historyCount: Int,
+    onSelectCategory: (String) -> Unit
+) {
+    val categories = listOf(
+        "trained" to ("🧠 Smart Radio" to null),
+        "adfree" to ("🛡️ Werbefrei" to null),
+        "favorites" to ("❤️ Favoriten" to "$favCount"),
+        "history" to ("🕒 Verlauf" to "$historyCount")
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = "Kategorien",
+            color = TextMuted,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 2.dp)
+        )
+
+        categories.forEach { (id, info) ->
+            val (label, badge) = info
+            val isSelected = (activeCategory == id)
+
+            Surface(
+                onClick = { onSelectCategory(id) },
+                shape = RoundedCornerShape(10.dp),
+                color = if (isSelected) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard,
+                border = BorderStroke(1.dp, if (isSelected) AccentPrimary else BorderSubtle),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = label,
+                        color = if (isSelected) TextPrimary else TextSecondary,
+                        fontSize = 12.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                    )
+
+                    if (badge != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) AccentPrimary else Color(0xFF0F1523))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = badge,
+                                color = if (isSelected) BgMain else TextMuted,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun SectionHeader(
     activeCategory: String,
     count: Int,
@@ -649,6 +782,55 @@ private fun SectionHeader(
                     color = TextMuted,
                     fontSize = 11.sp
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StationListContent(
+    isLoading: Boolean,
+    stations: List<Station>,
+    activeCategory: String,
+    searchQuery: String,
+    favorites: List<Station>,
+    currentStation: Station?,
+    isPlaying: Boolean,
+    onPlayStation: (Station) -> Unit,
+    onToggleFavorite: (Station) -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = AccentPrimary
+            )
+        } else if (stations.isEmpty()) {
+            EmptyStateView(
+                category = activeCategory,
+                query = searchQuery
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(stations, key = { it.stationuuid ?: it.getStreamUrl() }) { station ->
+                    val isActive = currentStation?.stationuuid == station.stationuuid ||
+                            currentStation?.getStreamUrl() == station.getStreamUrl()
+                    val isFav = favorites.any { it.stationuuid == station.stationuuid || it.getStreamUrl() == station.getStreamUrl() }
+
+                    StationCard(
+                        station = station,
+                        isActive = isActive,
+                        isPlaying = isPlaying,
+                        isFavorite = isFav,
+                        isHistoryView = (activeCategory == "history"),
+                        onCardClick = { onPlayStation(station) },
+                        onFavoriteClick = { onToggleFavorite(station) }
+                    )
+                }
             }
         }
     }
