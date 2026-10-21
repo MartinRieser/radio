@@ -16,6 +16,7 @@ app/build/
 .cxx
 local.properties
 *.apk
+!PulseCast-debug.apk
 *.aab
 
 __pycache__/

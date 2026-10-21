@@ -154,6 +154,19 @@ fun StationCard(
                         maxLines = 1
                     )
 
+                    // Genre Tags
+                    val tags = station.tags?.split(",")?.take(2)?.joinToString(", ") { it.trim() }
+                    if (!tags.isNullOrBlank()) {
+                        Text(text = "•", color = TextMuted, fontSize = 10.sp)
+                        Text(
+                            text = tags,
+                            color = TextMuted,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
                     // Bitrate (if > 0 and <= 320)
                     if (station.bitrate in 1..320) {
                         Text(text = "•", color = TextMuted, fontSize = 10.sp)
