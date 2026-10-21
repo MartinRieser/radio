@@ -1,7 +1,7 @@
 {
-  "version_code": 5,
-  "version_name": "1.1.3",
-  "generated_at": "2026-10-21T08:33:00",
-  "changelog": "Genre-Tags auf den Senderkarten wiederhergestellt",
+  "version_code": 6,
+  "version_name": "1.1.4",
+  "generated_at": "2026-10-21T08:50:00",
+  "changelog": "Reaktionsschnelles 2s SmartSwitch bei Nachrichten & Optimierter GitHub Actions Release Workflow",
   "apk_url": "https://raw.githubusercontent.com/MartinRieser/radio/android-native/PulseCast-debug.apk"
 }

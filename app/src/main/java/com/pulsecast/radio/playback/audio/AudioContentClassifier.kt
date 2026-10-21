@@ -47,7 +47,7 @@ class AudioContentClassifier(context: Context? = null) {
     private var smoothedSpeechScore: Float = 0.1f
 
     @Volatile
-    var sensitivityThreshold: Float = 0.50f
+    var sensitivityThreshold: Float = 0.35f
 
     @Volatile
     var stationMinutePrior: Float? = null
@@ -94,9 +94,9 @@ class AudioContentClassifier(context: Context? = null) {
         this.isAdFreeStation = isAdFree
         if (titleChanged) {
             val title = trackTitle.lowercase().trim()
-            val adKeywords = listOf("werbung", "commercial", "ad", "ads", "spot", "nachrichten", "news", "verkehr", "traffic", "stau", "blitzer", "wetter", "weather", "jingle", "gewinnspiel", "station id")
-            val hasAdKeyword = adKeywords.any { title.contains("\\b$it\\b".toRegex()) || title == it }
-            val isSongPattern = title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")
+            val adKeywords = listOf("werbung", "commercial", "ad", "ads", "spot", "nachrichten", "news", "verkehr", "traffic", "stau", "blitzer", "wetter", "weather", "jingle", "gewinnspiel", "station id", "info", "report")
+            val hasAdKeyword = adKeywords.any { title.contains(it) }
+            val isSongPattern = (title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")) && !hasAdKeyword
 
             if (!hasAdKeyword && isSongPattern) {
                 // Instantly reset speech score when a clear song title is broadcast
@@ -163,7 +163,7 @@ class AudioContentClassifier(context: Context? = null) {
                         for (category in classification.categories) {
                             val label = category.label.lowercase()
                             val score = category.score
-                            if (score > 0.12f) {
+                            if (score > 0.10f) {
                                 when {
                                     label.contains("speech") || label.contains("talk") ||
                                     label.contains("conversation") || label.contains("narration") ||
@@ -205,15 +205,18 @@ class AudioContentClassifier(context: Context? = null) {
         val adKeywords = listOf(
             "werbung", "commercial", "ad", "ads", "spot", "nachrichten", "news",
             "verkehr", "traffic", "stau", "blitzer", "wetter", "weather",
-            "jingle", "gewinnspiel", "station id"
+            "jingle", "gewinnspiel", "station id", "info", "report"
         )
 
-        val hasAdKeyword = adKeywords.any { keyword ->
-            title.contains("\\b$keyword\\b".toRegex()) || title == keyword
-        }
+        val hasAdKeyword = adKeywords.any { keyword -> title.contains(keyword) }
         hasAdMetadata = hasAdKeyword
 
-        val isSongPattern = title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")
+        val isSongPattern = (title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")) &&
+                            !hasAdKeyword &&
+                            !title.contains("nachrichten") &&
+                            !title.contains("news") &&
+                            !title.contains("wetter") &&
+                            !title.contains("verkehr")
 
         if (hasAdKeyword) {
             smoothedSpeechScore = 0.95f
@@ -225,10 +228,9 @@ class AudioContentClassifier(context: Context? = null) {
             return
         }
 
-        // --- 2. Song Pattern Protection (Prevents Vocal/Singing False-Positives During Active Songs) ---
-        if (isSongPattern && (latestAiMusicScore >= latestAiSpeechScore || latestAiSpeechScore < 0.65f)) {
-            // Track metadata indicates a song and AI confirms music or non-extreme speech -> Force Music!
-            smoothedSpeechScore = (0.80f * smoothedSpeechScore) + (0.20f * 0.05f)
+        // --- 2. Song Pattern Protection (Only discounts when AI speech score is very low) ---
+        if (isSongPattern && latestAiSpeechScore < 0.25f) {
+            smoothedSpeechScore = (0.70f * smoothedSpeechScore) + (0.30f * 0.05f)
             speechConfidence = smoothedSpeechScore
             musicConfidence = 1.0f - speechConfidence
             isSpeechDetected = false
@@ -277,56 +279,51 @@ class AudioContentClassifier(context: Context? = null) {
         val rmsStdDev = sqrt(rmsVarianceSum / windowSize)
         val rmsCoeffVar = if (avgRms > 0.001f) (rmsStdDev / avgRms) else 0f
 
-        val hasSpeechEnvelope = (rmsCoeffVar >= 0.28f) || (lowEnergyRate >= 0.28f) || (rmsCoeffVar >= 0.22f && lowEnergyRate >= 0.20f)
-        val hasSpeechConsonants = (zcrVariance >= 0.0035f) || (avgZcr >= 0.16f && zcrVariance >= 0.002f)
+        val hasSpeechEnvelope = (rmsCoeffVar >= 0.25f) || (lowEnergyRate >= 0.25f) || (rmsCoeffVar >= 0.20f && lowEnergyRate >= 0.18f)
+        val hasSpeechConsonants = (zcrVariance >= 0.0030f) || (avgZcr >= 0.14f && zcrVariance >= 0.0018f)
 
         var acousticSpeechScore = 0.0f
         if (hasSpeechEnvelope && hasSpeechConsonants) {
             acousticSpeechScore = 0.85f
         } else if (hasSpeechEnvelope) {
-            acousticSpeechScore = 0.35f
+            acousticSpeechScore = 0.40f
         } else if (hasSpeechConsonants) {
-            acousticSpeechScore = 0.25f
-        }
-
-        var metadataAdScore = 0.0f
-        if (isSongPattern && acousticSpeechScore < 0.35f) {
-            metadataAdScore = -0.20f
+            acousticSpeechScore = 0.30f
         }
 
         val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
         val learnedPrior = stationMinutePrior
         var timePrior = if (learnedPrior != null) {
-            (learnedPrior * 0.35f).coerceIn(0.0f, 0.35f)
+            (learnedPrior * 0.40f).coerceIn(0.0f, 0.40f)
         } else if (currentMinute in 57..59 || currentMinute in 0..4) {
-            0.20f
+            0.25f
         } else if (currentMinute in 29..32) {
-            0.10f
+            0.15f
         } else {
             0.0f
         }
 
         var rawSpeech = if (isTfliteLoaded && (latestAiSpeechScore > 0f || latestAiMusicScore > 0f)) {
             val neuralSpeech = when {
-                latestAiSpeechScore >= 0.35f -> 0.90f
-                latestAiSpeechScore >= 0.20f -> 0.65f
-                latestAiSpeechScore >= 0.10f -> 0.40f
+                latestAiSpeechScore >= 0.30f -> 0.95f
+                latestAiSpeechScore >= 0.18f -> 0.75f
+                latestAiSpeechScore >= 0.10f -> 0.45f
                 else -> 0.05f
             }
             (neuralSpeech * 0.70f) + (acousticSpeechScore * 0.15f) + (timePrior * 0.15f)
         } else {
-            (acousticSpeechScore * 0.70f) + (metadataAdScore * 0.15f) + (timePrior * 0.15f)
+            (acousticSpeechScore * 0.70f) + (timePrior * 0.30f)
         }
 
         rawSpeech = rawSpeech.coerceIn(0.0f, 1.0f)
 
-        smoothedSpeechScore = (0.75f * smoothedSpeechScore) + (0.25f * rawSpeech)
+        smoothedSpeechScore = (0.65f * smoothedSpeechScore) + (0.35f * rawSpeech)
 
         speechConfidence = smoothedSpeechScore
         musicConfidence = 1.0f - smoothedSpeechScore
 
-        val onThreshold = sensitivityThreshold.coerceIn(0.25f, 0.75f)
-        val offThreshold = (onThreshold - 0.15f).coerceAtLeast(0.15f)
+        val onThreshold = sensitivityThreshold.coerceIn(0.20f, 0.50f)
+        val offThreshold = (onThreshold - 0.12f).coerceAtLeast(0.12f)
 
         isSpeechDetected = if (isSpeechDetected) {
             smoothedSpeechScore >= offThreshold
@@ -334,12 +331,12 @@ class AudioContentClassifier(context: Context? = null) {
             smoothedSpeechScore >= onThreshold
         }
 
-        isPureSpeech = (latestAiSpeechScore >= 0.60f && latestAiMusicScore < 0.25f)
+        isPureSpeech = (latestAiSpeechScore >= 0.35f && latestAiMusicScore < 0.25f) || (smoothedSpeechScore >= 0.50f)
 
         detectionReason = when {
             hasAdKeyword -> "Werbung / News (Metadaten)"
             isPureSpeech -> "Nachrichten / Talk (Reine Sprache)"
-            isTfliteLoaded && latestAiSpeechScore >= 0.20f -> "Sprache / Talk (YAMNet AI)"
+            isTfliteLoaded && latestAiSpeechScore >= 0.18f -> "Sprache / Talk (YAMNet AI)"
             isSpeechDetected -> "Sprache / Talk"
             isSongPattern -> "Musik ($currentTrackTitle)"
             else -> "Musik"
