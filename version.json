@@ -1,7 +1,7 @@
 {
-  "version_code": 6,
-  "version_name": "1.1.4",
-  "generated_at": "2026-10-21T08:50:00",
-  "changelog": "Reaktionsschnelles 2s SmartSwitch bei Nachrichten & Optimierter GitHub Actions Release Workflow",
+  "version_code": 7,
+  "version_name": "1.1.5",
+  "generated_at": "2026-10-21T09:05:00",
+  "changelog": "111 trainierte Sender (inkl. 60 europäische Pop/Rock/Dance Sender) & Behobene GitHub Actions Linux Execution",
   "apk_url": "https://raw.githubusercontent.com/MartinRieser/radio/android-native/PulseCast-debug.apk"
 }
