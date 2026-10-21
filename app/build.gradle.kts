@@ -19,6 +19,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        ndk {
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("x86_64")
+        }
     }
 
     buildTypes {
@@ -29,10 +34,6 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            ndk {
-                abiFilters.add("arm64-v8a")
-                abiFilters.add("x86_64")
-            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
