@@ -1,6 +1,7 @@
 package com.pulsecast.radio.playback.audio
 
 import android.content.Context
+import android.util.Log
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -81,21 +82,26 @@ class AudioContentClassifier(context: Context? = null) {
             try {
                 tfliteClassifier = AudioClassifier.createFromFile(ctx, "yamnet.tflite")
                 isTfliteLoaded = true
+                Log.d("PulseCastAudio", "YAMNet TFLite Audio Classifier loaded successfully")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("PulseCastAudio", "Failed to load YAMNet TFLite Audio Classifier: ${e.message}")
                 isTfliteLoaded = false
             }
         }
     }
+
+    private val adKeywordsRegex = Regex(
+        """\b(werbung|commercial|ads?|preroll|pre-roll|spot|nachrichten|news|verkehr|traffic|stau|blitzer|wetter|weather|jingle|gewinnspiel|report)\b""",
+        RegexOption.IGNORE_CASE
+    )
 
     fun setStationContext(trackTitle: String, isAdFree: Boolean) {
         val titleChanged = this.currentTrackTitle != trackTitle
         this.currentTrackTitle = trackTitle
         this.isAdFreeStation = isAdFree
         if (titleChanged) {
-            val title = trackTitle.lowercase().trim()
-            val adKeywords = listOf("werbung", "commercial", "ad", "ads", "spot", "nachrichten", "news", "verkehr", "traffic", "stau", "blitzer", "wetter", "weather", "jingle", "gewinnspiel", "station id", "info", "report")
-            val hasAdKeyword = adKeywords.any { title.contains(it) }
+            val title = trackTitle.trim()
+            val hasAdKeyword = adKeywordsRegex.containsMatchIn(title)
             val isSongPattern = (title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")) && !hasAdKeyword
 
             if (!hasAdKeyword && isSongPattern) {
@@ -183,8 +189,8 @@ class AudioContentClassifier(context: Context? = null) {
                         latestAiSpeechScore = aiSpeech
                         latestAiMusicScore = aiMusic
                     }
-                } catch (_: Exception) {
-                    // Fallback to DSP if TFLite classification encounters buffer sizing
+                } catch (e: Exception) {
+                    Log.w("PulseCastAudio", "TFLite classification exception: ${e.message}")
                 }
             }
 
@@ -201,22 +207,12 @@ class AudioContentClassifier(context: Context? = null) {
 
     private fun evaluateClassification() {
         // --- 1. ICY Metadata Analysis ---
-        val title = currentTrackTitle.lowercase().trim()
-        val adKeywords = listOf(
-            "werbung", "commercial", "ad", "ads", "spot", "nachrichten", "news",
-            "verkehr", "traffic", "stau", "blitzer", "wetter", "weather",
-            "jingle", "gewinnspiel", "station id", "info", "report"
-        )
-
-        val hasAdKeyword = adKeywords.any { keyword -> title.contains(keyword) }
+        val title = currentTrackTitle.trim()
+        val hasAdKeyword = adKeywordsRegex.containsMatchIn(title)
         hasAdMetadata = hasAdKeyword
 
         val isSongPattern = (title.contains(" - ") || title.contains(" feat. ") || title.contains(" vs. ")) &&
-                            !hasAdKeyword &&
-                            !title.contains("nachrichten") &&
-                            !title.contains("news") &&
-                            !title.contains("wetter") &&
-                            !title.contains("verkehr")
+                            !hasAdKeyword
 
         if (hasAdKeyword) {
             smoothedSpeechScore = 0.95f
@@ -225,6 +221,7 @@ class AudioContentClassifier(context: Context? = null) {
             isSpeechDetected = true
             isPureSpeech = true
             detectionReason = "Werbung / News (Metadaten)"
+            Log.d("PulseCastAudio", "Metadata Ad Keyword detected in title: '$currentTrackTitle'")
             return
         }
 
@@ -304,13 +301,14 @@ class AudioContentClassifier(context: Context? = null) {
         }
 
         var rawSpeech = if (isTfliteLoaded && (latestAiSpeechScore > 0f || latestAiMusicScore > 0f)) {
+            val netSpeechAi = latestAiSpeechScore - latestAiMusicScore
             val neuralSpeech = when {
-                latestAiSpeechScore >= 0.30f -> 0.95f
-                latestAiSpeechScore >= 0.18f -> 0.75f
-                latestAiSpeechScore >= 0.10f -> 0.45f
+                latestAiSpeechScore >= 0.35f && netSpeechAi >= 0.10f -> 0.95f
+                latestAiSpeechScore >= 0.25f && netSpeechAi >= 0.0f -> 0.70f
+                latestAiSpeechScore >= 0.18f && netSpeechAi >= -0.10f -> 0.45f
                 else -> 0.05f
             }
-            (neuralSpeech * 0.70f) + (acousticSpeechScore * 0.15f) + (timePrior * 0.15f)
+            (neuralSpeech * 0.75f) + (acousticSpeechScore * 0.15f) + (timePrior * 0.10f)
         } else {
             (acousticSpeechScore * 0.70f) + (timePrior * 0.30f)
         }
@@ -341,6 +339,11 @@ class AudioContentClassifier(context: Context? = null) {
             isSongPattern -> "Musik ($currentTrackTitle)"
             else -> "Musik"
         }
+
+        Log.d(
+            "PulseCastAudio",
+            "Title: '$currentTrackTitle' | AiSpeech: ${String.format("%.2f", latestAiSpeechScore)} | AiMusic: ${String.format("%.2f", latestAiMusicScore)} | Acoustic: ${String.format("%.2f", acousticSpeechScore)} | Smoothed: ${String.format("%.2f", smoothedSpeechScore)} | isSpeech: $isSpeechDetected | isPure: $isPureSpeech | Reason: $detectionReason"
+        )
     }
 
     fun reset() {

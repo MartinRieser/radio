@@ -2,6 +2,7 @@ package com.pulsecast.radio.playback
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -146,6 +147,11 @@ class SmartSwitchCoordinator(
 
                 val shouldTriggerSpeech = isSpeech || isPureSpeechOrAd || isJingleMatched || isTopOfHourNewsWindow
 
+                Log.d(
+                    "PulseCastSmart",
+                    "Station: '${station.name}' | isSpeech: $isSpeech | isPureOrAd: $isPureSpeechOrAd | isNewsWin: $isTopOfHourNewsWindow | Ignored: $isSpeechIgnoredForStation | SpeechSecs: $consecutiveSpeechSeconds | Reason: ${audioClassifier.detectionReason}"
+                )
+
                 if (!isSpeechIgnoredForStation && shouldTriggerSpeech) {
                     consecutiveSpeechSeconds += if (isJingleMatched || isPureSpeechOrAd || isTopOfHourNewsWindow) 2 else 1
                     consecutiveMusicSeconds = 0
@@ -157,7 +163,10 @@ class SmartSwitchCoordinator(
                         else -> baseTolerance // Standard tolerance for DJ comments
                     }
 
+                    Log.d("PulseCastSmart", "--> SPEECH ACTIVE: $consecutiveSpeechSeconds / ${requiredTolerance}s on '${station.name}'")
+
                     if (consecutiveSpeechSeconds >= requiredTolerance) {
+                        Log.i("PulseCastSmart", "===> TRIGGERING SMART SWITCH away from '${station.name}'!")
                         triggerSmartSwitch()
                         consecutiveSpeechSeconds = 0
                         consecutiveMusicSeconds = 0
