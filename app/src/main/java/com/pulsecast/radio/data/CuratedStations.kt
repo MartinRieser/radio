@@ -10,14 +10,19 @@ object CuratedStations {
 
     fun load(context: Context): List<Station> {
         return try {
-            val cachedFile = File(context.filesDir, "curated_stations.json")
-            val jsonString = if (cachedFile.exists() && cachedFile.length() > 0) {
-                cachedFile.bufferedReader().use { it.readText() }
-            } else {
-                context.assets.open("curated_stations.json").bufferedReader().use { it.readText() }
-            }
+            val assetJson = context.assets.open("curated_stations.json").bufferedReader().use { it.readText() }
             val listType = object : TypeToken<List<Station>>() {}.type
-            Gson().fromJson<List<Station>>(jsonString, listType) ?: fallbackStations()
+            val assetList: List<Station> = Gson().fromJson(assetJson, listType) ?: fallbackStations()
+
+            val cachedFile = File(context.filesDir, "curated_stations.json")
+            if (cachedFile.exists() && cachedFile.length() > 0) {
+                val cachedJson = cachedFile.bufferedReader().use { it.readText() }
+                val cachedList: List<Station> = Gson().fromJson(cachedJson, listType) ?: assetList
+                if (cachedList.size >= assetList.size) {
+                    return cachedList
+                }
+            }
+            assetList
         } catch (e: Exception) {
             e.printStackTrace()
             fallbackStations()
@@ -75,30 +80,6 @@ object CuratedStations {
                 bitrate = 128,
                 favicon = "https://api.ardmediathek.de/image-service/images/urn:ard:image:52fd25fc45de7c6a?w=512",
                 votes = 2150
-            ),
-            Station(
-                stationuuid = "240d28b9-7858-48d2-a816-9cf8e1875fe8",
-                name = "SWR3",
-                urlResolved = "https://liveradio.swr.de/sw282p3/swr3/play.mp3",
-                country = "Germany",
-                countrycode = "DE",
-                tags = "pop, rock, hits, comedy, info",
-                codec = "MP3",
-                bitrate = 128,
-                favicon = "https://www.swr3.de/favicon.ico",
-                votes = 2200
-            ),
-            Station(
-                stationuuid = "0596bdc5-77fc-48ba-8653-e5e34bb86568",
-                name = "SomaFM Groove Salad",
-                urlResolved = "https://ice1.somafm.com/groovesalad-256-mp3",
-                country = "United States",
-                countrycode = "US",
-                tags = "ambient, chillout, downtempo, electronic",
-                codec = "MP3",
-                bitrate = 256,
-                favicon = "https://somafm.com/img3/groovesalad120.png",
-                votes = 3200
             )
         )
     }

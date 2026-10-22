@@ -1,7 +1,6 @@
 package com.pulsecast.radio.playback
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
@@ -37,13 +36,17 @@ sealed class SmartSwitchStatus {
 class SmartSwitchCoordinator(
     private val context: Context,
     private val repository: HistoryAndFavoritesRepository,
-    val intelligenceRepository: StationIntelligenceRepository,
-    val audioClassifier: AudioContentClassifier,
+    private val intelligenceRepository: StationIntelligenceRepository,
+    private val audioClassifier: AudioContentClassifier,
     private val onSwitchStationRequest: (Station) -> Unit
 ) {
     private val scope = CoroutineScope(Dispatchers.Main + Job())
+    private var monitoringJob: Job? = null
 
-    private val _status = MutableStateFlow<SmartSwitchStatus>(SmartSwitchStatus.Music)
+    private var currentStation: Station? = null
+    private var isAudiblePlaying: Boolean = false
+
+    private val _status = MutableStateFlow<SmartSwitchStatus>(SmartSwitchStatus.Disabled)
     val status: StateFlow<SmartSwitchStatus> = _status.asStateFlow()
 
     private val _speechSeconds = MutableStateFlow(0)
@@ -52,13 +55,9 @@ class SmartSwitchCoordinator(
     private val _originalSwitchedStation = MutableStateFlow<Station?>(null)
     val originalSwitchedStation: StateFlow<Station?> = _originalSwitchedStation.asStateFlow()
 
-    private var monitoringJob: Job? = null
-    private var probePlayer: ExoPlayer? = null
-
-    private var currentStation: Station? = null
-    private var isAudiblePlaying: Boolean = false
     private var consecutiveSpeechSeconds: Int = 0
     private var consecutiveMusicSeconds: Int = 0
+    private var lastSwitchTimeMs: Long = 0L
 
     // Set of station keys (stationuuid / streamUrl) for which speech detection should be ignored
     private val ignoredSpeechStationKeys = mutableSetOf<String>()
@@ -78,7 +77,10 @@ class SmartSwitchCoordinator(
     fun onCurrentStationChanged(station: Station?) {
         currentStation = station
         consecutiveSpeechSeconds = 0
+        consecutiveMusicSeconds = 0
         _speechSeconds.value = 0
+        audioClassifier.reset()
+        lastSwitchTimeMs = System.currentTimeMillis()
 
         if (station != null) {
             audioClassifier.setStationContext(
@@ -126,6 +128,25 @@ class SmartSwitchCoordinator(
                     _status.value = SmartSwitchStatus.Disabled
                     consecutiveSpeechSeconds = 0
                     _speechSeconds.value = 0
+                    continue
+                }
+
+                // 15-second Post-Switch Immunity Grace Period
+                val timeSinceSwitchMs = System.currentTimeMillis() - lastSwitchTimeMs
+                val isInGracePeriod = timeSinceSwitchMs < 15_000L
+
+                if (isInGracePeriod) {
+                    consecutiveSpeechSeconds = 0
+                    _speechSeconds.value = 0
+                    val remainingSecs = ((15_000 - timeSinceSwitchMs) / 1000).coerceAtLeast(1)
+                    Log.d("PulseCastSmart", "Station: '${station.name}' | Grace Period Active (${remainingSecs}s remaining)")
+
+                    val orig = _originalSwitchedStation.value
+                    if (orig != null) {
+                        _status.value = SmartSwitchStatus.Switched(orig)
+                    } else {
+                        _status.value = SmartSwitchStatus.Music
+                    }
                     continue
                 }
 
@@ -208,207 +229,59 @@ class SmartSwitchCoordinator(
         scope.launch {
             val candidate = findBestCandidateStation(current) ?: return@launch
 
+            // Save original station if not already in switched state
             if (_originalSwitchedStation.value == null) {
                 _originalSwitchedStation.value = current
             }
 
-            val isCandidateReady = silentlyProbeCandidate(candidate)
-            if (isCandidateReady) {
-                markFallbackUsed(candidate)
-                onSwitchStationRequest(candidate)
-                _status.value = SmartSwitchStatus.Switched(current)
-            } else {
-                val electronicFallback = getCuratedElectronicFallback(current)
-                if (electronicFallback != null && electronicFallback.getStreamUrl() != candidate.getStreamUrl()) {
-                    val probe2 = silentlyProbeCandidate(electronicFallback)
-                    if (probe2) {
-                        markFallbackUsed(electronicFallback)
-                        onSwitchStationRequest(electronicFallback)
-                        _status.value = SmartSwitchStatus.Switched(current)
-                    }
-                }
-            }
+            markFallbackUsed(candidate)
+            _status.value = SmartSwitchStatus.Switched(_originalSwitchedStation.value ?: current)
+            onSwitchStationRequest(candidate)
         }
     }
 
-    private fun findBestCandidateStation(excludeStation: Station): Station? {
-        val strategy = intelligenceRepository.smartSwitchStrategy.value
-        val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
-        val curated = CuratedStations.load(context)
-        val favorites = repository.favorites.value
-
-        when (strategy) {
-            "favorites_only" -> {
-                return pickBestCandidateFromList(favorites, excludeStation, currentMinute)
-            }
-
-            "specific" -> {
-                val specificKey = intelligenceRepository.specificFallbackKey.value
-                if (!specificKey.isNullOrBlank()) {
-                    val candidate = (curated + favorites).firstOrNull {
-                        (it.stationuuid == specificKey || it.getStreamUrl() == specificKey) &&
-                        (it.stationuuid != excludeStation.stationuuid && it.getStreamUrl() != excludeStation.getStreamUrl())
-                    }
-                    if (candidate != null) return candidate
-                }
-            }
-
-            "same_genre" -> {
-                val currentTags = excludeStation.tags?.lowercase()?.split(",")?.map { it.trim() } ?: emptyList()
-                if (currentTags.isNotEmpty()) {
-                    val matchingGenreStations = (curated + favorites).filter { st ->
-                        st.stationuuid != excludeStation.stationuuid && st.getStreamUrl() != excludeStation.getStreamUrl() &&
-                        st.tags?.lowercase()?.split(",")?.any { tag -> currentTags.contains(tag.trim()) } == true
-                    }
-                    val pick = pickBestCandidateFromList(matchingGenreStations, excludeStation, currentMinute)
-                    if (pick != null) return pick
-                }
-            }
-        }
-
-        val bestFav = pickBestCandidateFromList(favorites, excludeStation, currentMinute)
-        if (bestFav != null) return bestFav
-
-        return getCuratedElectronicFallback(excludeStation)
-    }
-
-    private fun pickBestCandidateFromList(
-        candidates: List<Station>,
-        excludeStation: Station,
-        currentMinute: Int
-    ): Station? {
-        if (candidates.isEmpty()) return null
-
-        val excludeKeys = setOfNotNull(
-            excludeStation.stationuuid,
-            excludeStation.getStreamUrl(),
-            _originalSwitchedStation.value?.stationuuid,
-            _originalSwitchedStation.value?.getStreamUrl()
-        )
-
-        val eligible = candidates.filter { st ->
-            val key1 = st.stationuuid
-            val key2 = st.getStreamUrl()
-            (key1 == null || !excludeKeys.contains(key1)) && !excludeKeys.contains(key2)
-        }
-
-        if (eligible.isEmpty()) return null
-
-        val freshCandidates = eligible.filter { st ->
-            val key = st.stationuuid?.takeIf { it.isNotBlank() } ?: st.getStreamUrl()
-            !recentFallbackKeys.contains(key)
-        }.ifEmpty { eligible }
-
-        val ranked = freshCandidates.sortedWith(
-            compareByDescending<Station> { intelligenceRepository.isStationPureMusic(it) }
-                .thenByDescending { !intelligenceRepository.hasPreRollAd(it) }
-                .thenBy { intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) }
-        )
-
-        val lowSpeechCandidates = ranked.filter {
-            intelligenceRepository.getSpeechProbabilityAtMinute(it, currentMinute) < 0.70f
-        }.ifEmpty { ranked }
-
-        return lowSpeechCandidates.take(3).shuffled().firstOrNull()
-    }
-
-    private fun getCuratedElectronicFallback(excludeStation: Station): Station? {
-        val curated = CuratedStations.load(context)
-        val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
-        val electronicStations = curated.filter {
-            (it.stationuuid != excludeStation.stationuuid && it.getStreamUrl() != excludeStation.getStreamUrl()) &&
-            ((it.tags?.lowercase()?.contains("electronic") == true) ||
-             (it.tags?.lowercase()?.contains("chillout") == true) ||
-             (it.tags?.lowercase()?.contains("lo-fi") == true) ||
-             (it.tags?.lowercase()?.contains("ambient") == true) ||
-             it.name.contains("Ibiza", ignoreCase = true) ||
-             it.name.contains("Groove Salad", ignoreCase = true) ||
-             it.name.contains("Lofi Cafe", ignoreCase = true))
-        }
-
-        return pickBestCandidateFromList(electronicStations, excludeStation, currentMinute)
-    }
-
-    private suspend fun silentlyProbeCandidate(candidate: Station): Boolean {
-        return try {
-            releaseProbePlayer()
-            val probe = ExoPlayer.Builder(context).build().apply {
-                volume = 0f
-            }
-            probePlayer = probe
-
-            val streamUrl = candidate.getStreamUrl()
-            if (streamUrl.isBlank()) return false
-
-            var isTrackMusic = true
-            probe.addListener(object : Player.Listener {
-                override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    val t = (mediaMetadata.title?.toString() ?: "").lowercase()
-                    if (t.contains("werbung") || t.contains("ad") || t.contains("nachrichten") || t.contains("news")) {
-                        isTrackMusic = false
-                    }
-                }
-            })
-
-            val mediaItem = MediaItem.fromUri(Uri.parse(streamUrl))
-            probe.setMediaItem(mediaItem)
-            probe.prepare()
-            probe.play()
-
-            val hasPreRoll = intelligenceRepository.hasPreRollAd(candidate)
-            if (hasPreRoll) {
-                var waited = 0
-                while (waited < 10) {
-                    delay(1000)
-                    waited++
-                    if (probe.playbackState == Player.STATE_READY) {
-                        break
-                    }
-                }
-            } else {
-                delay(2000)
-            }
-
-            releaseProbePlayer()
-            isTrackMusic
-        } catch (e: Exception) {
-            e.printStackTrace()
-            releaseProbePlayer()
-            false
-        }
-    }
-
-    /**
-     * Returns to the original station that triggered the smart switch
-     * and adds it to ignoredSpeechStationKeys so speech on that station is ignored for now.
-     */
     fun returnToOriginalStationAndIgnoreSpeech() {
-        val original = _originalSwitchedStation.value ?: return
-        val key = original.stationuuid?.takeIf { it.isNotBlank() } ?: original.getStreamUrl()
-        ignoredSpeechStationKeys.add(key)
+        val orig = _originalSwitchedStation.value ?: return
+        val current = currentStation ?: return
+
+        // Ignore speech on the current station that caused the switch or was return-target
+        val currentKey = current.stationuuid?.takeIf { it.isNotBlank() } ?: current.getStreamUrl()
+        ignoredSpeechStationKeys.add(currentKey)
+
         _originalSwitchedStation.value = null
-        _status.value = SmartSwitchStatus.Music
-        onSwitchStationRequest(original)
+        onSwitchStationRequest(orig)
     }
 
-    fun clearIgnoredSpeechStations() {
-        ignoredSpeechStationKeys.clear()
-    }
+    private fun findBestCandidateStation(current: Station): Station? {
+        val currentKey = current.stationuuid?.takeIf { it.isNotBlank() } ?: current.getStreamUrl()
 
-    private fun releaseProbePlayer() {
-        try {
-            probePlayer?.stop()
-            probePlayer?.release()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            probePlayer = null
+        // 1. Favorites list first
+        val favs = repository.favorites.value
+        val validFavs = favs.filter {
+            val k = it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl()
+            k != currentKey && !recentFallbackKeys.contains(k)
+        }
+        if (validFavs.isNotEmpty()) {
+            return validFavs.random()
+        }
+
+        // 2. Curated Catalogue
+        val curated = CuratedStations.load(context)
+        val validCurated = curated.filter {
+            val k = it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl()
+            k != currentKey && !recentFallbackKeys.contains(k)
+        }
+        if (validCurated.isNotEmpty()) {
+            return validCurated.random()
+        }
+
+        return curated.firstOrNull {
+            val k = it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl()
+            k != currentKey
         }
     }
 
     fun release() {
         stopMonitoring()
-        _originalSwitchedStation.value = null
-        releaseProbePlayer()
     }
 }
