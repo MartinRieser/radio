@@ -12,7 +12,9 @@
     "votes": 3500,
     "geo_lat": 48.2082,
     "geo_long": 16.3738,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://orf-live.ors-shoutcast.at/oe3-q2a",
+    "url": "https://orf-live.ors-shoutcast.at/oe3-q2a"
   },
   {
     "stationuuid": "206f93c5-5f3c-4ba1-82c2-19a42582fcc2",
@@ -26,7 +28,9 @@
     "favicon": "https://fm4.orf.at/apple-touch-icon.png",
     "votes": 2800,
     "geo_lat": 48.21,
-    "geo_long": 16.363
+    "geo_long": 16.363,
+    "urlResolved": "https://orf-live.ors-shoutcast.at/fm4-q2a",
+    "url": "https://orf-live.ors-shoutcast.at/fm4-q2a"
   },
   {
     "stationuuid": "orf-vorarlberg-001",
@@ -39,7 +43,9 @@
     "bitrate": 192,
     "favicon": "https://vorarlberg.orf.at/favicon.ico",
     "votes": 1800,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://orf-live.ors-shoutcast.at/vbg-q2a",
+    "url": "https://orf-live.ors-shoutcast.at/vbg-q2a"
   },
   {
     "stationuuid": "radiotop-ch-001",
@@ -52,7 +58,9 @@
     "bitrate": 96,
     "favicon": "https://toponline.ch/favicon.ico",
     "votes": 1200,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://radiotop.ice.infomaniak.ch/radiotop96.aac",
+    "url": "https://radiotop.ice.infomaniak.ch/radiotop96.aac"
   },
   {
     "stationuuid": "radio7-ulm-001",
@@ -65,7 +73,9 @@
     "bitrate": 192,
     "favicon": "https://www.radio7.de/favicon.ico",
     "votes": 1600,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://streams.radio7.de/dab/mp3-192/web/",
+    "url": "https://streams.radio7.de/dab/mp3-192/web/"
   },
   {
     "stationuuid": "av-live-vorarlberg-001",
@@ -78,7 +88,9 @@
     "bitrate": 128,
     "favicon": "https://www.antennevorarlberg.at/favicon.ico",
     "votes": 1500,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://web.radio.antennevorarlberg.at/av-live",
+    "url": "https://web.radio.antennevorarlberg.at/av-live"
   },
   {
     "stationuuid": "rockantenne-de-001",
@@ -91,7 +103,9 @@
     "bitrate": 128,
     "favicon": "https://www.rockantenne.de/favicon.ico",
     "votes": 3100,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://stream.rockantenne.de/rockantenne/stream/mp3",
+    "url": "https://stream.rockantenne.de/rockantenne/stream/mp3"
   },
   {
     "stationuuid": "tippfm-ireland-001",
@@ -104,7 +118,9 @@
     "bitrate": 128,
     "favicon": "https://www.tippfm.com/favicon.ico",
     "votes": 1700,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://playerservices.streamtheworld.com/api/livestream-redirect/TIPP_FM.mp3",
+    "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/TIPP_FM.mp3"
   },
   {
     "stationuuid": "radiogalaxy-bayern-001",
@@ -117,7 +133,9 @@
     "bitrate": 128,
     "favicon": "https://galaxy-bayern.de/favicon.ico",
     "votes": 1900,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://frontend.streamonkey.net/fhn-radiogalaxy/stream/mp3",
+    "url": "https://frontend.streamonkey.net/fhn-radiogalaxy/stream/mp3"
   },
   {
     "stationuuid": "radiogong-963-001",
@@ -130,7 +148,9 @@
     "bitrate": 128,
     "favicon": "https://www.radiogong.de/favicon.ico",
     "votes": 2200,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "http://mp3.radiogong963.c.nmdn.net/ps-radiogong963/livestream.mp3",
+    "url": "http://mp3.radiogong963.c.nmdn.net/ps-radiogong963/livestream.mp3"
   },
   {
     "stationuuid": "067388ea-bff2-41b5-869a-766b2f7b4a47",
@@ -145,7 +165,9 @@
     "votes": 2400,
     "geo_lat": 46.948,
     "geo_long": 7.4474,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://stream.srg-ssr.ch/srgssr/rsp/mp3/128",
+    "url": "https://stream.srg-ssr.ch/srgssr/rsp/mp3/128"
   },
   {
     "stationuuid": "0de82079-04e7-407b-b616-e0726eba5244",
@@ -160,7 +182,9 @@
     "votes": 2150,
     "geo_lat": 48.1351,
     "geo_long": 11.582,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://dispatcher.rndfnk.com/br/br3/live/mp3/mid",
+    "url": "https://dispatcher.rndfnk.com/br/br3/live/mp3/mid"
   },
   {
     "stationuuid": "240d28b9-7858-48d2-a816-9cf8e1875fe8",
@@ -175,7 +199,9 @@
     "votes": 2200,
     "geo_lat": 48.7606,
     "geo_long": 8.24,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://liveradio.swr.de/sw282p3/swr3/play.mp3",
+    "url": "https://liveradio.swr.de/sw282p3/swr3/play.mp3"
   },
   {
     "stationuuid": "b2cbd1fd-275d-432a-8b20-37dcb3572315",
@@ -190,7 +216,9 @@
     "votes": 2050,
     "geo_lat": 50.9375,
     "geo_long": 6.9603,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3",
+    "url": "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3"
   },
   {
     "stationuuid": "7b6aca3d-dfa3-47dd-9f57-820b04c3f339",
@@ -205,7 +233,9 @@
     "votes": 2600,
     "geo_lat": 48.8566,
     "geo_long": 2.3522,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://icecast.radiofrance.fr/fip-midfi.mp3",
+    "url": "https://icecast.radiofrance.fr/fip-midfi.mp3"
   },
   {
     "stationuuid": "0596bdc5-77fc-48ba-8653-e5e34bb86568",
@@ -220,7 +250,9 @@
     "votes": 2900,
     "geo_lat": 37.7749,
     "geo_long": -122.4194,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://ice1.somafm.com/groovesalad-256-mp3",
+    "url": "https://ice1.somafm.com/groovesalad-256-mp3"
   },
   {
     "stationuuid": "e9fddd49-3ee2-4597-8574-1b7dbd00aac0",
@@ -234,7 +266,9 @@
     "favicon": "https://kexp.org/static/assets/img/kexp-touch-icon-180x180.png",
     "votes": 1850,
     "geo_lat": 47.6062,
-    "geo_long": -122.3321
+    "geo_long": -122.3321,
+    "urlResolved": "https://kexp-mp3-128.streamguys1.com/kexp128.mp3",
+    "url": "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
   },
   {
     "stationuuid": "4260f1f5-d5b3-44d5-9666-355da4da0b21",
@@ -249,7 +283,9 @@
     "votes": 1650,
     "geo_lat": 52.52,
     "geo_long": 13.405,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://streams.ilovemusic.de/iloveradio17.mp3",
+    "url": "https://streams.ilovemusic.de/iloveradio17.mp3"
   },
   {
     "stationuuid": "34edbcea-ce81-4e39-81ab-71e74745d544",
@@ -264,7 +300,9 @@
     "votes": 1380,
     "geo_lat": 47.5596,
     "geo_long": 7.5886,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://stream.srg-ssr.ch/srgssr/rsc/mp3/128",
+    "url": "https://stream.srg-ssr.ch/srgssr/rsc/mp3/128"
   },
   {
     "stationuuid": "960eb2e9-0601-11e8-ae97-52543be04c81",
@@ -279,7 +317,9 @@
     "votes": 1420,
     "geo_lat": 37.7849,
     "geo_long": -122.4094,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://ice5.somafm.com/dronezone-128-mp3",
+    "url": "https://ice5.somafm.com/dronezone-128-mp3"
   },
   {
     "stationuuid": "9a368941-71a3-4bda-9186-6604d9030514",
@@ -294,7 +334,9 @@
     "votes": 1540,
     "geo_lat": 47.3769,
     "geo_long": 8.5417,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://stream.srg-ssr.ch/srgssr/rsj/mp3/128",
+    "url": "https://stream.srg-ssr.ch/srgssr/rsj/mp3/128"
   },
   {
     "stationuuid": "960e4940-0601-11e8-ae97-52543be04c81",
@@ -309,7 +351,9 @@
     "votes": 1740,
     "geo_lat": 38.9067,
     "geo_long": 1.4206,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://inhouse.ibizaglobalradio.com:8024/ibizaglobalradio.mp3",
+    "url": "https://inhouse.ibizaglobalradio.com:8024/ibizaglobalradio.mp3"
   },
   {
     "stationuuid": "78d27eb0-ad49-4188-be72-38f7137e4164",
@@ -324,7 +368,9 @@
     "votes": 1690,
     "geo_lat": 48.1451,
     "geo_long": 11.572,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://stream.antenne.de/antenne/stream/mp3",
+    "url": "https://stream.antenne.de/antenne/stream/mp3"
   },
   {
     "stationuuid": "0ec95505-0ff5-4b11-af12-80d77d591367",
@@ -339,7 +385,9 @@
     "votes": 1150,
     "geo_lat": 37.7649,
     "geo_long": -122.4294,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "urlResolved": "https://ice6.somafm.com/secretagent-128-aac",
+    "url": "https://ice6.somafm.com/secretagent-128-aac"
   },
   {
     "stationuuid": "4b473070-a3c2-41bd-8d98-c2db5f5954bc",
@@ -353,7 +401,9 @@
     "favicon": "https://www.rockantenne.de/apple-touch-icon.png",
     "votes": 1070,
     "geo_lat": 48.1551,
-    "geo_long": 11.562
+    "geo_long": 11.562,
+    "urlResolved": "https://stream.rockantenne.de/heavy-metal/stream/mp3",
+    "url": "https://stream.rockantenne.de/heavy-metal/stream/mp3"
   },
   {
     "stationuuid": "hitradio-ffh-001",
@@ -366,7 +416,9 @@
     "bitrate": 128,
     "favicon": "https://www.ffh.de/favicon.ico",
     "votes": 2600,
-    "learnedNewsWindow": ":00 - :04"
+    "learnedNewsWindow": ":00 - :04",
+    "urlResolved": "https://mp3.ffh.de/radioffh/hqlivestream.mp3",
+    "url": "https://mp3.ffh.de/radioffh/hqlivestream.mp3"
   },
   {
     "stationuuid": "av-2000er-vorarlberg-001",
@@ -377,7 +429,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=antennevorarlberg.at&sz=128",
+    "urlResolved": "https://web.radio.antennevorarlberg.at/av-2000er",
+    "url": "https://web.radio.antennevorarlberg.at/av-2000er"
   },
   {
     "stationuuid": "av-classicrock-vorarlberg-001",
@@ -388,7 +443,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=antennevorarlberg.at&sz=128",
+    "urlResolved": "https://web.radio.antennevorarlberg.at/av-classicrock/stream/mp3",
+    "url": "https://web.radio.antennevorarlberg.at/av-classicrock/stream/mp3"
   },
   {
     "stationuuid": "ab-greatesthits-001",
@@ -399,7 +457,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=antenne.de&sz=128",
+    "urlResolved": "https://stream.antenne.de/greatest-hits/stream/mp3",
+    "url": "https://stream.antenne.de/greatest-hits/stream/mp3"
   },
   {
     "stationuuid": "ra-classicperlen-001",
@@ -410,7 +471,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "http://www.rockantenne.de/logos/station-rock-antenne/apple-touch-icon.png",
+    "urlResolved": "https://stream.rockantenne.de/classic-perlen/stream/mp3",
+    "url": "https://stream.rockantenne.de/classic-perlen/stream/mp3"
   },
   {
     "stationuuid": "somafm-indiepop-001",
@@ -421,7 +485,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://somafm.com/img3/indiepop-400.jpg",
+    "urlResolved": "https://ice1.somafm.com/indiepop-128-mp3",
+    "url": "https://ice1.somafm.com/indiepop-128-mp3"
   },
   {
     "stationuuid": "somafm-lush-001",
@@ -432,7 +499,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://somafm.com/img3/lush-400.jpg",
+    "urlResolved": "https://ice1.somafm.com/lush-128-mp3",
+    "url": "https://ice1.somafm.com/lush-128-mp3"
   },
   {
     "stationuuid": "top100station-de-001",
@@ -443,7 +513,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=top100station.com&sz=128",
+    "urlResolved": "http://streamhq.top100station.com/top100station-high.mp3",
+    "url": "http://streamhq.top100station.com/top100station-high.mp3"
   },
   {
     "stationuuid": "ilovetop100-de-001",
@@ -454,7 +527,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=ilovemusic.de&sz=128",
+    "urlResolved": "https://streams.ilovemusic.de/iloveradio9.mp3",
+    "url": "https://streams.ilovemusic.de/iloveradio9.mp3"
   },
   {
     "stationuuid": "av-top40-vorarlberg-001",
@@ -465,7 +541,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=antennevorarlberg.at&sz=128",
+    "urlResolved": "https://web.radio.antennevorarlberg.at/av-top40",
+    "url": "https://web.radio.antennevorarlberg.at/av-top40"
   },
   {
     "stationuuid": "ab-top40-bayern-001",
@@ -476,7 +555,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=antenne.de&sz=128",
+    "urlResolved": "https://stream.antenne.de/top-40/stream/mp3",
+    "url": "https://stream.antenne.de/top-40/stream/mp3"
   },
   {
     "stationuuid": "ahfm-trance-nl-001",
@@ -487,7 +569,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=ah.fm&sz=128",
+    "urlResolved": "https://eu.ah.fm/live",
+    "url": "https://eu.ah.fm/live"
   },
   {
     "stationuuid": "intenseradio-nl-001",
@@ -498,7 +583,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=live-streams.nl&sz=128",
+    "urlResolved": "https://secure.live-streams.nl/main",
+    "url": "https://secure.live-streams.nl/main"
   },
   {
     "stationuuid": "timeout-trance-nl-001",
@@ -509,7 +597,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=slotex.pl&sz=128",
+    "urlResolved": "https://s3.slotex.pl/shoutcast/7056/stream",
+    "url": "https://s3.slotex.pl/shoutcast/7056/stream"
   },
   {
     "stationuuid": "cdance-retro-nl-001",
@@ -520,7 +611,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=myradiostream.com:18304&sz=128",
+    "urlResolved": "http://s45.myradiostream.com:18304/",
+    "url": "http://s45.myradiostream.com:18304/"
   },
   {
     "stationuuid": "heart80s-uk-001",
@@ -531,7 +625,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": false
+    "is_pure_music": false,
+    "favicon": "http://heart.co.uk/assets_v4r/heart/img/favicon-196x196.png",
+    "urlResolved": "https://media-ssl.musicradio.com/Heart80sMP3",
+    "url": "https://media-ssl.musicradio.com/Heart80sMP3"
   },
   {
     "stationuuid": "181fm-awesome80s-us-001",
@@ -542,7 +639,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=181fm.com&sz=128",
+    "urlResolved": "http://listen.181fm.com/181-awesome80s_128k.mp3",
+    "url": "http://listen.181fm.com/181-awesome80s_128k.mp3"
   },
   {
     "stationuuid": "977-80s-us-001",
@@ -553,7 +653,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=streamtheworld.com:3690&sz=128",
+    "urlResolved": "http://26433.live.streamtheworld.com:3690/977_80_SC",
+    "url": "http://26433.live.streamtheworld.com:3690/977_80_SC"
   },
   {
     "stationuuid": "somafm-u80s-us-001",
@@ -564,7 +667,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://somafm.com/u80s/",
+    "urlResolved": "https://ice6.somafm.com/u80s-128-mp3",
+    "url": "https://ice6.somafm.com/u80s-128-mp3"
   },
   {
     "stationuuid": "100radio80-fr-001",
@@ -575,7 +681,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://bocir-prod-bucket.s3.amazonaws.com/radios/centpourcent/images/favicon.ico",
+    "urlResolved": "http://100radio-80.ice.infomaniak.ch/100radio-80-128.mp3",
+    "url": "http://100radio-80.ice.infomaniak.ch/100radio-80-128.mp3"
   },
   {
     "stationuuid": "chantefrance80s-fr-001",
@@ -586,7 +695,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=chantefrance.com&sz=128",
+    "urlResolved": "http://stream1.chantefrance.com/cf-80",
+    "url": "http://stream1.chantefrance.com/cf-80"
   },
   {
     "stationuuid": "maxi80-fr-001",
@@ -597,7 +709,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://cdn-radiotime-logos.tunein.com/s108907d.png",
+    "urlResolved": "http://audio1.maxi80.com/",
+    "url": "http://audio1.maxi80.com/"
   },
   {
     "stationuuid": "181fm-star90s-us-001",
@@ -608,7 +723,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=181fm.com&sz=128",
+    "urlResolved": "http://listen.181fm.com/181-star90s_128k.mp3",
+    "url": "http://listen.181fm.com/181-star90s_128k.mp3"
   },
   {
     "stationuuid": "181fm-90sdance-us-001",
@@ -619,7 +737,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=181fm.com&sz=128",
+    "urlResolved": "http://listen.181fm.com/181-90sdance_128k.mp3",
+    "url": "http://listen.181fm.com/181-90sdance_128k.mp3"
   },
   {
     "stationuuid": "allzic90s-fr-001",
@@ -630,7 +751,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.allzicradio.com/apple-touch-icon-120x120.png",
+    "urlResolved": "http://allzic07.ice.infomaniak.ch/allzic07.mp3",
+    "url": "http://allzic07.ice.infomaniak.ch/allzic07.mp3"
   },
   {
     "stationuuid": "av-90er-vorarlberg-001",
@@ -641,7 +765,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=antennevorarlberg.at&sz=128",
+    "urlResolved": "https://web.radio.antennevorarlberg.at/av-90er",
+    "url": "https://web.radio.antennevorarlberg.at/av-90er"
   },
   {
     "stationuuid": "ra-90errock-001",
@@ -652,7 +779,10 @@
     "codec": "MP3",
     "bitrate": 128,
     "votes": 1500,
-    "is_pure_music": true
+    "is_pure_music": true,
+    "favicon": "https://www.google.com/s2/favicons?domain=rockantenne.de&sz=128",
+    "urlResolved": "https://stream.rockantenne.de/90er-rock/stream/mp3",
+    "url": "https://stream.rockantenne.de/90er-rock/stream/mp3"
   },
   {
     "stationuuid": "961350a4-0601-11e8-ae97-52543be04c81",
@@ -663,8 +793,10 @@
     "tags": "pop, chart, hits, electronic, youth, ndr",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=ndr.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://icecast.ndr.de/ndr/njoy/live/mp3/128/stream.mp3",
+    "url": "https://icecast.ndr.de/ndr/njoy/live/mp3/128/stream.mp3"
   },
   {
     "stationuuid": "energy-zuerich-001",
@@ -675,8 +807,10 @@
     "tags": "pop, hits, chart, zürich, nrj",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://energy.ch/ech-new/images/ech/apple-touch-icon.png",
+    "votes": 1000,
+    "url_resolved": "https://energyzuerich.ice.infomaniak.ch/energyzuerich-high.mp3",
+    "url": "https://energyzuerich.ice.infomaniak.ch/energyzuerich-high.mp3"
   },
   {
     "stationuuid": "a7b3c2d1-e4f5-4a6b-8c9d-0e1f2a3b4c5d",
@@ -687,8 +821,10 @@
     "tags": "classical, orchestra, symphony, opera",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=srg-ssr.ch&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://stream.srg-ssr.ch/m/rsc_de/mp3_128",
+    "url": "https://stream.srg-ssr.ch/m/rsc_de/mp3_128"
   },
   {
     "stationuuid": "b8c4d3e2-f5a6-4b7c-9d0e-1f2a3b4c5d6e",
@@ -699,8 +835,10 @@
     "tags": "jazz, swing, blues, soul",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=srg-ssr.ch&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://stream.srg-ssr.ch/srgssr/rsj/mp3/128",
+    "url": "https://stream.srg-ssr.ch/srgssr/rsj/mp3/128"
   },
   {
     "stationuuid": "da91ea37-2a84-4180-fce1-a85511370707",
@@ -711,8 +849,10 @@
     "tags": "oldies, pop, hits, news, br",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://api.ardmediathek.de/image-service/images/urn:ard:image:b366004f6196d70c?w=512",
+    "votes": 1000,
+    "url_resolved": "https://dispatcher.rndfnk.com/br/br1/obb/mp3/mid",
+    "url": "https://dispatcher.rndfnk.com/br/br1/obb/mp3/mid"
   },
   {
     "stationuuid": "fc130c59-4ca6-43a2-1e03-ca7733590909",
@@ -723,8 +863,10 @@
     "tags": "pop, rock, hits, news, swr",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://api.ardmediathek.de/image-service/images/urn:ard:image:fcd6835b90ee9466?w=512",
+    "votes": 1000,
+    "url_resolved": "https://liveradio.swr.de/sw282p3/swr1bw/play.mp3",
+    "url": "https://liveradio.swr.de/sw282p3/swr1bw/play.mp3"
   },
   {
     "stationuuid": "9618a804-0601-11e8-ae97-52543be04c81",
@@ -735,8 +877,10 @@
     "tags": "pop, chart, electronic, youth, wdr",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www1.wdr.de/radio/1live/resources/img/favicon/apple-touch-icon.png",
+    "votes": 1000,
+    "url_resolved": "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3",
+    "url": "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3"
   },
   {
     "stationuuid": "7a35e4d1-c42e-4b2a-96e5-4299bb710101",
@@ -747,8 +891,10 @@
     "tags": "pop, news, information, talk, wdr",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www1.wdr.de/mediathek/audio/sendereihen-bilder/wdr2-default100~_v-gseaclassicxl.jpg",
+    "votes": 1000,
+    "url_resolved": "https://wdr-wdr2-rheinland.icecastssl.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3",
+    "url": "https://wdr-wdr2-rheinland.icecastssl.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3"
   },
   {
     "stationuuid": "regenbogen-bw-001",
@@ -759,8 +905,10 @@
     "tags": "pop, hits, chart, baden-wuerttemberg, news",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://file.atsw.de/production/static/1721915194495/icons/icon_512.b8wxo2c0800.png",
+    "votes": 1000,
+    "url_resolved": "https://stream.regenbogen.de/live/mp3-128/",
+    "url": "https://stream.regenbogen.de/live/mp3-128/"
   },
   {
     "stationuuid": "dasding-swr-001",
@@ -771,8 +919,10 @@
     "tags": "pop, chart, urban, youth, swr",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=swr.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://liveradio.swr.de/sw282p3/dasding/play.mp3",
+    "url": "https://liveradio.swr.de/sw282p3/dasding/play.mp3"
   },
   {
     "stationuuid": "liferadio-at-001",
@@ -783,8 +933,10 @@
     "tags": "pop, hits, chart, austria, news",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=liferadio.at&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://stream.liferadio.at/live/mp3-128/",
+    "url": "https://stream.liferadio.at/live/mp3-128/"
   },
   {
     "stationuuid": "be79c815-0862-4f6e-dac9-8633ff150505",
@@ -795,8 +947,10 @@
     "tags": "rock, classic rock, hard rock, alternative",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=radiobob.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://streams.radiobob.de/bob-live/mp3-192/streams.radiobob.de/",
+    "url": "https://streams.radiobob.de/bob-live/mp3-192/streams.radiobob.de/"
   },
   {
     "stationuuid": "cf80d926-1973-407f-ebd0-974400260606",
@@ -807,8 +961,10 @@
     "tags": "electronic, techno, trance, edm",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=sunshine-live.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://stream.sunshine-live.de/live/mp3-128/stream.sunshine-live.de/",
+    "url": "https://stream.sunshine-live.de/live/mp3-128/stream.sunshine-live.de/"
   },
   {
     "stationuuid": "78012206-1aa1-11e9-a80b-52543be04c81",
@@ -819,8 +975,10 @@
     "tags": "music,variety",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://mangoradio.de/wp-content/uploads/cropped-Logo-192x192.webp",
+    "votes": 1000,
+    "url_resolved": "https://mangoradio.stream.laut.fm/mangoradio",
+    "url": "https://mangoradio.stream.laut.fm/mangoradio"
   },
   {
     "stationuuid": "960cca40-0601-11e8-ae97-52543be04c81",
@@ -831,8 +989,10 @@
     "tags": "heavy metal,metal",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://www.rockantenne.de/logos/station-rock-antenne/favicon.ico",
+    "votes": 1000,
+    "url_resolved": "http://mp3channels.webradio.rockantenne.de/heavy-metal",
+    "url": "http://mp3channels.webradio.rockantenne.de/heavy-metal"
   },
   {
     "stationuuid": "9637a1b2-0601-11e8-ae97-52543be04c81",
@@ -843,8 +1003,10 @@
     "tags": "90s,hits,pop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=90s90s.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://streams.90s90s.de/pop/mp3-192/streams.90s90s.de/",
+    "url": "http://streams.90s90s.de/pop/mp3-192/streams.90s90s.de/"
   },
   {
     "stationuuid": "962c0376-0601-11e8-ae97-52543be04c81",
@@ -855,8 +1017,10 @@
     "tags": "90s,dance,electronica,eurodance",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=sunshine-live.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.sunshine-live.de/90er/mp3-192/stream.sunshine-live.de",
+    "url": "http://stream.sunshine-live.de/90er/mp3-192/stream.sunshine-live.de"
   },
   {
     "stationuuid": "342a0e53-ab9b-11e9-88f4-52543be04c81",
@@ -867,8 +1031,10 @@
     "tags": "electronic,techno,trance",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.trancebase.fm/media/icons/trb/apple-touch-icon.png",
+    "votes": 1000,
+    "url_resolved": "http://listen.trancebase.fm/tunein-aac-hd-pls",
+    "url": "http://listen.trancebase.fm/tunein-aac-hd-pls"
   },
   {
     "stationuuid": "9627c2e6-0601-11e8-ae97-52543be04c81",
@@ -879,8 +1045,10 @@
     "tags": "dance,electronic,minimal,techno",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=sunshine-live.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.sunshine-live.de/techno/mp3-192/stream.sunshine-live.de/",
+    "url": "http://stream.sunshine-live.de/techno/mp3-192/stream.sunshine-live.de/"
   },
   {
     "stationuuid": "b7e7bb7b-b41a-11e8-afe1-52543be04c81",
@@ -891,8 +1059,10 @@
     "tags": "90s",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=90s90s.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://streams.90s90s.de/eurodance/mp3-192/radiode/",
+    "url": "http://streams.90s90s.de/eurodance/mp3-192/radiode/"
   },
   {
     "stationuuid": "6cddaca1-f2c1-11e8-a471-52543be04c81",
@@ -903,8 +1073,10 @@
     "tags": "70er,70s,oldies,pop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.0nradio.com/logos/0n-70s_600x600.jpg",
+    "votes": 1000,
+    "url_resolved": "https://0n-70s.radionetz.de/0n-70s.mp3",
+    "url": "https://0n-70s.radionetz.de/0n-70s.mp3"
   },
   {
     "stationuuid": "ca2d0aa2-6fc8-4761-beb6-ce692a4a9bf5",
@@ -915,8 +1087,10 @@
     "tags": "alternative metal,alternative rock,grunge,indie rock,punkrock,rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.best-of-rock.fm/favicons/apple-touch-icon.png",
+    "votes": 1000,
+    "url_resolved": "https://bestofrockfm.stream.vip/altrock/mp3-256/bestofrock.fm/",
+    "url": "https://bestofrockfm.stream.vip/altrock/mp3-256/bestofrock.fm/"
   },
   {
     "stationuuid": "8a41b60c-f115-11e8-a471-52543be04c81",
@@ -927,8 +1101,10 @@
     "tags": "80er,80s,oldies,pop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.0nradio.com/logos/0n-80s_600x600.jpg",
+    "votes": 1000,
+    "url_resolved": "https://0n-80s.radionetz.de/0n-80s.mp3",
+    "url": "https://0n-80s.radionetz.de/0n-80s.mp3"
   },
   {
     "stationuuid": "960ebc25-0601-11e8-ae97-52543be04c81",
@@ -939,8 +1115,10 @@
     "tags": "reggae",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://static.wixstatic.com/media/a09246_33fe4aef6e5f4f17b605a8d8645ff015%7emv2.png/v1/fill/w_32%2ch_32%2clg_1%2cusm_0.66_1.00_0.01/a09246_33fe4aef6e5f4f17b605a8d8645ff015%7emv2.png",
+    "votes": 1000,
+    "url_resolved": "http://origin-rastamusic.streamguys1.com/rastamusic.mp3",
+    "url": "http://origin-rastamusic.streamguys1.com/rastamusic.mp3"
   },
   {
     "stationuuid": "1b762b21-2ec6-412a-a231-fa34a96f4f99",
@@ -951,8 +1129,10 @@
     "tags": "80s,new wave,pop,rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://upload.80s80s.de/production/static/1697296555757/icons/icon_512.ewwAEi8A30w.png",
+    "votes": 1000,
+    "url_resolved": "http://regiocast.streamabc.net/regc-80s80smweb2517500-mp3-192-1672667?sABC=6nq36rn3%230%236q8s7o7o3p7411o9n0871834qs5r90so%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1792241315",
+    "url": "http://regiocast.streamabc.net/regc-80s80smweb2517500-mp3-192-1672667?sABC=6nq36rn3%230%236q8s7o7o3p7411o9n0871834qs5r90so%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1792241315"
   },
   {
     "stationuuid": "96154a1e-0601-11e8-ae97-52543be04c81",
@@ -963,8 +1143,10 @@
     "tags": "ambient,dance,electronic,instrumental",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=laut.fm&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.laut.fm/total-instrumental",
+    "url": "http://stream.laut.fm/total-instrumental"
   },
   {
     "stationuuid": "9605d022-0601-11e8-ae97-52543be04c81",
@@ -975,8 +1157,10 @@
     "tags": "80s",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=ffh.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://mp3.ffh.de/ffhchannels/hq80er.mp3",
+    "url": "http://mp3.ffh.de/ffhchannels/hq80er.mp3"
   },
   {
     "stationuuid": "8f1e8acf-2ce6-4542-a423-bc29ea514e4a",
@@ -987,8 +1171,10 @@
     "tags": "electro,electro house,electronic,hits,progressive psytrance,progressive trance,psytrance,trance,voca",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.rm.fm/favicon.ico",
+    "votes": 1000,
+    "url_resolved": "https://trance-high.rautemusik.fm/?ref=radiobrowser",
+    "url": "https://trance-high.rautemusik.fm/?ref=radiobrowser"
   },
   {
     "stationuuid": "960567ca-0601-11e8-ae97-52543be04c81",
@@ -999,8 +1185,10 @@
     "tags": "eurodance",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=ffh.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://mp3.ffh.de/ffhchannels/hqeurodance.mp3?aw_0_req.gdpr=true",
+    "url": "http://mp3.ffh.de/ffhchannels/hqeurodance.mp3?aw_0_req.gdpr=true"
   },
   {
     "stationuuid": "9610ac7f-0601-11e8-ae97-52543be04c81",
@@ -1011,8 +1199,10 @@
     "tags": "50s,60s,70s,80s,oldies,pop,rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://1000oldies.de/apple-icon-120x120.png",
+    "votes": 1000,
+    "url_resolved": "http://1000oldies.stream.laut.fm/1000oldies?t302=2018-01-16_15-40-29&uuid=37780fea-d865-4439-9a4a-66f3ec1715a0",
+    "url": "http://1000oldies.stream.laut.fm/1000oldies?t302=2018-01-16_15-40-29&uuid=37780fea-d865-4439-9a4a-66f3ec1715a0"
   },
   {
     "stationuuid": "6217a525-f2c2-11e8-a471-52543be04c81",
@@ -1023,8 +1213,10 @@
     "tags": "90er,90s,dance,oldies,pop,rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.0nradio.com/logos/0n-90s_600x600.jpg",
+    "votes": 1000,
+    "url_resolved": "https://0n-90s.radionetz.de/0n-90s.mp3",
+    "url": "https://0n-90s.radionetz.de/0n-90s.mp3"
   },
   {
     "stationuuid": "962683f5-0601-11e8-ae97-52543be04c81",
@@ -1035,8 +1227,10 @@
     "tags": "dance,electronic,lounge",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=sunshine-live.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.sunshine-live.de/lounge/mp3-192/stream.sunshine-live.de/",
+    "url": "http://stream.sunshine-live.de/lounge/mp3-192/stream.sunshine-live.de/"
   },
   {
     "stationuuid": "cc0fdbe3-a2fb-4f0a-b67d-b47acd6354c7",
@@ -1047,8 +1241,10 @@
     "tags": "deep house,electro house,electronic,elektro,elektronik,house,progressive house,vocal house",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=technolovers.fm&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://stream.technolovers.fm/deep-house?ref=radiobrowser",
+    "url": "https://stream.technolovers.fm/deep-house?ref=radiobrowser"
   },
   {
     "stationuuid": "5b48d259-27f5-11e8-91bf-52543be04c81",
@@ -1059,8 +1255,10 @@
     "tags": "hiphop,rap,trap",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.iloveradio.de/favicon.ico",
+    "votes": 1000,
+    "url_resolved": "http://ilm.stream27.radiohost.de/ilm_iloveusonlyrapradio_mp3-192?upd-meta&upd-scheme=http&_art=dD0xNzkyMjE1MjM2JmQ9NzQzZTJmZDk1NjNiZTRkMGEyYmQ",
+    "url": "http://ilm.stream27.radiohost.de/ilm_iloveusonlyrapradio_mp3-192?upd-meta&upd-scheme=http&_art=dD0xNzkyMjE1MjM2JmQ9NzQzZTJmZDk1NjNiZTRkMGEyYmQ"
   },
   {
     "stationuuid": "9618d38b-0601-11e8-ae97-52543be04c81",
@@ -1071,8 +1269,10 @@
     "tags": "heavy metal",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=radiobob.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://streams.radiobob.de/bob-metal/mp3-192/streams.radiobob.de/",
+    "url": "http://streams.radiobob.de/bob-metal/mp3-192/streams.radiobob.de/"
   },
   {
     "stationuuid": "143caaf5-1354-442b-bc83-3bae08aa45c7",
@@ -1083,8 +1283,10 @@
     "tags": "70s soft rock,80s soft rock,pop rock,rock,rock'n'roll,soft rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://i.ibb.co/SJFG3bt/soft-rock.jpg",
+    "votes": 1000,
+    "url_resolved": "https://stream.0nlineradio.com/soft-rock?ref=radiobrowser",
+    "url": "https://stream.0nlineradio.com/soft-rock?ref=radiobrowser"
   },
   {
     "stationuuid": "51895bd4-f369-11e8-a471-52543be04c81",
@@ -1095,8 +1297,10 @@
     "tags": "alternative,electro,hip hop,indie,rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.0nradio.com/logos/0n-indie_600x600.jpg",
+    "votes": 1000,
+    "url_resolved": "https://0n-indie.radionetz.de/0n-indie.mp3",
+    "url": "https://0n-indie.radionetz.de/0n-indie.mp3"
   },
   {
     "stationuuid": "9618ca06-0601-11e8-ae97-52543be04c81",
@@ -1107,8 +1311,10 @@
     "tags": "alternative,rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=radiobob.de&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://streams.radiobob.de/bob-alternative/mp3-192/streams.radiobob.de/",
+    "url": "http://streams.radiobob.de/bob-alternative/mp3-192/streams.radiobob.de/"
   },
   {
     "stationuuid": "960b364a-0601-11e8-ae97-52543be04c81",
@@ -1119,8 +1325,10 @@
     "tags": "hits,pop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://upload.kissfm.de/production/static/1699276434696/icons/icon_64.be8y2280000.png",
+    "votes": 1000,
+    "url_resolved": "http://stream.kissfm.de/kissfm/mp3-128/internetradio/",
+    "url": "http://stream.kissfm.de/kissfm/mp3-128/internetradio/"
   },
   {
     "stationuuid": "be9dcb42-f365-11e8-a471-52543be04c81",
@@ -1131,8 +1339,10 @@
     "tags": "ambient,chillout,easy listening,electro",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.0nradio.com/logos/0n-chillout_600x600.jpg",
+    "votes": 1000,
+    "url_resolved": "https://0n-chillout.radionetz.de/0n-chillout.aac",
+    "url": "https://0n-chillout.radionetz.de/0n-chillout.aac"
   },
   {
     "stationuuid": "9615de2d-0601-11e8-ae97-52543be04c81",
@@ -1143,8 +1353,10 @@
     "tags": "top 40",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://www.antenne.de/logos/station-antenne-bayern/apple-touch-icon.png",
+    "votes": 1000,
+    "url_resolved": "http://mp3channels.webradio.antenne.de/top-40",
+    "url": "http://mp3channels.webradio.antenne.de/top-40"
   },
   {
     "stationuuid": "96057c18-0601-11e8-ae97-52543be04c81",
@@ -1155,8 +1367,10 @@
     "tags": "rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://austrianrockradio.at/wp-content/uploads/2023/02/liferadio-150x150.png",
+    "votes": 1000,
+    "url_resolved": "http://live.antenne.at/arr",
+    "url": "http://live.antenne.at/arr"
   },
   {
     "stationuuid": "8a3685e2-711e-4764-9080-6fa143c33014",
@@ -1167,8 +1381,10 @@
     "tags": "orf",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/411/749/352/990/original/16c84635847ddad3.png",
+    "votes": 1000,
+    "url_resolved": "http://orf-live.ors-shoutcast.at/wie-q1a",
+    "url": "http://orf-live.ors-shoutcast.at/wie-q1a"
   },
   {
     "stationuuid": "96061367-0601-11e8-ae97-52543be04c81",
@@ -1179,8 +1395,10 @@
     "tags": "",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://www.kronehit.at/static/base/img/apple-touch-icon.f5c3420c154b.png",
+    "votes": 1000,
+    "url_resolved": "http://onair-ha1.krone.at/kronehit1058.mp3",
+    "url": "http://onair-ha1.krone.at/kronehit1058.mp3"
   },
   {
     "stationuuid": "9647d94c-0601-11e8-ae97-52543be04c81",
@@ -1191,8 +1409,10 @@
     "tags": "adult contemporary",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://www.kronehit.at/static/base/img/apple-touch-icon.f5c3420c154b.png",
+    "votes": 1000,
+    "url_resolved": "http://onair-ha1.krone.at/kronehit64.aac",
+    "url": "http://onair-ha1.krone.at/kronehit64.aac"
   },
   {
     "stationuuid": "d0d9c01c-5e0d-11ea-be63-52543be04c81",
@@ -1203,8 +1423,10 @@
     "tags": "hard rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.radio886.at/img/stream_logos_2024/886_STREAM_ICON_HARDROCK.png",
+    "votes": 1000,
+    "url_resolved": "http://radio886.at/streams/88.6_Hard_Rock/mp3",
+    "url": "http://radio886.at/streams/88.6_Hard_Rock/mp3"
   },
   {
     "stationuuid": "9620cfc5-0601-11e8-ae97-52543be04c81",
@@ -1215,8 +1437,10 @@
     "tags": "children,dab+,kids",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.meinkinderradio.at/wp-content/uploads/2021/07/favicon.png",
+    "votes": 1000,
+    "url_resolved": "http://stream01.zogl.net:8906/stream",
+    "url": "http://stream01.zogl.net:8906/stream"
   },
   {
     "stationuuid": "af1d60c9-5e0d-11ea-be63-52543be04c81",
@@ -1227,8 +1451,10 @@
     "tags": "rock",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.radio886.at/apple-touch-icon.png",
+    "votes": 1000,
+    "url_resolved": "http://radio886.at/streams/radio_88.6/mp3",
+    "url": "http://radio886.at/streams/radio_88.6/mp3"
   },
   {
     "stationuuid": "54b85bd0-8b71-11e9-ad01-52543be04c81",
@@ -1239,8 +1465,10 @@
     "tags": "80s,darkwave,electronic,electropop,gothic,industrial,minimal wave,synthpop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=laut.fm&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.laut.fm/darksynthradio",
+    "url": "http://stream.laut.fm/darksynthradio"
   },
   {
     "stationuuid": "17142ca0-4faf-11e9-a4d7-52543be04c81",
@@ -1251,8 +1479,10 @@
     "tags": "dab+,easy listening",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.city23.at/wp-content/themes/city23/medias/app-icons/apple-icon-120x120.png",
+    "votes": 1000,
+    "url_resolved": "http://live.radiomax.technology/city23",
+    "url": "http://live.radiomax.technology/city23"
   },
   {
     "stationuuid": "394c0c15-b64b-4d82-8be3-4e54afa0d475",
@@ -1263,8 +1493,10 @@
     "tags": "dance & electronic,edm,hardstyle",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=laut.fm&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.laut.fm/1000-electronic-dance-music",
+    "url": "http://stream.laut.fm/1000-electronic-dance-music"
   },
   {
     "stationuuid": "c4a15de4-ce45-401f-bfb1-f98f818a74f0",
@@ -1275,8 +1507,10 @@
     "tags": "orf",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/434/334/698/982/original/aad9486c4d8e92f2.png",
+    "votes": 1000,
+    "url_resolved": "http://orf-live.ors-shoutcast.at/noe-q2a",
+    "url": "http://orf-live.ors-shoutcast.at/noe-q2a"
   },
   {
     "stationuuid": "c64828ba-99b9-407b-bb7f-3f1c184447d2",
@@ -1287,8 +1521,10 @@
     "tags": "",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://u1-radio.at/wp-content/uploads/2022/03/u1_favicon512x512-150x150.png",
+    "votes": 1000,
+    "url_resolved": "https://live.u1-radio.at/",
+    "url": "https://live.u1-radio.at/"
   },
   {
     "stationuuid": "0d37b24b-204c-47f9-84df-4dcbfa97ba33",
@@ -1299,8 +1535,10 @@
     "tags": "orf",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/623/444/743/699/original/3022673107e835ba.png",
+    "votes": 1000,
+    "url_resolved": "https://orf-live.ors-shoutcast.at/vbg-q1a",
+    "url": "https://orf-live.ors-shoutcast.at/vbg-q1a"
   },
   {
     "stationuuid": "e58e609b-3712-4136-86cf-5ac872192918",
@@ -1311,8 +1549,10 @@
     "tags": "90s,dance,eurodance,top40",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.eurodance.at/images/logo.png",
+    "votes": 1000,
+    "url_resolved": "https://secureonair.krone.at/eurodance.aac",
+    "url": "https://secureonair.krone.at/eurodance.aac"
   },
   {
     "stationuuid": "31858a05-51df-4ff4-9d62-4f0a22fad870",
@@ -1323,8 +1563,10 @@
     "tags": "",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=laut.fm&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream.laut.fm/drumandbass_fm",
+    "url": "http://stream.laut.fm/drumandbass_fm"
   },
   {
     "stationuuid": "477d5e54-24b0-48dd-97f0-5cf4f047eb55",
@@ -1335,8 +1577,10 @@
     "tags": "orf,local radio,volkstümlich",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/561/229/082/482/original/57acca969ede8452.png",
+    "votes": 1000,
+    "url_resolved": "http://orf-live.ors-shoutcast.at/tir-q2a",
+    "url": "http://orf-live.ors-shoutcast.at/tir-q2a"
   },
   {
     "stationuuid": "c1ca7ee1-2534-4188-ae4d-be40836b59b0",
@@ -1347,8 +1591,10 @@
     "tags": "hip-hop,reggae",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=laut.fm&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://mountainreggaeradio.stream.laut.fm/mountainreggaeradio",
+    "url": "https://mountainreggaeradio.stream.laut.fm/mountainreggaeradio"
   },
   {
     "stationuuid": "964de587-0601-11e8-ae97-52543be04c81",
@@ -1359,8 +1605,10 @@
     "tags": "dance,party",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.antenne.at/favicon.ico",
+    "votes": 1000,
+    "url_resolved": "http://live.antenne.at/ost",
+    "url": "http://live.antenne.at/ost"
   },
   {
     "stationuuid": "bbd3a015-9cff-4afb-8aed-b011555a4538",
@@ -1371,8 +1619,10 @@
     "tags": "austrian music,austropop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://arabella.at/static/base/img/apple-touch-icon.a3ce28a2756f.png",
+    "votes": 1000,
+    "url_resolved": "https://frontend.streams.arabella.at/arabella-austropop/stream/mp3?aggregator=arabella-playlistfile",
+    "url": "https://frontend.streams.arabella.at/arabella-austropop/stream/mp3?aggregator=arabella-playlistfile"
   },
   {
     "stationuuid": "96087c49-0601-11e8-ae97-52543be04c81",
@@ -1383,8 +1633,10 @@
     "tags": "pop",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://media.metacast.eu/pictures/10_2015/OdriLYWpbHJqKDAcGCMv-7384.png",
+    "votes": 1000,
+    "url_resolved": "http://stream1.energy.at:8000/ibk",
+    "url": "http://stream1.energy.at:8000/ibk"
   },
   {
     "stationuuid": "f0787305-4e27-4494-b5ae-8f9082301f1a",
@@ -1395,8 +1647,10 @@
     "tags": "orf",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/531/169/177/709/original/1721e6944c64b1b3.png",
+    "votes": 1000,
+    "url_resolved": "http://orf-live.ors-shoutcast.at/stm-q2a",
+    "url": "http://orf-live.ors-shoutcast.at/stm-q2a"
   },
   {
     "stationuuid": "95e84b33-c9a2-4b01-b54c-fdbc36fefacc",
@@ -1407,8 +1661,10 @@
     "tags": "club,dance,edm,electronic,partymix",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=antennevorarlberg.at&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://web.radio.antennevorarlberg.at/av-partymix",
+    "url": "https://web.radio.antennevorarlberg.at/av-partymix"
   },
   {
     "stationuuid": "f9bc912f-dbd7-4a75-b3af-1a77c2231098",
@@ -1419,8 +1675,10 @@
     "tags": "orf,orf,public radio,regional radio",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/600/349/621/738/original/38f30e28fae38639.png",
+    "votes": 1000,
+    "url_resolved": "http://ors-sn02.ors-shoutcast.at/ktn-q1a",
+    "url": "http://ors-sn02.ors-shoutcast.at/ktn-q1a"
   },
   {
     "stationuuid": "961a6bf2-0601-11e8-ae97-52543be04c81",
@@ -1431,8 +1689,10 @@
     "tags": "freies radio salzkammergut",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://freiesradio.at/wp-content/uploads/2016/11/cropped-favicon-180x180.png",
+    "votes": 1000,
+    "url_resolved": "http://stream.xaok.org:8000/frs.mp3",
+    "url": "http://stream.xaok.org:8000/frs.mp3"
   },
   {
     "stationuuid": "96060101-0601-11e8-ae97-52543be04c81",
@@ -1443,8 +1703,10 @@
     "tags": "",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=liferadio.at&sz=128",
+    "votes": 1000,
+    "url_resolved": "http://stream1.liferadio.at/",
+    "url": "http://stream1.liferadio.at/"
   },
   {
     "stationuuid": "79a03ff6-e304-4426-8496-cf8253084f75",
@@ -1455,8 +1717,10 @@
     "tags": "2000s,80s,90s,austrian music,austropop,smooth",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.arabella.at/static/base/img/favicon.png",
+    "votes": 1000,
+    "url_resolved": "https://frontend.streams.arabella.at/arabella-oberoesterreich?aggregator=tunein",
+    "url": "https://frontend.streams.arabella.at/arabella-oberoesterreich?aggregator=tunein"
   },
   {
     "stationuuid": "962ee480-0601-11e8-ae97-52543be04c81",
@@ -1467,8 +1731,10 @@
     "tags": "christmas music",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://www.radio-xmas.at/assets/img/santa.png",
+    "votes": 1000,
+    "url_resolved": "http://www.radio-xmas.at:443/xmas?1512905036085",
+    "url": "http://www.radio-xmas.at:443/xmas?1512905036085"
   },
   {
     "stationuuid": "1abda628-4353-4725-8eca-5fce5287f27f",
@@ -1479,8 +1745,10 @@
     "tags": "",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://www.google.com/s2/favicons?domain=liferadio.at&sz=128",
+    "votes": 1000,
+    "url_resolved": "https://stream8.liferadio.at/",
+    "url": "https://stream8.liferadio.at/"
   },
   {
     "stationuuid": "77bb2bea-2de1-4909-bf9f-25021e173092",
@@ -1491,8 +1759,10 @@
     "tags": "orf",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/581/969/931/266/original/4e38a6ea240646e2.png",
+    "votes": 1000,
+    "url_resolved": "http://orf-live.ors-shoutcast.at/bgl-q2a",
+    "url": "http://orf-live.ors-shoutcast.at/bgl-q2a"
   },
   {
     "stationuuid": "154fc4d3-4584-4b59-b2ed-e8656e0420e8",
@@ -1503,8 +1773,10 @@
     "tags": "orf",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "https://orfodon.org/system/accounts/avatars/111/374/411/749/352/990/original/16c84635847ddad3.png",
+    "votes": 1000,
+    "url_resolved": "http://orf-live.ors-shoutcast.at/wie-q2a",
+    "url": "http://orf-live.ors-shoutcast.at/wie-q2a"
   },
   {
     "stationuuid": "960c5763-0601-11e8-ae97-52543be04c81",
@@ -1515,7 +1787,9 @@
     "tags": "",
     "codec": "MP3",
     "bitrate": 128,
-    "favicon": "https://api.radio-browser.info/favicon.ico",
-    "votes": 1000
+    "favicon": "http://www.gruen-weiss.at/favicon.ico",
+    "votes": 1000,
+    "url_resolved": "http://live.gruen-weiss.at/rgw.mp3",
+    "url": "http://live.gruen-weiss.at/rgw.mp3"
   }
 ]

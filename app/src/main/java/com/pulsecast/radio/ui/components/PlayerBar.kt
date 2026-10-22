@@ -91,6 +91,23 @@ fun PlayerBar(
                         .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val iconUrl = androidx.compose.runtime.remember(station.favicon, station.getStreamUrl()) {
+                        val fav = station.favicon?.trim() ?: ""
+                        if (fav.isNotBlank() && !fav.contains("favicon.ico")) {
+                            if (fav.startsWith("http://")) fav.replace("http://", "https://") else fav
+                        } else {
+                            val streamUrl = station.getStreamUrl()
+                            if (streamUrl.contains("//")) {
+                                val host = streamUrl.split("//")[1].split("/")[0]
+                                val parts = host.split(".")
+                                if (parts.size >= 2) {
+                                    val domain = parts.takeLast(2).joinToString(".")
+                                    "https://www.google.com/s2/favicons?domain=$domain&sz=128"
+                                } else ""
+                            } else ""
+                        }
+                    }
+
                     // Station Icon
                     Box(
                         modifier = Modifier
@@ -100,10 +117,10 @@ fun PlayerBar(
                         contentAlignment = Alignment.Center
                     ) {
                         val fallbackPainter = rememberVectorPainter(Icons.Default.Radio)
-                        if (!station.favicon.isNullOrBlank()) {
+                        if (iconUrl.isNotBlank()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(station.favicon)
+                                    .data(iconUrl)
                                     .setHeader("User-Agent", "Mozilla/5.0")
                                     .crossfade(true)
                                     .build(),

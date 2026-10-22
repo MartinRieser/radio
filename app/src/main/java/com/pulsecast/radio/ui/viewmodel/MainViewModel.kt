@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -51,6 +50,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // OTA Intelligence & App Updater
     val appUpdateManager = com.pulsecast.radio.updater.AppUpdateManager(application)
     val appUpdateState = appUpdateManager.updateState
+
+    // Automotive Car Drive Mode
+    val carDriveModeManager = com.pulsecast.radio.automotive.CarDriveModeManager(application)
+    val isCarModeActive = carDriveModeManager.isCarModeActive
+    val currentSpeedKmh = carDriveModeManager.currentSpeedKmh
+    val carConnectionReason = carDriveModeManager.carConnectionReason
+
+    fun toggleCarMode() {
+        carDriveModeManager.toggleManualCarMode()
+    }
+
+    fun exitCarMode() {
+        carDriveModeManager.exitCarMode()
+    }
 
     val intelligenceSyncState = playbackController.intelligenceRepository.syncState
     val activeGeneratedAt = playbackController.intelligenceRepository.activeGeneratedAt
@@ -136,17 +149,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         } catch (e: Exception) {
                             emptyList()
                         }
-                        (curated + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }.filter { it.isAdFree() }
+                        CuratedStations.deduplicateAndOptimize((curated + apiStations).filter { it.isAdFree() })
                     }
                     "favorites" -> {
-                        repository.favorites.value
+                        CuratedStations.deduplicateAndOptimize(repository.favorites.value)
                     }
                     "history" -> {
                         repository.history.value
                     }
                     else -> {
                         // Tag based
-                        ApiClient.getApi().getStationsByTag(category, 50)
+                        val apiStations = ApiClient.getApi().getStationsByTag(category, 50)
+                        CuratedStations.deduplicateAndOptimize(apiStations)
                     }
                 }
                 _stations.value = filterMaxBitrate(loadedList)
@@ -174,11 +188,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     (it.country?.lowercase()?.contains(q) == true)
                 }
             } else if (_activeCategory.value == "favorites") {
-                repository.favorites.value.filter {
-                    it.name.lowercase().contains(q) ||
-                    (it.tags?.lowercase()?.contains(q) == true) ||
-                    (it.country?.lowercase()?.contains(q) == true)
-                }
+                CuratedStations.deduplicateAndOptimize(
+                    repository.favorites.value.filter {
+                        it.name.lowercase().contains(q) ||
+                        (it.tags?.lowercase()?.contains(q) == true) ||
+                        (it.country?.lowercase()?.contains(q) == true)
+                    }
+                )
             } else {
                 val curated = CuratedStations.load(getApplication())
                 val curatedMatches = curated.filter {
@@ -191,7 +207,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 } catch (e: Exception) {
                     emptyList()
                 }
-                (curatedMatches + apiStations).distinctBy { it.stationuuid ?: it.getStreamUrl() }
+                CuratedStations.deduplicateAndOptimize(curatedMatches + apiStations)
             }
             _stations.value = filterMaxBitrate(matches)
         } catch (e: Exception) {
@@ -317,6 +333,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
+        carDriveModeManager.unregister()
         playbackController.release()
     }
 }

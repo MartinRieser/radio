@@ -9,7 +9,7 @@ data class Station(
     @SerializedName("name")
     val name: String = "",
 
-    @SerializedName("url_resolved")
+    @SerializedName("url_resolved", alternate = ["urlResolved"])
     val urlResolved: String? = null,
 
     @SerializedName("url")
@@ -78,7 +78,9 @@ data class Station(
      * Resolves the primary streaming URL (fallback to url if url_resolved is null)
      */
     fun getStreamUrl(): String {
-        return urlResolved?.takeIf { it.isNotBlank() } ?: (url ?: "")
+        val resolved = urlResolved?.trim()?.takeIf { it.isNotBlank() }
+        val raw = url?.trim()?.takeIf { it.isNotBlank() }
+        return (resolved ?: (raw ?: "")).trim()
     }
 
     /**

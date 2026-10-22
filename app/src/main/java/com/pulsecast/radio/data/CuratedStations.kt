@@ -9,7 +9,7 @@ import java.io.File
 object CuratedStations {
 
     fun load(context: Context): List<Station> {
-        return try {
+        val rawList = try {
             val assetJson = context.assets.open("curated_stations.json").bufferedReader().use { it.readText() }
             val listType = object : TypeToken<List<Station>>() {}.type
             val assetList: List<Station> = Gson().fromJson(assetJson, listType) ?: fallbackStations()
@@ -19,14 +19,59 @@ object CuratedStations {
                 val cachedJson = cachedFile.bufferedReader().use { it.readText() }
                 val cachedList: List<Station> = Gson().fromJson(cachedJson, listType) ?: assetList
                 if (cachedList.size >= assetList.size) {
-                    return cachedList
+                    cachedList
+                } else {
+                    assetList
                 }
+            } else {
+                assetList
             }
-            assetList
         } catch (e: Exception) {
             e.printStackTrace()
             fallbackStations()
         }
+
+        return deduplicateAndOptimize(rawList)
+    }
+
+    fun deduplicateAndOptimize(stations: List<Station>): List<Station> {
+        val uniqueMap = mutableMapOf<String, Station>()
+
+        for (s in stations) {
+            val streamUrl = s.getStreamUrl().lowercase().trim()
+            val uuid = s.stationuuid?.lowercase()?.trim() ?: ""
+            // Clean station name (e.g. "N-JOY (NDR)" -> "n-joy", "Energy Zürich (CH)" -> "energy zürich")
+            val cleanName = s.name.lowercase()
+                .split("(")[0]
+                .replace("fm", "")
+                .replace("radio", "")
+                .replace("hq", "")
+                .replace("orf", "")
+                .replace("|", "")
+                .trim()
+
+            val primaryKey = when {
+                cleanName.isNotBlank() -> "name:$cleanName"
+                streamUrl.isNotBlank() -> "url:$streamUrl"
+                else -> "uuid:$uuid"
+            }
+
+            if (!uniqueMap.containsKey(primaryKey)) {
+                uniqueMap[primaryKey] = s
+            } else {
+                // Keep the entry with better favicon or bitrate
+                val existing = uniqueMap[primaryKey]!!
+                val existingHasIcon = !existing.favicon.isNullOrBlank() && !existing.favicon.contains("favicon.ico")
+                val newHasIcon = !s.favicon.isNullOrBlank() && !s.favicon.contains("favicon.ico")
+
+                if (!existingHasIcon && newHasIcon) {
+                    uniqueMap[primaryKey] = s
+                } else if (existingHasIcon == newHasIcon && s.bitrate > existing.bitrate) {
+                    uniqueMap[primaryKey] = s
+                }
+            }
+        }
+        return uniqueMap.values.toList()
     }
 
     fun updateCachedStations(context: Context, jsonString: String): Boolean {
@@ -34,8 +79,10 @@ object CuratedStations {
             val listType = object : TypeToken<List<Station>>() {}.type
             val parsed: List<Station> = Gson().fromJson(jsonString, listType) ?: return false
             if (parsed.isEmpty()) return false
+            val deduplicated = deduplicateAndOptimize(parsed)
+            val cleanJson = Gson().toJson(deduplicated)
             val file = File(context.filesDir, "curated_stations.json")
-            file.writeText(jsonString)
+            file.writeText(cleanJson)
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -68,18 +115,6 @@ object CuratedStations {
                 bitrate = 128,
                 favicon = "https://www.radioswisspop.ch/social-media/rsp-web.png",
                 votes = 2400
-            ),
-            Station(
-                stationuuid = "0de82079-04e7-407b-b616-e0726eba5244",
-                name = "Bayern 3",
-                urlResolved = "https://dispatcher.rndfnk.com/br/br3/live/mp3/mid",
-                country = "Germany",
-                countrycode = "DE",
-                tags = "pop, hits, bavaria, adult contemporary",
-                codec = "MP3",
-                bitrate = 128,
-                favicon = "https://api.ardmediathek.de/image-service/images/urn:ard:image:52fd25fc45de7c6a?w=512",
-                votes = 2150
             )
         )
     }
