@@ -44,6 +44,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Android Auto & Automotive Media Metadata -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
         <!-- Media3 MediaSession Service for background streaming & lock screen controls -->
         <service
             android:name=".playback.RadioPlaybackService"
