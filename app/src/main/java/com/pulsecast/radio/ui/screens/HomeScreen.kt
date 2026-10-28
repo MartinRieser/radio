@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.FilterList
@@ -63,7 +62,6 @@ import androidx.compose.ui.unit.sp
 import com.pulsecast.radio.model.Station
 import com.pulsecast.radio.ui.components.AppUpdateDialog
 import com.pulsecast.radio.ui.components.PlayerBar
-import com.pulsecast.radio.ui.components.SleepTimerDialog
 import com.pulsecast.radio.ui.components.StationCard
 import com.pulsecast.radio.ui.theme.AccentPrimary
 import com.pulsecast.radio.ui.theme.AccentSecondary
@@ -87,16 +85,12 @@ fun HomeScreen(viewModel: MainViewModel) {
     val favorites1 by viewModel.favorites1.collectAsState()
     val favorites2 by viewModel.favorites2.collectAsState()
     val favorites3 by viewModel.favorites3.collectAsState()
-    val allFavorites by viewModel.allFavorites.collectAsState()
 
     val currentStation by viewModel.playbackController.currentStation.collectAsState()
     val isPlaying by viewModel.playbackController.isPlaying.collectAsState()
     val isBuffering by viewModel.playbackController.isBuffering.collectAsState()
     val liveSeconds by viewModel.playbackController.liveSeconds.collectAsState()
     val trackTitle by viewModel.playbackController.trackTitle.collectAsState()
-
-    val sleepMinutes by viewModel.sleepMinutesRemaining.collectAsState()
-    var showSleepDialog by remember { mutableStateOf(false) }
 
     val isCarModeActive by viewModel.isCarModeActive.collectAsState()
     val currentSpeedKmh by viewModel.currentSpeedKmh.collectAsState()
@@ -159,9 +153,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                             .padding(bottom = 8.dp)
                     ) {
                         HeaderView(
-                            sleepMinutes = sleepMinutes,
                             isCarModeActive = isCarModeActive,
-                            onSleepClick = { showSleepDialog = true },
                             onCarModeClick = { viewModel.toggleCarMode() }
                         )
 
@@ -223,9 +215,7 @@ fun HomeScreen(viewModel: MainViewModel) {
                 ) {
                     // 1. App Header
                     HeaderView(
-                        sleepMinutes = sleepMinutes,
                         isCarModeActive = isCarModeActive,
-                        onSleepClick = { showSleepDialog = true },
                         onCarModeClick = { viewModel.toggleCarMode() }
                     )
 
@@ -276,14 +266,6 @@ fun HomeScreen(viewModel: MainViewModel) {
         }
     }
 
-    if (showSleepDialog) {
-        SleepTimerDialog(
-            currentMinutesRemaining = sleepMinutes,
-            onDismiss = { showSleepDialog = false },
-            onSelectMinutes = { viewModel.setSleepTimer(it) }
-        )
-    }
-
     if (appUpdateState is AppUpdateState.Available || appUpdateState is AppUpdateState.Downloading) {
         AppUpdateDialog(
             state = appUpdateState,
@@ -300,9 +282,7 @@ fun HomeScreen(viewModel: MainViewModel) {
 
 @Composable
 private fun HeaderView(
-    sleepMinutes: Int,
     isCarModeActive: Boolean,
-    onSleepClick: () -> Unit,
     onCarModeClick: () -> Unit
 ) {
     Row(
@@ -344,9 +324,9 @@ private fun HeaderView(
             }
         }
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(16.dp))
 
-        // Center: Giant Full-Width Auto Drive Mode Button (expands between Branding and Sleep Timer)
+        // Center/Right: Giant Full-Width Auto Drive Mode Button
         Surface(
             onClick = onCarModeClick,
             shape = RoundedCornerShape(22.dp),
@@ -378,36 +358,6 @@ private fun HeaderView(
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // Right: Sleep Timer / Dark Mode Button
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(22.dp))
-                .background(if (sleepMinutes > 0) AccentPrimary.copy(alpha = 0.2f) else BgSurfaceCard)
-                .clickable(onClick = onSleepClick)
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Bedtime,
-                    contentDescription = "Sleep Timer",
-                    tint = if (sleepMinutes > 0) AccentPrimary else TextSecondary,
-                    modifier = Modifier.size(18.dp)
-                )
-                if (sleepMinutes > 0) {
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "${sleepMinutes}m",
-                        color = AccentPrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
             }
         }
     }

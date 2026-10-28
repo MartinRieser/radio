@@ -1,7 +1,7 @@
 {
   "version_code": 10,
   "version_name": "1.2.0",
-  "generated_at": "2026-10-28T05:40:00",
-  "changelog": "Schlankere App: Entfernung der SmartSwitch-Spracherkennung und KI-Trainingsdaten",
+  "generated_at": "2026-10-22T08:30:00",
+  "changelog": "Ablenkungsfreier Automodus mit Bluetooth & GPS Erkennung, Entdecken-Liste & Favoriten-Schnellwahl",
   "apk_url": "https://raw.githubusercontent.com/MartinRieser/radio/android-native/PulseCast-debug.apk"
 }

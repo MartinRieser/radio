@@ -37,12 +37,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    // Sleep Timer
-    private val _sleepMinutesRemaining = MutableStateFlow(0)
-    val sleepMinutesRemaining: StateFlow<Int> = _sleepMinutesRemaining.asStateFlow()
-    private var sleepTimerJob: Job? = null
-
-    // 3 Favorite lists ("Hart wie Herz")
+    // 3 Favorite lists ("Hart", "Diamant", "Stern")
     val favorites1 = repository.favorites1
     val favorites2 = repository.favorites2
     val favorites3 = repository.favorites3
@@ -265,26 +260,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         repository.setFavoriteType(station, type)
         if (_activeCategory.value.startsWith("favorites")) {
             loadCategory(_activeCategory.value)
-        }
-    }
-
-    // --- SLEEP TIMER ---
-    fun setSleepTimer(minutes: Int) {
-        sleepTimerJob?.cancel()
-        _sleepMinutesRemaining.value = minutes
-
-        if (minutes > 0) {
-            sleepTimerJob = viewModelScope.launch {
-                var remainingSeconds = minutes * 60
-                while (isActive && remainingSeconds > 0) {
-                    delay(1000)
-                    remainingSeconds--
-                    _sleepMinutesRemaining.value = (remainingSeconds + 59) / 60
-                }
-                // Time is up -> Stop playback
-                playbackController.stop()
-                _sleepMinutesRemaining.value = 0
-            }
         }
     }
 
