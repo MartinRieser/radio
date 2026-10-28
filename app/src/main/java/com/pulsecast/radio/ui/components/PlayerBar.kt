@@ -59,7 +59,6 @@ fun PlayerBar(
     isBuffering: Boolean,
     liveSeconds: Int,
     trackTitle: String,
-    hasOriginalSwitchedStation: Boolean = false,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
     onPrevClick: () -> Unit
@@ -200,8 +199,8 @@ fun PlayerBar(
                         IconButton(onClick = onPrevClick, modifier = Modifier.size(36.dp)) {
                             Icon(
                                 imageVector = Icons.Default.SkipPrevious,
-                                contentDescription = if (hasOriginalSwitchedStation) "Zurück zum ursprünglichen Sender (Sprache ignorieren)" else "Vorheriger Sender",
-                                tint = if (hasOriginalSwitchedStation) Color(0xFF6366F1) else TextSecondary,
+                                contentDescription = "Vorheriger Sender",
+                                tint = TextSecondary,
                                 modifier = Modifier.size(22.dp)
                             )
                         }

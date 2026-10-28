@@ -14,11 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.pulsecast.radio.data.CuratedStations
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
-import com.pulsecast.radio.data.StationIntelligenceRepository
 import com.pulsecast.radio.model.Station
-import com.pulsecast.radio.playback.audio.AudioBridge
-import com.pulsecast.radio.playback.audio.AudioContentClassifier
-import com.pulsecast.radio.playback.audio.StationSignalCollector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,26 +28,13 @@ import kotlinx.coroutines.launch
 @OptIn(UnstableApi::class)
 class PlaybackController(
     private val context: Context,
-    private val repository: HistoryAndFavoritesRepository,
-    val intelligenceRepository: StationIntelligenceRepository = StationIntelligenceRepository(context)
+    private val repository: HistoryAndFavoritesRepository
 ) {
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var mediaController: MediaController? = null
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
     private var timerJob: Job? = null
-
-    val audioClassifier = AudioContentClassifier(context)
-    val signalCollector = StationSignalCollector(intelligenceRepository)
-    val smartSwitchCoordinator = SmartSwitchCoordinator(
-        context = context,
-        repository = repository,
-        intelligenceRepository = intelligenceRepository,
-        audioClassifier = audioClassifier,
-        onSwitchStationRequest = { targetStation ->
-            playStation(targetStation)
-        }
-    )
 
     private val _currentStation = MutableStateFlow<Station?>(null)
     val currentStation: StateFlow<Station?> = _currentStation.asStateFlow()
@@ -73,9 +56,6 @@ class PlaybackController(
     private var stationHistorySaved = false
 
     init {
-        AudioBridge.classifier = audioClassifier
-        AudioBridge.signalCollector = signalCollector
-
         // Wire playback bridge for Bluetooth / Car controls
         RadioPlaybackBridge.onToggleMute = { togglePlayPause() }
         RadioPlaybackBridge.onStopStream = { stop() }
@@ -106,7 +86,6 @@ class PlaybackController(
         mediaController?.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
                 _isPlaying.value = playing
-                smartSwitchCoordinator.onPlaybackStateChanged(playing)
                 if (playing) {
                     startTimer()
                 } else {
@@ -136,8 +115,6 @@ class PlaybackController(
                     }
                     if (matching != null) {
                         _currentStation.value = matching
-                        smartSwitchCoordinator.onCurrentStationChanged(matching)
-                        signalCollector.onStationChanged(matching)
                         _trackTitle.value = ""
                         _liveSeconds.value = 0
                         stationListeningSeconds = 0
@@ -157,7 +134,6 @@ class PlaybackController(
                     else -> ""
                 }
                 _trackTitle.value = formatted
-                smartSwitchCoordinator.onMediaMetadataUpdated(formatted)
             }
         })
     }
@@ -172,8 +148,6 @@ class PlaybackController(
 
         _currentStation.value = station
         RadioPlaybackBridge.updateCurrentStation(station)
-        smartSwitchCoordinator.onCurrentStationChanged(station)
-        signalCollector.onStationChanged(station)
         _trackTitle.value = ""
         _liveSeconds.value = 0
         stationListeningSeconds = 0
@@ -269,7 +243,6 @@ class PlaybackController(
             RadioPlaybackBridge.onStopStream = null
             RadioPlaybackBridge.onStartStream = null
         }
-        smartSwitchCoordinator.release()
         finalizeHistory()
         stopTimer()
         MediaController.releaseFuture(controllerFuture ?: return)

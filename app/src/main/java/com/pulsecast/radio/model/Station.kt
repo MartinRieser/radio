@@ -53,8 +53,7 @@ data class Station(
     val lastPlayed: Long? = null,
     val playDuration: Int = 0,
     @SerializedName("is_pure_music")
-    val isPureMusic: Boolean = false,
-    val learnedNewsWindow: String? = null
+    val isPureMusic: Boolean = false
 ) {
     /**
      * Checks if this station is dedicated to continuous music with no news/commercial breaks.

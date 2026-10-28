@@ -20,10 +20,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.audio.AudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
@@ -36,8 +33,6 @@ import com.pulsecast.radio.MainActivity
 import com.pulsecast.radio.data.CuratedStations
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
 import com.pulsecast.radio.model.Station
-import com.pulsecast.radio.playback.audio.AudioBridge
-import com.pulsecast.radio.playback.audio.PcmTapAudioProcessor
 
 @OptIn(UnstableApi::class)
 class RadioPlaybackService : MediaLibraryService() {
@@ -68,26 +63,8 @@ class RadioPlaybackService : MediaLibraryService() {
         super.onCreate()
         repository = HistoryAndFavoritesRepository(this)
 
-        // 1. Configure PCM Audio Tap for Speech / Commercial Detection & Signal Mining
-        val pcmTap = PcmTapAudioProcessor { buffer, sampleRate, channelCount ->
-            AudioBridge.classifier?.processPcmBuffer(buffer, sampleRate, channelCount)
-            AudioBridge.signalCollector?.processPcmBuffer(buffer, sampleRate, channelCount)
-        }
-
-        val renderersFactory = object : DefaultRenderersFactory(this) {
-            override fun buildAudioSink(
-                context: Context,
-                enableFloatOutput: Boolean,
-                enableAudioTrackPlaybackParams: Boolean
-            ): AudioSink? {
-                return DefaultAudioSink.Builder(context)
-                    .setAudioProcessors(arrayOf(pcmTap))
-                    .build()
-            }
-        }
-
         // Configure ExoPlayer for live radio streaming
-        player = ExoPlayer.Builder(this, renderersFactory)
+        player = ExoPlayer.Builder(this)
             .setWakeMode(C.WAKE_MODE_NETWORK) // Prevent CPU/WiFi sleep
             .setAudioAttributes(
                 AudioAttributes.Builder()
@@ -426,13 +403,13 @@ class RadioPlaybackService : MediaLibraryService() {
             val items = when (parentId) {
                 "root" -> {
                     listOf(
-                        buildFolderItem("smart_radio", "🧠 Smart Radio", "Trainierte Sender"),
+                        buildFolderItem("featured", "⭐ Entdecken", "Kuratierte Sender"),
                         buildFolderItem("adfree", "🛡️ Werbefrei", "Reine Musik ohne Werbung"),
                         buildFolderItem("favorites", "❤️ Favoriten", "${repository.favorites.value.size} gespeicherte Sender"),
-                        buildFolderItem("history", "🕒 Verlauf", "${repository.history.value.size}zuletzt gehörte Sender")
+                        buildFolderItem("history", "🕒 Verlauf", "${repository.history.value.size} zuletzt gehörte Sender")
                     )
                 }
-                "smart_radio" -> {
+                "featured" -> {
                     CuratedStations.load(this@RadioPlaybackService).map { buildPlayableItem(it) }
                 }
                 "adfree" -> {

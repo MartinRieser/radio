@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pulsecast.radio.model.Station
-import com.pulsecast.radio.playback.SmartSwitchStatus
 import com.pulsecast.radio.ui.theme.AccentPrimary
 import com.pulsecast.radio.ui.theme.BgMain
 import com.pulsecast.radio.ui.theme.BgSurface
@@ -62,8 +61,6 @@ fun CarDriveModeScreen(
     isPlaying: Boolean,
     isBuffering: Boolean,
     trackTitle: String,
-    smartSwitchStatus: SmartSwitchStatus,
-    originalSwitchedStation: Station?,
     favorites: List<Station>,
     speedKmh: Float,
     reason: String,
@@ -220,53 +217,19 @@ fun CarDriveModeScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Smart Switch Status Badge
-                when (smartSwitchStatus) {
-                    is SmartSwitchStatus.Switched -> {
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color(0xFF6366F1).copy(alpha = 0.25f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF818CF8))
-                        ) {
-                            Text(
-                                text = "🟣 Gewechselt (Original: ${originalSwitchedStation?.name ?: "Sender"})",
-                                color = Color(0xFFA5B4FC),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
-                    is SmartSwitchStatus.SpeechDetected -> {
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color(0xFFF59E0B).copy(alpha = 0.25f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFBBF24))
-                        ) {
-                            Text(
-                                text = "🟠 Sprache erkannt (${smartSwitchStatus.elapsedSeconds}/${smartSwitchStatus.maxSeconds}s)",
-                                color = Color(0xFFFDE047),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
-                    else -> {
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color(0xFF10B981).copy(alpha = 0.2f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF34D399))
-                        ) {
-                            Text(
-                                text = "🟢 Smart Radio Aktiv",
-                                color = Color(0xFF6EE7B7),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
+                // Live Playback Status Badge
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFF10B981).copy(alpha = 0.2f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF34D399))
+                ) {
+                    Text(
+                        text = if (isPlaying) "🟢 Live Wiedergabe" else "⚪ Pausiert",
+                        color = if (isPlaying) Color(0xFF6EE7B7) else TextSecondary,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
                 }
             }
 
@@ -278,18 +241,18 @@ fun CarDriveModeScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Giant Prev / Return Button
+                // Giant Prev Button
                 Box(
                     modifier = Modifier
                         .size(76.dp)
                         .clip(CircleShape)
-                        .background(if (originalSwitchedStation != null) Color(0xFF4F46E5) else Color(0xFF1E293B))
+                        .background(Color(0xFF1E293B))
                         .clickable(onClick = onPrevClick),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (originalSwitchedStation != null) Icons.AutoMirrored.Filled.Undo else Icons.Default.SkipPrevious,
-                        contentDescription = "Zurück",
+                        imageVector = Icons.Default.SkipPrevious,
+                        contentDescription = "Vorheriger Sender",
                         tint = TextPrimary,
                         modifier = Modifier.size(38.dp)
                     )

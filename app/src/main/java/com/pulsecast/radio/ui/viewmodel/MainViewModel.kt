@@ -22,7 +22,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val repository = HistoryAndFavoritesRepository(application)
     val playbackController = PlaybackController(application, repository)
 
-    private val _activeCategory = MutableStateFlow("trained")
+    private val _activeCategory = MutableStateFlow("featured")
     val activeCategory: StateFlow<String> = _activeCategory.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -48,7 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var searchJob: Job? = null
 
-    // OTA Intelligence & App Updater
+    // App Updater
     val appUpdateManager = com.pulsecast.radio.updater.AppUpdateManager(application)
     val appUpdateState = appUpdateManager.updateState
 
@@ -65,11 +65,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun exitCarMode() {
         carDriveModeManager.exitCarMode()
     }
-
-    val intelligenceSyncState = playbackController.intelligenceRepository.syncState
-    val activeGeneratedAt = playbackController.intelligenceRepository.activeGeneratedAt
-    val trainedStationCount: Int
-        get() = playbackController.intelligenceRepository.trainedStationCount
 
     init {
         // Register callbacks for Bluetooth steering wheel / Car Media buttons
@@ -90,17 +85,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        loadCategory("trained")
+        loadCategory("featured")
         checkForAppUpdate()
-    }
-
-    fun syncIntelligence(forced: Boolean = true) {
-        viewModelScope.launch {
-            val updated = playbackController.intelligenceRepository.syncRemoteIntelligence(forced)
-            if (updated && _activeCategory.value == "trained") {
-                _stations.value = CuratedStations.load(getApplication())
-            }
-        }
     }
 
     fun checkForAppUpdate() {
@@ -128,7 +114,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             delay(400) // Debounce
             if (query.isBlank()) {
                 if (_activeCategory.value == "search") {
-                    _activeCategory.value = "trained"
+                    _activeCategory.value = "featured"
                 }
                 loadCategory(_activeCategory.value)
             } else {
@@ -143,7 +129,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun clearSearch() {
         _searchQuery.value = ""
         if (_activeCategory.value == "search") {
-            _activeCategory.value = "trained"
+            _activeCategory.value = "featured"
         }
         loadCategory(_activeCategory.value)
     }
@@ -158,7 +144,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _errorMessage.value = null
             try {
                 val loadedList = when (category) {
-                    "trained", "featured" -> {
+                    "featured" -> {
                         CuratedStations.load(getApplication())
                     }
                     "adfree" -> {
@@ -261,16 +247,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Steps to the previous radio station in circular order, or returns to original
-     * station if SmartSwitch had temporarily jumped due to speech/ads.
+     * Steps to the previous radio station in circular order.
      * Accessible by Car Bluetooth AVRCP back button, steering wheel, and UI.
      */
     fun playPrevious() {
-        val original = playbackController.smartSwitchCoordinator.originalSwitchedStation.value
-        if (original != null) {
-            playbackController.smartSwitchCoordinator.returnToOriginalStationAndIgnoreSpeech()
-            return
-        }
         val list = _stations.value.ifEmpty {
             CuratedStations.load(getApplication())
         }
@@ -313,54 +293,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _sleepMinutesRemaining.value = 0
             }
         }
-    }
-
-    fun togglePureMusic(station: Station) {
-        playbackController.intelligenceRepository.togglePureMusic(station)
-        loadCategory(_activeCategory.value)
-    }
-
-    fun isStationPureMusic(station: Station): Boolean {
-        return playbackController.intelligenceRepository.isStationPureMusic(station)
-    }
-
-    val speechSensitivity = playbackController.intelligenceRepository.speechSensitivity
-    val speechResetHoldSeconds = playbackController.intelligenceRepository.speechResetHoldSeconds
-    val smartSwitchStrategy = playbackController.intelligenceRepository.smartSwitchStrategy
-    val specificFallbackKey = playbackController.intelligenceRepository.specificFallbackKey
-    val miningMode = playbackController.intelligenceRepository.miningMode
-    val originalSwitchedStation = playbackController.smartSwitchCoordinator.originalSwitchedStation
-
-    fun setSmartSwitchEnabled(enabled: Boolean) {
-        playbackController.intelligenceRepository.setSmartSwitchEnabled(enabled)
-    }
-
-    fun setSpeechToleranceSeconds(seconds: Int) {
-        playbackController.intelligenceRepository.setSpeechToleranceSeconds(seconds)
-    }
-
-    fun setSpeechSensitivity(sensitivity: Float) {
-        playbackController.intelligenceRepository.setSpeechSensitivity(sensitivity)
-    }
-
-    fun setSpeechResetHoldSeconds(seconds: Int) {
-        playbackController.intelligenceRepository.setSpeechResetHoldSeconds(seconds)
-    }
-
-    fun setSmartSwitchStrategy(strategy: String) {
-        playbackController.intelligenceRepository.setSmartSwitchStrategy(strategy)
-    }
-
-    fun setSpecificFallbackKey(key: String?) {
-        playbackController.intelligenceRepository.setSpecificFallbackKey(key)
-    }
-
-    fun setMiningMode(mode: String) {
-        playbackController.intelligenceRepository.setMiningMode(mode)
-    }
-
-    fun returnToOriginalStation() {
-        playbackController.smartSwitchCoordinator.returnToOriginalStationAndIgnoreSpeech()
     }
 
     override fun onCleared() {

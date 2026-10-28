@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -63,10 +62,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pulsecast.radio.model.Station
-import com.pulsecast.radio.playback.SmartSwitchStatus
 import com.pulsecast.radio.ui.components.AppUpdateDialog
 import com.pulsecast.radio.ui.components.PlayerBar
-import com.pulsecast.radio.ui.components.SmartSwitchDialog
 import com.pulsecast.radio.ui.components.StationCard
 import com.pulsecast.radio.ui.components.SleepTimerDialog
 import com.pulsecast.radio.ui.theme.AccentPrimary
@@ -104,20 +101,8 @@ fun HomeScreen(viewModel: MainViewModel) {
     val currentSpeedKmh by viewModel.currentSpeedKmh.collectAsState()
     val carConnectionReason by viewModel.carConnectionReason.collectAsState()
 
-    val smartSwitchStatus by viewModel.playbackController.smartSwitchCoordinator.status.collectAsState()
-    val originalSwitchedStation by viewModel.originalSwitchedStation.collectAsState()
-    val isSmartSwitchEnabled by viewModel.playbackController.intelligenceRepository.isSmartSwitchEnabled.collectAsState()
-    val speechToleranceSeconds by viewModel.playbackController.intelligenceRepository.speechToleranceSeconds.collectAsState()
-    val speechSensitivity by viewModel.speechSensitivity.collectAsState()
-    val speechResetHoldSeconds by viewModel.speechResetHoldSeconds.collectAsState()
-    val smartSwitchStrategy by viewModel.smartSwitchStrategy.collectAsState()
-    val miningMode by viewModel.miningMode.collectAsState()
-    var showSmartSwitchDialog by remember { mutableStateOf(false) }
-
     val context = LocalContext.current
     val appUpdateState by viewModel.appUpdateState.collectAsState()
-    val intelligenceSyncState by viewModel.intelligenceSyncState.collectAsState()
-    val activeGeneratedAt by viewModel.activeGeneratedAt.collectAsState()
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -128,8 +113,6 @@ fun HomeScreen(viewModel: MainViewModel) {
             isPlaying = isPlaying,
             isBuffering = isBuffering,
             trackTitle = trackTitle,
-            smartSwitchStatus = smartSwitchStatus,
-            originalSwitchedStation = originalSwitchedStation,
             favorites = favorites,
             speedKmh = currentSpeedKmh,
             reason = carConnectionReason,
@@ -150,7 +133,6 @@ fun HomeScreen(viewModel: MainViewModel) {
                     isBuffering = isBuffering,
                     liveSeconds = liveSeconds,
                     trackTitle = trackTitle,
-                    hasOriginalSwitchedStation = (originalSwitchedStation != null),
                     onPlayPauseClick = { viewModel.togglePlayPause() },
                     onNextClick = { viewModel.playNext() },
                     onPrevClick = { viewModel.playPrevious() }
@@ -174,11 +156,8 @@ fun HomeScreen(viewModel: MainViewModel) {
                     ) {
                         HeaderView(
                             sleepMinutes = sleepMinutes,
-                            isSmartSwitchEnabled = isSmartSwitchEnabled,
                             isCarModeActive = isCarModeActive,
-                            smartSwitchStatus = smartSwitchStatus,
                             onSleepClick = { showSleepDialog = true },
-                            onSmartSwitchClick = { showSmartSwitchDialog = true },
                             onCarModeClick = { viewModel.toggleCarMode() }
                         )
 
@@ -241,11 +220,8 @@ fun HomeScreen(viewModel: MainViewModel) {
                     // 1. App Header
                     HeaderView(
                         sleepMinutes = sleepMinutes,
-                        isSmartSwitchEnabled = isSmartSwitchEnabled,
                         isCarModeActive = isCarModeActive,
-                        smartSwitchStatus = smartSwitchStatus,
                         onSleepClick = { showSleepDialog = true },
-                        onSmartSwitchClick = { showSmartSwitchDialog = true },
                         onCarModeClick = { viewModel.toggleCarMode() }
                     )
 
@@ -304,27 +280,6 @@ fun HomeScreen(viewModel: MainViewModel) {
         )
     }
 
-    if (showSmartSwitchDialog) {
-        SmartSwitchDialog(
-            isEnabled = isSmartSwitchEnabled,
-            toleranceSeconds = speechToleranceSeconds,
-            speechSensitivity = speechSensitivity,
-            speechResetHoldSeconds = speechResetHoldSeconds,
-            smartSwitchStrategy = smartSwitchStrategy,
-            miningMode = miningMode,
-            syncState = intelligenceSyncState,
-            trainedStationCount = viewModel.trainedStationCount,
-            activeGeneratedAt = activeGeneratedAt,
-            onSyncIntelligenceClick = { viewModel.syncIntelligence(forced = true) },
-            onEnabledChanged = { viewModel.setSmartSwitchEnabled(it) },
-            onToleranceChanged = { viewModel.setSpeechToleranceSeconds(it) },
-            onSensitivityChanged = { viewModel.setSpeechSensitivity(it) },
-            onResetHoldChanged = { viewModel.setSpeechResetHoldSeconds(it) },
-            onStrategyChanged = { viewModel.setSmartSwitchStrategy(it) },
-            onMiningModeChanged = { viewModel.setMiningMode(it) },
-            onDismiss = { showSmartSwitchDialog = false }
-        )
-    }
 
     if (appUpdateState is AppUpdateState.Available || appUpdateState is AppUpdateState.Downloading) {
         AppUpdateDialog(
@@ -343,34 +298,10 @@ fun HomeScreen(viewModel: MainViewModel) {
 @Composable
 private fun HeaderView(
     sleepMinutes: Int,
-    isSmartSwitchEnabled: Boolean,
     isCarModeActive: Boolean,
-    smartSwitchStatus: SmartSwitchStatus,
     onSleepClick: () -> Unit,
-    onSmartSwitchClick: () -> Unit,
     onCarModeClick: () -> Unit
 ) {
-    val buttonBgColor = when {
-        !isSmartSwitchEnabled -> BgSurfaceCard
-        smartSwitchStatus is SmartSwitchStatus.SpeechDetected -> Color(0xFFF59E0B).copy(alpha = 0.25f)
-        smartSwitchStatus is SmartSwitchStatus.Switched -> Color(0xFF6366F1).copy(alpha = 0.25f)
-        else -> AccentPrimary.copy(alpha = 0.2f)
-    }
-
-    val buttonTextColor = when {
-        !isSmartSwitchEnabled -> TextSecondary
-        smartSwitchStatus is SmartSwitchStatus.SpeechDetected -> Color(0xFFF59E0B)
-        smartSwitchStatus is SmartSwitchStatus.Switched -> Color(0xFFA5B4FC)
-        else -> AccentPrimary
-    }
-
-    val buttonText = when {
-        !isSmartSwitchEnabled -> "Aus"
-        smartSwitchStatus is SmartSwitchStatus.SpeechDetected -> "Rede"
-        smartSwitchStatus is SmartSwitchStatus.Switched -> "Gewechselt"
-        else -> "Smart"
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -410,7 +341,7 @@ private fun HeaderView(
             }
         }
 
-        // Action Buttons: Car Mode, Smart Switch & Sleep Timer
+        // Action Buttons: Car Mode & Sleep Timer
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -435,32 +366,6 @@ private fun HeaderView(
                     Text(
                         text = "Auto",
                         color = if (isCarModeActive) Color(0xFF10B981) else TextSecondary,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            // Smart Switch Button with Dynamic State Color
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(buttonBgColor)
-                    .clickable(onClick = onSmartSwitchClick)
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = "Smart Switch",
-                        tint = buttonTextColor,
-                        modifier = Modifier.size(15.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = buttonText,
-                        color = buttonTextColor,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -633,7 +538,7 @@ private fun CategoryTabs(
     onSelectCategory: (String) -> Unit
 ) {
     val tabs = listOf(
-        "trained" to "🧠 Smart Radio",
+        "featured" to "⭐ Entdecken",
         "adfree" to "🛡️ Werbefrei",
         "favorites" to "❤️ Favoriten ($favCount)",
         "history" to "🕒 Verlauf ($historyCount)"
@@ -677,7 +582,7 @@ private fun CategoryListLandscape(
     onSelectCategory: (String) -> Unit
 ) {
     val categories = listOf(
-        "trained" to "🧠 Smart Radio (Trainierte Sender)",
+        "featured" to "⭐ Entdecken",
         "adfree" to "🛡️ Werbefrei",
         "favorites" to "❤️ Favoriten ($favCount)",
         "history" to "🕒 Verlauf ($historyCount)",
@@ -725,7 +630,7 @@ private fun SectionHeader(
     onClearHistory: () -> Unit
 ) {
     val title = when (activeCategory) {
-        "trained" -> "🧠 Smart Radio (Trainierte Sender)"
+        "featured" -> "⭐ Entdecken"
         "adfree" -> "🛡️ Werbefreie Sender"
         "favorites" -> "❤️ Deine Favoriten"
         "history" -> "🕒 Hörverlauf"

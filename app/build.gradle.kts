@@ -12,8 +12,8 @@ android {
         applicationId = "com.pulsecast.radio"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.1.7"
+        versionCode = 10
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -95,9 +95,6 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
-    // On-Device AI / TensorFlow Lite Audio Classification (YAMNet AI VAD)
-    implementation("org.tensorflow:tensorflow-lite-task-audio:0.4.4")
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
 
     // Unit Testing
     testImplementation("junit:junit:4.13.2")
