@@ -8,6 +8,7 @@ import com.pulsecast.radio.data.CuratedStations
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
 import com.pulsecast.radio.model.Station
 import com.pulsecast.radio.playback.PlaybackController
+import com.pulsecast.radio.playback.RadioPlaybackBridge
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,6 +72,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = playbackController.intelligenceRepository.trainedStationCount
 
     init {
+        // Register callbacks for Bluetooth steering wheel / Car Media buttons
+        RadioPlaybackBridge.onPlayNext = { playNext() }
+        RadioPlaybackBridge.onPlayPrevious = { playPrevious() }
+
+        // Keep RadioPlaybackBridge station list continuously in sync
+        viewModelScope.launch {
+            _stations.collect { list ->
+                RadioPlaybackBridge.updateStationList(list)
+            }
+        }
+
+        // Keep RadioPlaybackBridge current station continuously in sync
+        viewModelScope.launch {
+            playbackController.currentStation.collect { station ->
+                RadioPlaybackBridge.updateCurrentStation(station)
+            }
+        }
+
         loadCategory("trained")
         checkForAppUpdate()
     }
@@ -226,8 +245,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         playbackController.togglePlayPause()
     }
 
+    /**
+     * Advances to the next radio station in circular order.
+     * Accessible by Car Bluetooth AVRCP forward button, steering wheel, and UI.
+     */
     fun playNext() {
-        val list = _stations.value
+        val list = _stations.value.ifEmpty {
+            CuratedStations.load(getApplication())
+        }
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
         val currentIndex = list.indexOfFirst { it.stationuuid == current?.stationuuid || it.getStreamUrl() == current?.getStreamUrl() }
@@ -235,13 +260,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         playStation(list[nextIndex])
     }
 
+    /**
+     * Steps to the previous radio station in circular order, or returns to original
+     * station if SmartSwitch had temporarily jumped due to speech/ads.
+     * Accessible by Car Bluetooth AVRCP back button, steering wheel, and UI.
+     */
     fun playPrevious() {
         val original = playbackController.smartSwitchCoordinator.originalSwitchedStation.value
         if (original != null) {
             playbackController.smartSwitchCoordinator.returnToOriginalStationAndIgnoreSpeech()
             return
         }
-        val list = _stations.value
+        val list = _stations.value.ifEmpty {
+            CuratedStations.load(getApplication())
+        }
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
         val currentIndex = list.indexOfFirst { it.stationuuid == current?.stationuuid || it.getStreamUrl() == current?.getStreamUrl() }
@@ -333,6 +365,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
+        if (RadioPlaybackBridge.onPlayNext != null) {
+            RadioPlaybackBridge.onPlayNext = null
+            RadioPlaybackBridge.onPlayPrevious = null
+        }
         carDriveModeManager.unregister()
         playbackController.release()
     }

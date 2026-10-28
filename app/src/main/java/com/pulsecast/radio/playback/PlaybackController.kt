@@ -12,6 +12,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.pulsecast.radio.data.CuratedStations
 import com.pulsecast.radio.data.HistoryAndFavoritesRepository
 import com.pulsecast.radio.data.StationIntelligenceRepository
 import com.pulsecast.radio.model.Station
@@ -74,6 +75,17 @@ class PlaybackController(
     init {
         AudioBridge.classifier = audioClassifier
         AudioBridge.signalCollector = signalCollector
+
+        // Wire playback bridge for Bluetooth / Car controls
+        RadioPlaybackBridge.onToggleMute = { togglePlayPause() }
+        RadioPlaybackBridge.onStopStream = { stop() }
+        RadioPlaybackBridge.onStartStream = {
+            val current = _currentStation.value ?: RadioPlaybackBridge.currentStationList.value.firstOrNull()
+            if (current != null) {
+                playStation(current)
+            }
+        }
+
         connectToService()
     }
 
@@ -110,6 +122,31 @@ class PlaybackController(
                 }
             }
 
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+                val mediaId = mediaItem?.mediaId ?: return
+                val current = _currentStation.value
+                if (current?.stationuuid != mediaId && current?.getStreamUrl() != mediaId) {
+                    val matching = RadioPlaybackBridge.currentStationList.value.firstOrNull {
+                        it.stationuuid == mediaId || it.getStreamUrl() == mediaId
+                    } ?: repository.favorites.value.firstOrNull {
+                        it.stationuuid == mediaId || it.getStreamUrl() == mediaId
+                    } ?: CuratedStations.load(context).firstOrNull {
+                        it.stationuuid == mediaId || it.getStreamUrl() == mediaId
+                    }
+                    if (matching != null) {
+                        _currentStation.value = matching
+                        smartSwitchCoordinator.onCurrentStationChanged(matching)
+                        signalCollector.onStationChanged(matching)
+                        _trackTitle.value = ""
+                        _liveSeconds.value = 0
+                        stationListeningSeconds = 0
+                        stationHistorySaved = false
+                        RadioPlaybackBridge.updateCurrentStation(matching)
+                    }
+                }
+            }
+
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 val title = mediaMetadata.title?.toString() ?: ""
                 val artist = mediaMetadata.artist?.toString() ?: ""
@@ -134,6 +171,7 @@ class PlaybackController(
         finalizeHistory()
 
         _currentStation.value = station
+        RadioPlaybackBridge.updateCurrentStation(station)
         smartSwitchCoordinator.onCurrentStationChanged(station)
         signalCollector.onStationChanged(station)
         _trackTitle.value = ""
@@ -164,12 +202,26 @@ class PlaybackController(
         controller.play()
     }
 
+    /**
+     * Toggles live streaming play/stop:
+     * When active, completely stops the live stream to save mobile data.
+     * When stopped/paused, reconnects and starts fresh on the live radio edge.
+     */
     fun togglePlayPause() {
         val controller = mediaController ?: return
         if (controller.isPlaying) {
-            controller.pause()
+            finalizeHistory()
+            controller.stop()
+            _isPlaying.value = false
+            stopTimer()
         } else {
-            controller.play()
+            val station = _currentStation.value ?: RadioPlaybackBridge.currentStationList.value.firstOrNull()
+            if (station != null) {
+                playStation(station)
+            } else {
+                controller.prepare()
+                controller.play()
+            }
         }
     }
 
@@ -212,6 +264,11 @@ class PlaybackController(
     }
 
     fun release() {
+        if (RadioPlaybackBridge.onToggleMute != null) {
+            RadioPlaybackBridge.onToggleMute = null
+            RadioPlaybackBridge.onStopStream = null
+            RadioPlaybackBridge.onStartStream = null
+        }
         smartSwitchCoordinator.release()
         finalizeHistory()
         stopTimer()
