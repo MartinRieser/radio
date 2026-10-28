@@ -51,10 +51,6 @@ class PlaybackController(
     private val _trackTitle = MutableStateFlow("")
     val trackTitle: StateFlow<String> = _trackTitle.asStateFlow()
 
-    // Listening duration tracking for > 1 minute rule
-    private var stationListeningSeconds = 0
-    private var stationHistorySaved = false
-
     init {
         // Wire playback bridge for Bluetooth / Car controls
         RadioPlaybackBridge.onToggleMute = { togglePlayPause() }
@@ -90,7 +86,6 @@ class PlaybackController(
                     startTimer()
                 } else {
                     stopTimer()
-                    finalizeHistory()
                 }
             }
 
@@ -117,23 +112,16 @@ class PlaybackController(
                         _currentStation.value = matching
                         _trackTitle.value = ""
                         _liveSeconds.value = 0
-                        stationListeningSeconds = 0
-                        stationHistorySaved = false
                         RadioPlaybackBridge.updateCurrentStation(matching)
                     }
                 }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                val title = mediaMetadata.title?.toString() ?: ""
-                val artist = mediaMetadata.artist?.toString() ?: ""
-                val formatted = when {
-                    artist.isNotBlank() && title.isNotBlank() -> "$artist - $title"
-                    title.isNotBlank() -> title
-                    artist.isNotBlank() -> artist
-                    else -> ""
-                }
-                _trackTitle.value = formatted
+                val station = _currentStation.value
+                val rawTitle = mediaMetadata.title?.toString()
+                val formatted = RadioMetadataFormatter.format(rawTitle, station)
+                _trackTitle.value = formatted.appTrackTitle
             }
         })
     }
@@ -143,20 +131,21 @@ class PlaybackController(
         val streamUrl = station.getStreamUrl()
         if (streamUrl.isBlank()) return
 
-        // Finalize previous station if >= 60s
-        finalizeHistory()
-
         _currentStation.value = station
         RadioPlaybackBridge.updateCurrentStation(station)
         _trackTitle.value = ""
         _liveSeconds.value = 0
-        stationListeningSeconds = 0
-        stationHistorySaved = false
 
+        val formatted = RadioMetadataFormatter.format(null, station)
         val mediaMetadata = MediaMetadata.Builder()
-            .setTitle(station.name)
-            .setArtist(station.country ?: "Live Radio")
-            .setArtworkUri(station.favicon?.let { Uri.parse(it) })
+            .setTitle(formatted.title)
+            .setArtist(formatted.artist)
+            .setAlbumTitle(formatted.album)
+            .apply {
+                if (!station.favicon.isNullOrBlank()) {
+                    setArtworkUri(Uri.parse(station.favicon))
+                }
+            }
             .build()
 
         val parsedUri = Uri.parse(streamUrl)
@@ -184,7 +173,6 @@ class PlaybackController(
     fun togglePlayPause() {
         val controller = mediaController ?: return
         if (controller.isPlaying) {
-            finalizeHistory()
             controller.stop()
             _isPlaying.value = false
             stopTimer()
@@ -200,7 +188,6 @@ class PlaybackController(
     }
 
     fun stop() {
-        finalizeHistory()
         mediaController?.stop()
         _isPlaying.value = false
         stopTimer()
@@ -212,14 +199,6 @@ class PlaybackController(
             while (isActive) {
                 delay(1000)
                 _liveSeconds.value++
-                stationListeningSeconds++
-
-                // STRICT RULE: Record to history when reaching 60 seconds (1 minute)
-                val current = _currentStation.value
-                if (stationListeningSeconds >= 60 && !stationHistorySaved && current != null) {
-                    repository.addToHistory(current, stationListeningSeconds)
-                    stationHistorySaved = true
-                }
             }
         }
     }
@@ -229,21 +208,12 @@ class PlaybackController(
         timerJob = null
     }
 
-    private fun finalizeHistory() {
-        val current = _currentStation.value
-        if (current != null && stationListeningSeconds >= 60 && !stationHistorySaved) {
-            repository.addToHistory(current, stationListeningSeconds)
-            stationHistorySaved = true
-        }
-    }
-
     fun release() {
         if (RadioPlaybackBridge.onToggleMute != null) {
             RadioPlaybackBridge.onToggleMute = null
             RadioPlaybackBridge.onStopStream = null
             RadioPlaybackBridge.onStartStream = null
         }
-        finalizeHistory()
         stopTimer()
         MediaController.releaseFuture(controllerFuture ?: return)
     }

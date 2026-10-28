@@ -42,13 +42,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val sleepMinutesRemaining: StateFlow<Int> = _sleepMinutesRemaining.asStateFlow()
     private var sleepTimerJob: Job? = null
 
-    // 3 Favorite lists + History
+    // 3 Favorite lists ("Hart wie Herz")
     val favorites1 = repository.favorites1
     val favorites2 = repository.favorites2
     val favorites3 = repository.favorites3
     val allFavorites = repository.allFavorites
-    val favorites = repository.allFavorites // Backwards compatibility
-    val history = repository.history
+    val favorites = repository.allFavorites // Alias
 
     private var searchJob: Job? = null
 
@@ -71,24 +70,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     init {
-        // Register callbacks for Bluetooth steering wheel / Car Media buttons
-        RadioPlaybackBridge.onPlayNext = { playNext() }
-        RadioPlaybackBridge.onPlayPrevious = { playPrevious() }
-
-        // Keep RadioPlaybackBridge station list continuously in sync
-        viewModelScope.launch {
-            _stations.collect { list ->
-                RadioPlaybackBridge.updateStationList(list)
-            }
-        }
-
-        // Keep RadioPlaybackBridge current station continuously in sync
-        viewModelScope.launch {
-            playbackController.currentStation.collect { station ->
-                RadioPlaybackBridge.updateCurrentStation(station)
-            }
-        }
-
         loadCategory("featured")
         checkForAppUpdate()
     }
@@ -122,7 +103,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 loadCategory(_activeCategory.value)
             } else {
-                if (!_activeCategory.value.startsWith("favorites") && _activeCategory.value != "history") {
+                if (!_activeCategory.value.startsWith("favorites")) {
                     _activeCategory.value = "search"
                 }
                 performSearch(query)
@@ -160,30 +141,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     "favorites_3" -> {
                         CuratedStations.deduplicateAndOptimize(repository.favorites3.value)
                     }
-                    "adfree" -> {
-                        val curated = CuratedStations.load(getApplication())
-                        val apiStations = try {
-                            ApiClient.getApi().getTopClickStations(40)
-                        } catch (e: Exception) {
-                            emptyList()
-                        }
-                        CuratedStations.deduplicateAndOptimize((curated + apiStations).filter { it.isAdFree() })
-                    }
-                    "history" -> {
-                        repository.history.value
-                    }
                     else -> {
                         // Tag based
                         val apiStations = ApiClient.getApi().getStationsByTag(category, 50)
                         CuratedStations.deduplicateAndOptimize(apiStations)
                     }
                 }
-                _stations.value = filterMaxBitrate(loadedList)
+                val filtered = filterMaxBitrate(loadedList)
+                _stations.value = filtered
+                RadioPlaybackBridge.updateStationList(filtered)
             } catch (e: Exception) {
                 e.printStackTrace()
                 _errorMessage.value = "Fehler beim Laden der Sender. Bitte Internetverbindung prüfen."
                 if (_stations.value.isEmpty()) {
-                    _stations.value = filterMaxBitrate(CuratedStations.load(getApplication()))
+                    val fallback = filterMaxBitrate(CuratedStations.load(getApplication()))
+                    _stations.value = fallback
+                    RadioPlaybackBridge.updateStationList(fallback)
                 }
             } finally {
                 _isLoading.value = false
@@ -197,13 +170,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         try {
             val q = query.lowercase().trim()
             val matches = when (_activeCategory.value) {
-                "history" -> {
-                    repository.history.value.filter {
-                        it.name.lowercase().contains(q) ||
-                        (it.tags?.lowercase()?.contains(q) == true) ||
-                        (it.country?.lowercase()?.contains(q) == true)
-                    }
-                }
                 "favorites", "favorites_1" -> {
                     CuratedStations.deduplicateAndOptimize(
                         repository.favorites1.value.filter {
@@ -246,7 +212,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     CuratedStations.deduplicateAndOptimize(curatedMatches + apiStations)
                 }
             }
-            _stations.value = filterMaxBitrate(matches)
+            val filtered = filterMaxBitrate(matches)
+            _stations.value = filtered
+            RadioPlaybackBridge.updateStationList(filtered)
         } catch (e: Exception) {
             e.printStackTrace()
             _errorMessage.value = "Suche fehlgeschlagen."
@@ -263,14 +231,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         playbackController.togglePlayPause()
     }
 
-    /**
-     * Advances to the next radio station in circular order.
-     * Accessible by Car Bluetooth AVRCP forward button, steering wheel, and UI.
-     */
     fun playNext() {
-        val list = _stations.value.ifEmpty {
-            CuratedStations.load(getApplication())
-        }
+        val list = _stations.value
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
         val currentIndex = list.indexOfFirst { it.stationuuid == current?.stationuuid || it.getStreamUrl() == current?.getStreamUrl() }
@@ -278,14 +240,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         playStation(list[nextIndex])
     }
 
-    /**
-     * Steps to the previous radio station in circular order.
-     * Accessible by Car Bluetooth AVRCP back button, steering wheel, and UI.
-     */
     fun playPrevious() {
-        val list = _stations.value.ifEmpty {
-            CuratedStations.load(getApplication())
-        }
+        val list = _stations.value
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
         val currentIndex = list.indexOfFirst { it.stationuuid == current?.stationuuid || it.getStreamUrl() == current?.getStreamUrl() }
@@ -293,31 +249,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         playStation(list[prevIndex])
     }
 
+    fun cycleFavorite(station: Station): Int {
+        val type = repository.cycleFavorite(station)
+        if (_activeCategory.value.startsWith("favorites")) {
+            loadCategory(_activeCategory.value)
+        }
+        return type
+    }
+
     fun getFavoriteType(station: Station): Int {
         return repository.getFavoriteType(station)
     }
 
-    /**
-     * Cycles favorite state:
-     * 0 (Kein) -> 1 (❤️ Herz) -> 2 (💎 Diamant) -> 3 (⭐ Stern) -> 0 (Kein)
-     */
-    fun cycleFavorite(station: Station) {
-        repository.cycleFavorite(station)
-        when (_activeCategory.value) {
-            "favorites", "favorites_1" -> _stations.value = repository.favorites1.value
-            "favorites_2" -> _stations.value = repository.favorites2.value
-            "favorites_3" -> _stations.value = repository.favorites3.value
-        }
-    }
-
-    fun toggleFavorite(station: Station) {
-        cycleFavorite(station)
-    }
-
-    fun clearHistory() {
-        repository.clearHistory()
-        if (_activeCategory.value == "history") {
-            _stations.value = emptyList()
+    fun setFavoriteType(station: Station, type: Int) {
+        repository.setFavoriteType(station, type)
+        if (_activeCategory.value.startsWith("favorites")) {
+            loadCategory(_activeCategory.value)
         }
     }
 
@@ -343,10 +290,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        if (RadioPlaybackBridge.onPlayNext != null) {
-            RadioPlaybackBridge.onPlayNext = null
-            RadioPlaybackBridge.onPlayPrevious = null
-        }
         carDriveModeManager.unregister()
         playbackController.release()
     }

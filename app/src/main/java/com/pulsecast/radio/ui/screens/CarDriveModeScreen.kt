@@ -20,8 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -33,6 +32,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +64,10 @@ fun CarDriveModeScreen(
     isPlaying: Boolean,
     isBuffering: Boolean,
     trackTitle: String,
-    favorites: List<Station>,
+    favorites1: List<Station>,
+    favorites2: List<Station>,
+    favorites3: List<Station>,
+    featuredStations: List<Station> = emptyList(),
     speedKmh: Float,
     reason: String,
     onExitClick: () -> Unit,
@@ -70,6 +76,24 @@ fun CarDriveModeScreen(
     onPrevClick: () -> Unit,
     onSelectStation: (Station) -> Unit
 ) {
+    // 0: 📻 Entdecken (No favorite list active), 1: ❤️ Hart, 2: 💎 Diamant, 3: ⭐ Stern
+    var selectedFavList by remember { mutableStateOf(0) }
+
+    val rawList = when (selectedFavList) {
+        1 -> favorites1
+        2 -> favorites2
+        3 -> favorites3
+        else -> emptyList()
+    }
+
+    val activeList = if (rawList.isNotEmpty()) rawList else featuredStations
+    val listLabel = when {
+        selectedFavList == 1 && favorites1.isNotEmpty() -> "❤️ Hart"
+        selectedFavList == 2 && favorites2.isNotEmpty() -> "💎 Diamant"
+        selectedFavList == 3 && favorites3.isNotEmpty() -> "⭐ Stern"
+        else -> "📻 Entdecken"
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +107,7 @@ fun CarDriveModeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // 1. Top Header: Mode & Exit Button
+            // 1. Top Header: Mode & App-Ansicht Return Button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -120,6 +144,7 @@ fun CarDriveModeScreen(
                     }
                 }
 
+                // App-Ansicht Return Button
                 Surface(
                     onClick = onExitClick,
                     shape = RoundedCornerShape(20.dp),
@@ -131,14 +156,14 @@ fun CarDriveModeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Beenden",
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Zur App-Ansicht",
                             tint = TextSecondary,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Beenden",
+                            text = "App-Ansicht",
                             color = TextPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
@@ -164,14 +189,31 @@ fun CarDriveModeScreen(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         val fallbackPainter = rememberVectorPainter(Icons.Default.Radio)
-                        if (!currentStation?.favicon.isNullOrBlank()) {
+                        val iconUrl = remember(currentStation?.favicon, currentStation?.getStreamUrl()) {
+                            val fav = currentStation?.favicon?.trim() ?: ""
+                            if (fav.isNotBlank() && !fav.contains("favicon.ico")) {
+                                if (fav.startsWith("http://")) fav.replace("http://", "https://") else fav
+                            } else {
+                                val streamUrl = currentStation?.getStreamUrl() ?: ""
+                                if (streamUrl.contains("//")) {
+                                    val host = streamUrl.split("//")[1].split("/")[0]
+                                    val parts = host.split(".")
+                                    if (parts.size >= 2) {
+                                        val domain = parts.takeLast(2).joinToString(".")
+                                        "https://www.google.com/s2/favicons?domain=$domain&sz=128"
+                                    } else ""
+                                } else ""
+                            }
+                        }
+
+                        if (iconUrl.isNotBlank()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(currentStation.favicon)
+                                    .data(iconUrl)
                                     .setHeader("User-Agent", "Mozilla/5.0")
                                     .crossfade(true)
                                     .build(),
-                                contentDescription = currentStation.name,
+                                contentDescription = currentStation?.name,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize(),
                                 error = fallbackPainter,
@@ -233,7 +275,7 @@ fun CarDriveModeScreen(
                 }
             }
 
-            // 3. Giant Controls (Prev/Return, Giant Play/Pause, Next)
+            // 3. Giant Controls (Prev, Giant Play/Pause, Next)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -301,47 +343,101 @@ fun CarDriveModeScreen(
                 }
             }
 
-            // 4. Quick Favorite Selector Carousel
-            if (favorites.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Favoriten Schnellwahl",
-                        color = TextSecondary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(favorites) { fav ->
-                            val isSelected = fav.stationuuid == currentStation?.stationuuid
-                            val favEmoji = when (fav.getEffectiveFavoriteType()) {
-                                2 -> "💎"
-                                3 -> "⭐"
-                                else -> "❤️"
-                            }
-                            Surface(
-                                onClick = { onSelectStation(fav) },
-                                shape = RoundedCornerShape(16.dp),
-                                color = if (isSelected) AccentPrimary.copy(alpha = 0.25f) else Color(0xFF1E293B),
-                                border = androidx.compose.foundation.BorderStroke(
-                                    1.dp,
-                                    if (isSelected) AccentPrimary else Color(0xFF334155)
-                                )
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "$favEmoji ${fav.name}",
-                                        color = if (isSelected) AccentPrimary else TextPrimary,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+            // 4. Favorite List Selector & Quick Carousel
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // List Selector Pills
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        1 to "❤️ Hart (${favorites1.size})",
+                        2 to "💎 Diamant (${favorites2.size})",
+                        3 to "⭐ Stern (${favorites3.size})"
+                    ).forEach { (listId, label) ->
+                        val isSelected = selectedFavList == listId
+                        Surface(
+                            onClick = {
+                                if (isSelected) {
+                                    // Tapping active list toggles it off -> Returns to "Entdecken"
+                                    selectedFavList = 0
+                                    val targetStation = featuredStations.firstOrNull()
+                                    if (targetStation != null && targetStation.stationuuid != currentStation?.stationuuid) {
+                                        onSelectStation(targetStation)
+                                    }
+                                } else {
+                                    // Tapping inactive list activates it
+                                    selectedFavList = listId
+                                    val targetList = when (listId) {
+                                        1 -> if (favorites1.isNotEmpty()) favorites1 else featuredStations
+                                        2 -> if (favorites2.isNotEmpty()) favorites2 else featuredStations
+                                        else -> if (favorites3.isNotEmpty()) favorites3 else featuredStations
+                                    }
+                                    val targetStation = targetList.firstOrNull()
+                                    if (targetStation != null && targetStation.stationuuid != currentStation?.stationuuid) {
+                                        onSelectStation(targetStation)
+                                    }
+                                }
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (isSelected) AccentPrimary else Color(0xFF1E293B),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                if (isSelected) AccentPrimary else Color(0xFF334155)
+                            ),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = label,
+                                color = if (isSelected) BgMain else TextSecondary,
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Carousel of active favorite / Entdecken list
+                if (activeList.isNotEmpty()) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = listLabel,
+                            color = TextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(activeList) { station ->
+                                val isSelected = station.stationuuid == currentStation?.stationuuid
+                                Surface(
+                                    onClick = { onSelectStation(station) },
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = if (isSelected) AccentPrimary.copy(alpha = 0.25f) else Color(0xFF1E293B),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        1.dp,
+                                        if (isSelected) AccentPrimary else Color(0xFF334155)
                                     )
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = station.name,
+                                            color = if (isSelected) AccentPrimary else TextPrimary,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
                                 }
                             }
                         }

@@ -66,7 +66,6 @@ fun StationCard(
     isPlaying: Boolean,
     favoriteType: Int = 0,
     isFavorite: Boolean = favoriteType > 0,
-    isHistoryView: Boolean = false,
     onCardClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
@@ -195,17 +194,6 @@ fun StationCard(
                             color = TextMuted,
                             fontSize = 12.sp,
                             maxLines = 1
-                        )
-                    }
-
-                    // History Timestamp (only in History View)
-                    if (isHistoryView && station.lastPlayed != null) {
-                        Text(text = "•", color = TextMuted, fontSize = 10.sp)
-                        Text(
-                            text = HistoryAndFavoritesRepository.formatRelativeTime(station.lastPlayed),
-                            color = AccentHistory,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium
                         )
                     }
                 }

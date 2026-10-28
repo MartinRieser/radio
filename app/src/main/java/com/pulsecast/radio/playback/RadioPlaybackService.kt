@@ -41,6 +41,8 @@ class RadioPlaybackService : MediaLibraryService() {
     private lateinit var player: ExoPlayer
     private lateinit var repository: HistoryAndFavoritesRepository
     private val mainHandler = Handler(Looper.getMainLooper())
+    private var currentPlayingStation: Station? = null
+    private var currentFormattedMetadata: MediaMetadata? = null
 
     private val muteReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -88,8 +90,10 @@ class RadioPlaybackService : MediaLibraryService() {
         )
 
         // 3. Wrap ExoPlayer in ForwardingPlayer so Bluetooth AVRCP / Car media commands (Next, Prev, Mute)
-        // are properly advertised and routed to station switching.
+        // are properly advertised and routed to station switching, and ICY metadata is formatted for car screens.
         val forwardingPlayer = object : ForwardingPlayer(player) {
+            private val listenerMap = mutableMapOf<Player.Listener, Player.Listener>()
+
             override fun getAvailableCommands(): Player.Commands {
                 return super.getAvailableCommands().buildUpon()
                     .add(Player.COMMAND_SEEK_TO_NEXT)
@@ -128,17 +132,43 @@ class RadioPlaybackService : MediaLibraryService() {
             override fun seekToPreviousMediaItem() {
                 playPreviousStation()
             }
+
+            override fun addListener(listener: Player.Listener) {
+                val wrapped = object : Player.Listener by listener {
+                    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                        val activeStation = currentPlayingStation ?: RadioPlaybackBridge.currentStation.value
+                        val formatted = buildFormattedMediaMetadata(mediaMetadata, activeStation)
+                        currentFormattedMetadata = formatted
+                        listener.onMediaMetadataChanged(formatted)
+                    }
+                }
+                listenerMap[listener] = wrapped
+                super.addListener(wrapped)
+            }
+
+            override fun removeListener(listener: Player.Listener) {
+                val wrapped = listenerMap.remove(listener) ?: listener
+                super.removeListener(wrapped)
+            }
+
+            override fun getMediaMetadata(): MediaMetadata {
+                val activeStation = currentPlayingStation ?: RadioPlaybackBridge.currentStation.value
+                return currentFormattedMetadata ?: buildFormattedMediaMetadata(super.getMediaMetadata(), activeStation)
+            }
         }
 
         // 4. Build MediaLibrarySession for Bluetooth AVRCP & Android Auto
         mediaLibrarySession = MediaLibrarySession.Builder(this, forwardingPlayer, CustomMediaLibrarySessionCallback())
             .setSessionActivity(pendingIntent)
+            .setBitmapLoader(CoilBitmapLoader(this))
             .build()
 
         // 5. Listen to ICY live metadata (song title, artist)
         player.addListener(object : Player.Listener {
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 super.onMediaMetadataChanged(mediaMetadata)
+                val activeStation = currentPlayingStation ?: RadioPlaybackBridge.currentStation.value
+                currentFormattedMetadata = buildFormattedMediaMetadata(mediaMetadata, activeStation)
             }
         })
 
@@ -246,6 +276,8 @@ class RadioPlaybackService : MediaLibraryService() {
     }
 
     private fun playStationInService(station: Station) {
+        currentPlayingStation = station
+        currentFormattedMetadata = buildFormattedMediaMetadata(MediaMetadata.EMPTY, station)
         val mediaItem = buildPlayableItem(station)
         player.setMediaItem(mediaItem)
         player.prepare()
@@ -404,11 +436,9 @@ class RadioPlaybackService : MediaLibraryService() {
                 "root" -> {
                     listOf(
                         buildFolderItem("featured", "📻 Entdecken", "Kuratierte Sender"),
-                        buildFolderItem("favorites_1", "❤️ Favoriten", "${repository.favorites1.value.size} gespeicherte Sender"),
+                        buildFolderItem("favorites_1", "❤️ Hart wie Herz", "${repository.favorites1.value.size} gespeicherte Sender"),
                         buildFolderItem("favorites_2", "💎 Diamant", "${repository.favorites2.value.size} gespeicherte Sender"),
-                        buildFolderItem("favorites_3", "⭐ Stern", "${repository.favorites3.value.size} gespeicherte Sender"),
-                        buildFolderItem("adfree", "🛡️ Werbefrei", "Reine Musik ohne Werbung"),
-                        buildFolderItem("history", "🕒 Verlauf", "${repository.history.value.size} zuletzt gehörte Sender")
+                        buildFolderItem("favorites_3", "⭐ Stern", "${repository.favorites3.value.size} gespeicherte Sender")
                     )
                 }
                 "featured" -> {
@@ -422,9 +452,6 @@ class RadioPlaybackService : MediaLibraryService() {
                 }
                 "favorites_3" -> {
                     repository.favorites3.value.map { buildPlayableItem(it) }
-                }
-                "history" -> {
-                    repository.history.value.map { buildPlayableItem(it) }
                 }
                 else -> emptyList()
             }
@@ -466,8 +493,11 @@ class RadioPlaybackService : MediaLibraryService() {
                 val metadata = item.mediaMetadata.buildUpon()
                     .apply {
                         if (matchingStation != null) {
-                            setTitle(matchingStation.name)
-                            setArtist(matchingStation.country ?: "Live Radio")
+                            currentPlayingStation = matchingStation
+                            val formatted = RadioMetadataFormatter.format(item.mediaMetadata.title?.toString(), matchingStation)
+                            setTitle(formatted.title)
+                            setArtist(formatted.artist)
+                            setAlbumTitle(formatted.album)
                             setSubtitle(matchingStation.tags)
                             if (!matchingStation.favicon.isNullOrBlank()) {
                                 setArtworkUri(Uri.parse(matchingStation.favicon))
@@ -509,20 +539,25 @@ class RadioPlaybackService : MediaLibraryService() {
             .build()
     }
 
-    private fun buildPlayableItem(station: Station): MediaItem {
-        val streamUrl = station.getStreamUrl()
-        val metadata = MediaMetadata.Builder()
-            .setTitle(station.name)
-            .setArtist(station.country ?: "Live Radio")
-            .setSubtitle(station.tags)
-            .setIsBrowsable(false)
-            .setIsPlayable(true)
+    private fun buildFormattedMediaMetadata(rawMetadata: MediaMetadata, station: Station?): MediaMetadata {
+        val rawTitle = rawMetadata.title?.toString()
+        val formatted = RadioMetadataFormatter.format(rawTitle, station)
+        return rawMetadata.buildUpon()
+            .setTitle(formatted.title)
+            .setArtist(formatted.artist)
+            .setAlbumTitle(formatted.album)
             .apply {
-                if (!station.favicon.isNullOrBlank()) {
+                if (!station?.favicon.isNullOrBlank()) {
                     setArtworkUri(Uri.parse(station.favicon))
                 }
             }
+            .setIsPlayable(true)
             .build()
+    }
+
+    private fun buildPlayableItem(station: Station): MediaItem {
+        val streamUrl = station.getStreamUrl()
+        val metadata = buildFormattedMediaMetadata(MediaMetadata.EMPTY, station)
 
         return MediaItem.Builder()
             .setMediaId(station.stationuuid ?: streamUrl)
