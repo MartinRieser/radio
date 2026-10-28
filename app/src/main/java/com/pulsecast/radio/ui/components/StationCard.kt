@@ -76,10 +76,8 @@ fun StationCard(
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(onClick = onCardClick),
+        onClick = onCardClick,
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = BgSurfaceCard),
         border = border,
         shape = RoundedCornerShape(14.dp)
@@ -210,13 +208,13 @@ fun StationCard(
             // Favorite Button (1x Herz -> 2x Diamant -> 3x Stern -> Entfernen)
             IconButton(
                 onClick = onFavoriteClick,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(44.dp)
             ) {
                 Icon(
                     imageVector = favIcon,
                     contentDescription = favDesc,
                     tint = favColor,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
