@@ -73,4 +73,22 @@ class StationTest {
         val austrianStation = Station(name = "Radio AT", countrycode = "AT")
         assertEquals("🇦🇹", austrianStation.getCountryFlag())
     }
+
+    @Test
+    fun testFavoriteTypeClassification() {
+        val defaultStation = Station(name = "Station Default")
+        assertEquals(0, defaultStation.getEffectiveFavoriteType())
+
+        val fav1Station = Station(name = "Station Fav 1", favoriteType = 1)
+        assertEquals(1, fav1Station.getEffectiveFavoriteType())
+
+        val fav2Station = Station(name = "Station Fav 2", favoriteType = 2)
+        assertEquals(2, fav2Station.getEffectiveFavoriteType())
+
+        val fav3Station = Station(name = "Station Fav 3", favoriteType = 3)
+        assertEquals(3, fav3Station.getEffectiveFavoriteType())
+
+        val legacyFavStation = Station(name = "Station Legacy Fav", isFavorite = true, favoriteType = 0)
+        assertEquals(1, legacyFavStation.getEffectiveFavoriteType())
+    }
 }

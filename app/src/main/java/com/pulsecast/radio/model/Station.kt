@@ -50,11 +50,15 @@ data class Station(
 
     // Local state fields
     val isFavorite: Boolean = false,
+    val favoriteType: Int = 0,
     val lastPlayed: Long? = null,
     val playDuration: Int = 0,
     @SerializedName("is_pure_music")
     val isPureMusic: Boolean = false
 ) {
+    fun getEffectiveFavoriteType(): Int {
+        return if (favoriteType in 1..3) favoriteType else if (isFavorite) 1 else 0
+    }
     /**
      * Checks if this station is dedicated to continuous music with no news/commercial breaks.
      */

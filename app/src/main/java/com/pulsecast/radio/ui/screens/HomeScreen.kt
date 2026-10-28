@@ -85,7 +85,10 @@ fun HomeScreen(viewModel: MainViewModel) {
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
-    val favorites by viewModel.favorites.collectAsState()
+    val favorites1 by viewModel.favorites1.collectAsState()
+    val favorites2 by viewModel.favorites2.collectAsState()
+    val favorites3 by viewModel.favorites3.collectAsState()
+    val allFavorites by viewModel.allFavorites.collectAsState()
     val history by viewModel.history.collectAsState()
 
     val currentStation by viewModel.playbackController.currentStation.collectAsState()
@@ -113,7 +116,7 @@ fun HomeScreen(viewModel: MainViewModel) {
             isPlaying = isPlaying,
             isBuffering = isBuffering,
             trackTitle = trackTitle,
-            favorites = favorites,
+            favorites = allFavorites,
             speedKmh = currentSpeedKmh,
             reason = carConnectionReason,
             onExitClick = { viewModel.exitCarMode() },
@@ -173,7 +176,9 @@ fun HomeScreen(viewModel: MainViewModel) {
 
                         CategoryListLandscape(
                             activeCategory = activeCategory,
-                            favCount = favorites.size,
+                            fav1Count = favorites1.size,
+                            fav2Count = favorites2.size,
+                            fav3Count = favorites3.size,
                             historyCount = history.size,
                             onSelectCategory = { viewModel.selectCategory(it) }
                         )
@@ -202,11 +207,13 @@ fun HomeScreen(viewModel: MainViewModel) {
                             stations = stations,
                             activeCategory = activeCategory,
                             searchQuery = searchQuery,
-                            favorites = favorites,
+                            favorites1 = favorites1,
+                            favorites2 = favorites2,
+                            favorites3 = favorites3,
                             currentStation = currentStation,
                             isPlaying = isPlaying,
                             onPlayStation = { viewModel.playStation(it) },
-                            onToggleFavorite = { viewModel.toggleFavorite(it) }
+                            onToggleFavorite = { viewModel.cycleFavorite(it) }
                         )
                     }
                 }
@@ -237,7 +244,9 @@ fun HomeScreen(viewModel: MainViewModel) {
                     // 3. Category Tabs
                     CategoryTabs(
                         activeCategory = activeCategory,
-                        favCount = favorites.size,
+                        fav1Count = favorites1.size,
+                        fav2Count = favorites2.size,
+                        fav3Count = favorites3.size,
                         historyCount = history.size,
                         onSelectCategory = { viewModel.selectCategory(it) }
                     )
@@ -260,11 +269,13 @@ fun HomeScreen(viewModel: MainViewModel) {
                             stations = stations,
                             activeCategory = activeCategory,
                             searchQuery = searchQuery,
-                            favorites = favorites,
+                            favorites1 = favorites1,
+                            favorites2 = favorites2,
+                            favorites3 = favorites3,
                             currentStation = currentStation,
                             isPlaying = isPlaying,
                             onPlayStation = { viewModel.playStation(it) },
-                            onToggleFavorite = { viewModel.toggleFavorite(it) }
+                            onToggleFavorite = { viewModel.cycleFavorite(it) }
                         )
                     }
                 }
@@ -279,7 +290,6 @@ fun HomeScreen(viewModel: MainViewModel) {
             onSelectMinutes = { viewModel.setSleepTimer(it) }
         )
     }
-
 
     if (appUpdateState is AppUpdateState.Available || appUpdateState is AppUpdateState.Downloading) {
         AppUpdateDialog(
@@ -533,14 +543,18 @@ private fun SearchAndFilterBar(
 @Composable
 private fun CategoryTabs(
     activeCategory: String,
-    favCount: Int,
+    fav1Count: Int,
+    fav2Count: Int,
+    fav3Count: Int,
     historyCount: Int,
     onSelectCategory: (String) -> Unit
 ) {
     val tabs = listOf(
-        "featured" to "⭐ Entdecken",
+        "featured" to "📻 Entdecken",
+        "favorites_1" to "❤️ Favoriten ($fav1Count)",
+        "favorites_2" to "💎 Diamant ($fav2Count)",
+        "favorites_3" to "⭐ Stern ($fav3Count)",
         "adfree" to "🛡️ Werbefrei",
-        "favorites" to "❤️ Favoriten ($favCount)",
         "history" to "🕒 Verlauf ($historyCount)"
     )
 
@@ -552,7 +566,7 @@ private fun CategoryTabs(
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp)
     ) {
         items(tabs) { (id, label) ->
-            val isSelected = activeCategory == id
+            val isSelected = activeCategory == id || (id == "favorites_1" && activeCategory == "favorites")
             Surface(
                 onClick = { onSelectCategory(id) },
                 shape = RoundedCornerShape(20.dp),
@@ -577,14 +591,18 @@ private fun CategoryTabs(
 @Composable
 private fun CategoryListLandscape(
     activeCategory: String,
-    favCount: Int,
+    fav1Count: Int,
+    fav2Count: Int,
+    fav3Count: Int,
     historyCount: Int,
     onSelectCategory: (String) -> Unit
 ) {
     val categories = listOf(
-        "featured" to "⭐ Entdecken",
+        "featured" to "📻 Entdecken",
+        "favorites_1" to "❤️ Favoriten ($fav1Count)",
+        "favorites_2" to "💎 Diamant ($fav2Count)",
+        "favorites_3" to "⭐ Stern ($fav3Count)",
         "adfree" to "🛡️ Werbefrei",
-        "favorites" to "❤️ Favoriten ($favCount)",
         "history" to "🕒 Verlauf ($historyCount)",
         "pop" to "🎵 Pop & Hits",
         "rock" to "🎸 Rock & Metal",
@@ -600,7 +618,7 @@ private fun CategoryListLandscape(
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         categories.forEach { (id, label) ->
-            val isSelected = activeCategory == id
+            val isSelected = activeCategory == id || (id == "favorites_1" && activeCategory == "favorites")
             Surface(
                 onClick = { onSelectCategory(id) },
                 shape = RoundedCornerShape(14.dp),
@@ -630,9 +648,11 @@ private fun SectionHeader(
     onClearHistory: () -> Unit
 ) {
     val title = when (activeCategory) {
-        "featured" -> "⭐ Entdecken"
+        "featured" -> "📻 Entdecken"
+        "favorites", "favorites_1" -> "❤️ Favoriten (Liste 1)"
+        "favorites_2" -> "💎 Diamant-Favoriten (Liste 2)"
+        "favorites_3" -> "⭐ Stern-Favoriten (Liste 3)"
         "adfree" -> "🛡️ Werbefreie Sender"
-        "favorites" -> "❤️ Deine Favoriten"
         "history" -> "🕒 Hörverlauf"
         "search" -> "🔍 Suchergebnisse"
         else -> "🏷️ $activeCategory"
@@ -686,7 +706,9 @@ private fun StationListContent(
     stations: List<Station>,
     activeCategory: String,
     searchQuery: String,
-    favorites: List<Station>,
+    favorites1: List<Station>,
+    favorites2: List<Station>,
+    favorites3: List<Station>,
     currentStation: Station?,
     isPlaying: Boolean,
     onPlayStation: (Station) -> Unit,
@@ -706,7 +728,9 @@ private fun StationListContent(
         ) {
             val emptyMessage = when {
                 searchQuery.isNotBlank() -> "Keine Sender für „$searchQuery“ gefunden."
-                activeCategory == "favorites" -> "Noch keine Favoriten gespeichert.\nTippe auf das ❤️ bei einem Sender!"
+                activeCategory in listOf("favorites", "favorites_1") -> "Noch keine Favoriten in der ❤️ Herz-Liste gespeichert.\nTippe 1x auf das Herz bei einem Sender!"
+                activeCategory == "favorites_2" -> "Noch keine Favoriten in der 💎 Diamant-Liste gespeichert.\nTippe 2x auf das Symbol bei einem Sender!"
+                activeCategory == "favorites_3" -> "Noch keine Favoriten in der ⭐ Stern-Liste gespeichert.\nTippe 3x auf das Symbol bei einem Sender!"
                 activeCategory == "history" -> "Dein Verlauf ist leer.\nHöre mindestens 1 Minute einen Sender!"
                 else -> "Keine Sender in dieser Kategorie gefunden."
             }
@@ -727,14 +751,23 @@ private fun StationListContent(
                 items = stations,
                 key = { it.stationuuid ?: it.getStreamUrl() }
             ) { station ->
-                val isFavorite = favorites.any { it.stationuuid == station.stationuuid || it.getStreamUrl() == station.getStreamUrl() }
+                val favType = remember(station, favorites1, favorites2, favorites3) {
+                    val key = station.stationuuid?.takeIf { it.isNotBlank() } ?: station.getStreamUrl()
+                    when {
+                        favorites1.any { (it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl()) == key } -> 1
+                        favorites2.any { (it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl()) == key } -> 2
+                        favorites3.any { (it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl()) == key } -> 3
+                        else -> 0
+                    }
+                }
                 val isCurrent = currentStation?.stationuuid == station.stationuuid || (currentStation != null && currentStation.getStreamUrl() == station.getStreamUrl())
 
                 StationCard(
                     station = station,
                     isActive = isCurrent,
                     isPlaying = isPlaying,
-                    isFavorite = isFavorite,
+                    favoriteType = favType,
+                    isHistoryView = activeCategory == "history",
                     onCardClick = { onPlayStation(station) },
                     onFavoriteClick = { onToggleFavorite(station) }
                 )

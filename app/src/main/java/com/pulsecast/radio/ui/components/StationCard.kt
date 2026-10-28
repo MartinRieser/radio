@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Diamond
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -62,7 +64,8 @@ fun StationCard(
     station: Station,
     isActive: Boolean,
     isPlaying: Boolean,
-    isFavorite: Boolean,
+    favoriteType: Int = 0,
+    isFavorite: Boolean = favoriteType > 0,
     isHistoryView: Boolean = false,
     onCardClick: () -> Unit,
     onFavoriteClick: () -> Unit
@@ -208,15 +211,23 @@ fun StationCard(
                 }
             }
 
-            // Favorite Button
+            val effectiveFavType = if (favoriteType in 1..3) favoriteType else if (isFavorite) 1 else 0
+            val (favIcon, favColor, favDesc) = when (effectiveFavType) {
+                1 -> Triple(Icons.Default.Favorite, AccentFav, "Favorit Liste 1 (Herz) - Tippen für Liste 2")
+                2 -> Triple(Icons.Default.Diamond, Color(0xFF06B6D4), "Favorit Liste 2 (Diamant) - Tippen für Liste 3")
+                3 -> Triple(Icons.Default.Star, Color(0xFFFBBF24), "Favorit Liste 3 (Stern) - Tippen zum Entfernen")
+                else -> Triple(Icons.Default.FavoriteBorder, TextMuted, "Zu Favoriten hinzufügen")
+            }
+
+            // Favorite Button (1x Herz -> 2x Diamant -> 3x Stern -> Entfernen)
             IconButton(
                 onClick = onFavoriteClick,
                 modifier = Modifier.size(36.dp)
             ) {
                 Icon(
-                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorit",
-                    tint = if (isFavorite) AccentFav else TextMuted,
+                    imageVector = favIcon,
+                    contentDescription = favDesc,
+                    tint = favColor,
                     modifier = Modifier.size(20.dp)
                 )
             }

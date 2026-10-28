@@ -42,8 +42,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val sleepMinutesRemaining: StateFlow<Int> = _sleepMinutesRemaining.asStateFlow()
     private var sleepTimerJob: Job? = null
 
-    // Combines favorites & history state
-    val favorites = repository.favorites
+    // 3 Favorite lists + History
+    val favorites1 = repository.favorites1
+    val favorites2 = repository.favorites2
+    val favorites3 = repository.favorites3
+    val allFavorites = repository.allFavorites
+    val favorites = repository.allFavorites // Backwards compatibility
     val history = repository.history
 
     private var searchJob: Job? = null
@@ -118,7 +122,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 loadCategory(_activeCategory.value)
             } else {
-                if (_activeCategory.value != "favorites" && _activeCategory.value != "history") {
+                if (!_activeCategory.value.startsWith("favorites") && _activeCategory.value != "history") {
                     _activeCategory.value = "search"
                 }
                 performSearch(query)
@@ -147,6 +151,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     "featured" -> {
                         CuratedStations.load(getApplication())
                     }
+                    "favorites", "favorites_1" -> {
+                        CuratedStations.deduplicateAndOptimize(repository.favorites1.value)
+                    }
+                    "favorites_2" -> {
+                        CuratedStations.deduplicateAndOptimize(repository.favorites2.value)
+                    }
+                    "favorites_3" -> {
+                        CuratedStations.deduplicateAndOptimize(repository.favorites3.value)
+                    }
                     "adfree" -> {
                         val curated = CuratedStations.load(getApplication())
                         val apiStations = try {
@@ -155,9 +168,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             emptyList()
                         }
                         CuratedStations.deduplicateAndOptimize((curated + apiStations).filter { it.isAdFree() })
-                    }
-                    "favorites" -> {
-                        CuratedStations.deduplicateAndOptimize(repository.favorites.value)
                     }
                     "history" -> {
                         repository.history.value
@@ -186,33 +196,55 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _errorMessage.value = null
         try {
             val q = query.lowercase().trim()
-            val matches = if (_activeCategory.value == "history") {
-                repository.history.value.filter {
-                    it.name.lowercase().contains(q) ||
-                    (it.tags?.lowercase()?.contains(q) == true) ||
-                    (it.country?.lowercase()?.contains(q) == true)
-                }
-            } else if (_activeCategory.value == "favorites") {
-                CuratedStations.deduplicateAndOptimize(
-                    repository.favorites.value.filter {
+            val matches = when (_activeCategory.value) {
+                "history" -> {
+                    repository.history.value.filter {
                         it.name.lowercase().contains(q) ||
                         (it.tags?.lowercase()?.contains(q) == true) ||
                         (it.country?.lowercase()?.contains(q) == true)
                     }
-                )
-            } else {
-                val curated = CuratedStations.load(getApplication())
-                val curatedMatches = curated.filter {
-                    it.name.lowercase().contains(q) ||
-                    (it.tags?.lowercase()?.contains(q) == true) ||
-                    (it.country?.lowercase()?.contains(q) == true)
                 }
-                val apiStations = try {
-                    ApiClient.getApi().searchStations(query, 50)
-                } catch (e: Exception) {
-                    emptyList()
+                "favorites", "favorites_1" -> {
+                    CuratedStations.deduplicateAndOptimize(
+                        repository.favorites1.value.filter {
+                            it.name.lowercase().contains(q) ||
+                            (it.tags?.lowercase()?.contains(q) == true) ||
+                            (it.country?.lowercase()?.contains(q) == true)
+                        }
+                    )
                 }
-                CuratedStations.deduplicateAndOptimize(curatedMatches + apiStations)
+                "favorites_2" -> {
+                    CuratedStations.deduplicateAndOptimize(
+                        repository.favorites2.value.filter {
+                            it.name.lowercase().contains(q) ||
+                            (it.tags?.lowercase()?.contains(q) == true) ||
+                            (it.country?.lowercase()?.contains(q) == true)
+                        }
+                    )
+                }
+                "favorites_3" -> {
+                    CuratedStations.deduplicateAndOptimize(
+                        repository.favorites3.value.filter {
+                            it.name.lowercase().contains(q) ||
+                            (it.tags?.lowercase()?.contains(q) == true) ||
+                            (it.country?.lowercase()?.contains(q) == true)
+                        }
+                    )
+                }
+                else -> {
+                    val curated = CuratedStations.load(getApplication())
+                    val curatedMatches = curated.filter {
+                        it.name.lowercase().contains(q) ||
+                        (it.tags?.lowercase()?.contains(q) == true) ||
+                        (it.country?.lowercase()?.contains(q) == true)
+                    }
+                    val apiStations = try {
+                        ApiClient.getApi().searchStations(query, 50)
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                    CuratedStations.deduplicateAndOptimize(curatedMatches + apiStations)
+                }
             }
             _stations.value = filterMaxBitrate(matches)
         } catch (e: Exception) {
@@ -261,11 +293,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         playStation(list[prevIndex])
     }
 
-    fun toggleFavorite(station: Station) {
-        repository.toggleFavorite(station)
-        if (_activeCategory.value == "favorites") {
-            _stations.value = repository.favorites.value
+    fun getFavoriteType(station: Station): Int {
+        return repository.getFavoriteType(station)
+    }
+
+    /**
+     * Cycles favorite state:
+     * 0 (Kein) -> 1 (❤️ Herz) -> 2 (💎 Diamant) -> 3 (⭐ Stern) -> 0 (Kein)
+     */
+    fun cycleFavorite(station: Station) {
+        repository.cycleFavorite(station)
+        when (_activeCategory.value) {
+            "favorites", "favorites_1" -> _stations.value = repository.favorites1.value
+            "favorites_2" -> _stations.value = repository.favorites2.value
+            "favorites_3" -> _stations.value = repository.favorites3.value
         }
+    }
+
+    fun toggleFavorite(station: Station) {
+        cycleFavorite(station)
     }
 
     fun clearHistory() {

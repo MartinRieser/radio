@@ -403,20 +403,25 @@ class RadioPlaybackService : MediaLibraryService() {
             val items = when (parentId) {
                 "root" -> {
                     listOf(
-                        buildFolderItem("featured", "⭐ Entdecken", "Kuratierte Sender"),
+                        buildFolderItem("featured", "📻 Entdecken", "Kuratierte Sender"),
+                        buildFolderItem("favorites_1", "❤️ Favoriten", "${repository.favorites1.value.size} gespeicherte Sender"),
+                        buildFolderItem("favorites_2", "💎 Diamant", "${repository.favorites2.value.size} gespeicherte Sender"),
+                        buildFolderItem("favorites_3", "⭐ Stern", "${repository.favorites3.value.size} gespeicherte Sender"),
                         buildFolderItem("adfree", "🛡️ Werbefrei", "Reine Musik ohne Werbung"),
-                        buildFolderItem("favorites", "❤️ Favoriten", "${repository.favorites.value.size} gespeicherte Sender"),
                         buildFolderItem("history", "🕒 Verlauf", "${repository.history.value.size} zuletzt gehörte Sender")
                     )
                 }
                 "featured" -> {
                     CuratedStations.load(this@RadioPlaybackService).map { buildPlayableItem(it) }
                 }
-                "adfree" -> {
-                    CuratedStations.load(this@RadioPlaybackService).filter { it.isAdFree() }.map { buildPlayableItem(it) }
+                "favorites_1", "favorites" -> {
+                    repository.favorites1.value.map { buildPlayableItem(it) }
                 }
-                "favorites" -> {
-                    repository.favorites.value.map { buildPlayableItem(it) }
+                "favorites_2" -> {
+                    repository.favorites2.value.map { buildPlayableItem(it) }
+                }
+                "favorites_3" -> {
+                    repository.favorites3.value.map { buildPlayableItem(it) }
                 }
                 "history" -> {
                     repository.history.value.map { buildPlayableItem(it) }

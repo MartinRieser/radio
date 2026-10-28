@@ -305,7 +305,7 @@ fun CarDriveModeScreen(
             if (favorites.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "❤️ Favoriten Schnellwahl",
+                        text = "Favoriten Schnellwahl",
                         color = TextSecondary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
@@ -316,6 +316,11 @@ fun CarDriveModeScreen(
                     ) {
                         items(favorites) { fav ->
                             val isSelected = fav.stationuuid == currentStation?.stationuuid
+                            val favEmoji = when (fav.getEffectiveFavoriteType()) {
+                                2 -> "💎"
+                                3 -> "⭐"
+                                else -> "❤️"
+                            }
                             Surface(
                                 onClick = { onSelectStation(fav) },
                                 shape = RoundedCornerShape(16.dp),
@@ -330,7 +335,7 @@ fun CarDriveModeScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = fav.name,
+                                        text = "$favEmoji ${fav.name}",
                                         color = if (isSelected) AccentPrimary else TextPrimary,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
