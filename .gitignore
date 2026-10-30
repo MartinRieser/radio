@@ -8,6 +8,8 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 /.idea/emulatorDisplays.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/inspectionProfiles/
 .DS_Store
 build/
 /build

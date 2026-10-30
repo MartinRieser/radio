@@ -91,4 +91,17 @@ class StationTest {
         val legacyFavStation = Station(name = "Station Legacy Fav", isFavorite = true, favoriteType = 0)
         assertEquals(1, legacyFavStation.getEffectiveFavoriteType())
     }
+
+    @Test
+    fun testIsSameStationAndNullUuidSafety() {
+        val stationA = Station(stationuuid = null, name = "Energy (Zürich)", url = "https://stream.energy.ch/zh")
+        val stationB = Station(stationuuid = null, name = "Energy (Basel)", url = "https://stream.energy.ch/bs")
+        val stationACopy = Station(stationuuid = null, name = "Energy (Zürich)", url = "https://stream.energy.ch/zh")
+
+        assertFalse("Different stations with null stationuuid must not match", stationA.isSameStation(stationB))
+        assertTrue("Identical stations with null stationuuid must match by URL", stationA.isSameStation(stationACopy))
+        assertFalse("Comparison with null must be false", stationA.isSameStation(null))
+        assertTrue("matchesIdOrUrl should match stream URL", stationA.matchesIdOrUrl("https://stream.energy.ch/zh"))
+        assertFalse("matchesIdOrUrl should not match null", stationA.matchesIdOrUrl(null))
+    }
 }

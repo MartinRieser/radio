@@ -59,6 +59,30 @@ data class Station(
     fun getEffectiveFavoriteType(): Int {
         return if (favoriteType in 1..3) favoriteType else if (isFavorite) 1 else 0
     }
+
+    fun isSameStation(other: Station?): Boolean {
+        if (other == null) return false
+        val u1 = stationuuid?.trim()?.takeIf { it.isNotBlank() }
+        val u2 = other.stationuuid?.trim()?.takeIf { it.isNotBlank() }
+        if (u1 != null && u2 != null) {
+            return u1.equals(u2, ignoreCase = true)
+        }
+        val url1 = getStreamUrl().trim()
+        val url2 = other.getStreamUrl().trim()
+        if (url1.isNotBlank() && url2.isNotBlank()) {
+            return url1.equals(url2, ignoreCase = true)
+        }
+        return name.trim().equals(other.name.trim(), ignoreCase = true)
+    }
+
+    fun matchesIdOrUrl(idOrUrl: String?): Boolean {
+        val target = idOrUrl?.trim()?.takeIf { it.isNotBlank() } ?: return false
+        val uuid = stationuuid?.trim()?.takeIf { it.isNotBlank() }
+        if (uuid != null && uuid.equals(target, ignoreCase = true)) return true
+        val streamUrl = getStreamUrl().trim()
+        return streamUrl.isNotBlank() && streamUrl.equals(target, ignoreCase = true)
+    }
+
     /**
      * Checks if this station is dedicated to continuous music with no news/commercial breaks.
      */

@@ -1,5 +1,6 @@
 package com.pulsecast.radio.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,20 +23,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,34 +62,26 @@ fun CarDriveModeScreen(
     isPlaying: Boolean,
     isBuffering: Boolean,
     trackTitle: String,
+    activeCategory: String,
     favorites1: List<Station>,
     favorites2: List<Station>,
     favorites3: List<Station>,
-    featuredStations: List<Station> = emptyList(),
+    activeStations: List<Station> = emptyList(),
     speedKmh: Float,
     reason: String,
     onExitClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
     onPrevClick: () -> Unit,
+    onSelectCategory: (String) -> Unit,
     onSelectStation: (Station) -> Unit
 ) {
-    // 0: 📻 Entdecken (No favorite list active), 1: ❤️ Hart, 2: 💎 Diamant, 3: ⭐ Stern
-    var selectedFavList by remember { mutableStateOf(0) }
-
-    val rawList = when (selectedFavList) {
-        1 -> favorites1
-        2 -> favorites2
-        3 -> favorites3
-        else -> emptyList()
-    }
-
-    val activeList = if (rawList.isNotEmpty()) rawList else featuredStations
-    val listLabel = when {
-        selectedFavList == 1 && favorites1.isNotEmpty() -> "❤️ Hart"
-        selectedFavList == 2 && favorites2.isNotEmpty() -> "💎 Diamant"
-        selectedFavList == 3 && favorites3.isNotEmpty() -> "⭐ Stern"
-        else -> "📻 Entdecken"
+    val listLabel = when (activeCategory) {
+        "favorites", "favorites_1" -> "❤️ Favoriten 1 (Herz)"
+        "favorites_2" -> "💎 Favoriten 2 (Diamant)"
+        "favorites_3" -> "⭐ Favoriten 3 (Stern)"
+        "featured" -> "📻 Entdecken"
+        else -> "📻 Aktive Liste ($activeCategory)"
     }
 
     Box(
@@ -149,7 +139,7 @@ fun CarDriveModeScreen(
                     onClick = onExitClick,
                     shape = RoundedCornerShape(20.dp),
                     color = Color(0xFF222B3E),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155))
+                    border = BorderStroke(1.dp, Color(0xFF334155))
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
@@ -184,7 +174,7 @@ fun CarDriveModeScreen(
                     modifier = Modifier.size(110.dp),
                     shape = RoundedCornerShape(22.dp),
                     color = BgSurface,
-                    border = androidx.compose.foundation.BorderStroke(2.dp, BorderAccent),
+                    border = BorderStroke(2.dp, BorderAccent),
                     shadowElevation = 16.dp
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -262,11 +252,16 @@ fun CarDriveModeScreen(
                 // Live Playback Status Badge
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF10B981).copy(alpha = 0.2f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF34D399))
+                    color = if (isPlaying) Color(0xFF10B981).copy(alpha = 0.2f) else Color(0xFF1E293B),
+                    border = BorderStroke(1.dp, if (isPlaying) Color(0xFF34D399) else Color(0xFF334155))
                 ) {
+                    val statusLabel = when {
+                        isBuffering -> "⏳ Verbinde…"
+                        isPlaying -> "🟢 Live Wiedergabe"
+                        else -> "⚪ Gestoppt"
+                    }
                     Text(
-                        text = if (isPlaying) "🟢 Live Wiedergabe" else "⚪ Pausiert",
+                        text = statusLabel,
                         color = if (isPlaying) Color(0xFF6EE7B7) else TextSecondary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
@@ -317,8 +312,8 @@ fun CarDriveModeScreen(
                         )
                     } else {
                         Icon(
-                            imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (isPlaying) "Pause" else "Abspielen",
+                            imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                            contentDescription = if (isPlaying) "Stoppen" else "Abspielen",
                             tint = BgMain,
                             modifier = Modifier.size(52.dp)
                         )
@@ -343,9 +338,8 @@ fun CarDriveModeScreen(
                 }
             }
 
-            // 4. Favorite List Selector & Quick Carousel
+            // 4. Synchronized List Selector & Quick Carousel
             Column(modifier = Modifier.fillMaxWidth()) {
-                // List Selector Pills
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -353,37 +347,29 @@ fun CarDriveModeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     listOf(
-                        1 to "❤️ Hart (${favorites1.size})",
-                        2 to "💎 Diamant (${favorites2.size})",
-                        3 to "⭐ Stern (${favorites3.size})"
-                    ).forEach { (listId, label) ->
-                        val isSelected = selectedFavList == listId
+                        Triple("featured", "📻 Alle", true),
+                        Triple("favorites_1", "❤️ (${favorites1.size})", favorites1.isNotEmpty()),
+                        Triple("favorites_2", "💎 (${favorites2.size})", favorites2.isNotEmpty()),
+                        Triple("favorites_3", "⭐ (${favorites3.size})", favorites3.isNotEmpty())
+                    ).forEach { (catId, label, hasItems) ->
+                        val isSelected = activeCategory == catId || (catId == "favorites_1" && activeCategory == "favorites")
                         Surface(
                             onClick = {
-                                if (isSelected) {
-                                    // Tapping active list toggles it off -> Returns to "Entdecken"
-                                    selectedFavList = 0
-                                    val targetStation = featuredStations.firstOrNull()
-                                    if (targetStation != null && targetStation.stationuuid != currentStation?.stationuuid) {
-                                        onSelectStation(targetStation)
-                                    }
-                                } else {
-                                    // Tapping inactive list activates it
-                                    selectedFavList = listId
-                                    val targetList = when (listId) {
-                                        1 -> if (favorites1.isNotEmpty()) favorites1 else featuredStations
-                                        2 -> if (favorites2.isNotEmpty()) favorites2 else featuredStations
-                                        else -> if (favorites3.isNotEmpty()) favorites3 else featuredStations
-                                    }
-                                    val targetStation = targetList.firstOrNull()
-                                    if (targetStation != null && targetStation.stationuuid != currentStation?.stationuuid) {
-                                        onSelectStation(targetStation)
-                                    }
+                                val targetCategory = if (isSelected && catId != "featured") "featured" else catId
+                                onSelectCategory(targetCategory)
+                                val targetList = when (targetCategory) {
+                                    "favorites_1" -> favorites1
+                                    "favorites_2" -> favorites2
+                                    "favorites_3" -> favorites3
+                                    else -> emptyList()
+                                }
+                                if (targetList.isNotEmpty() && targetList.none { it.isSameStation(currentStation) }) {
+                                    onSelectStation(targetList.first())
                                 }
                             },
                             shape = RoundedCornerShape(16.dp),
                             color = if (isSelected) AccentPrimary else Color(0xFF1E293B),
-                            border = androidx.compose.foundation.BorderStroke(
+                            border = BorderStroke(
                                 1.dp,
                                 if (isSelected) AccentPrimary else Color(0xFF334155)
                             ),
@@ -391,7 +377,11 @@ fun CarDriveModeScreen(
                         ) {
                             Text(
                                 text = label,
-                                color = if (isSelected) BgMain else TextSecondary,
+                                color = when {
+                                    isSelected -> BgMain
+                                    hasItems -> TextPrimary
+                                    else -> TextSecondary.copy(alpha = 0.5f)
+                                },
                                 fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 textAlign = TextAlign.Center,
@@ -401,11 +391,11 @@ fun CarDriveModeScreen(
                     }
                 }
 
-                // Carousel of active favorite / Entdecken list
-                if (activeList.isNotEmpty()) {
+                // Carousel of active station list
+                if (activeStations.isNotEmpty()) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = listLabel,
+                            text = "$listLabel (${activeStations.size})",
                             color = TextSecondary,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
@@ -414,13 +404,16 @@ fun CarDriveModeScreen(
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            items(activeList) { station ->
-                                val isSelected = station.stationuuid == currentStation?.stationuuid
+                            items(
+                                items = activeStations,
+                                key = { it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl() }
+                            ) { station ->
+                                val isSelected = station.isSameStation(currentStation)
                                 Surface(
                                     onClick = { onSelectStation(station) },
                                     shape = RoundedCornerShape(16.dp),
                                     color = if (isSelected) AccentPrimary.copy(alpha = 0.25f) else Color(0xFF1E293B),
-                                    border = androidx.compose.foundation.BorderStroke(
+                                    border = BorderStroke(
                                         1.dp,
                                         if (isSelected) AccentPrimary else Color(0xFF334155)
                                     )
@@ -442,6 +435,13 @@ fun CarDriveModeScreen(
                             }
                         }
                     }
+                } else {
+                    Text(
+                        text = "Diese Favoriten-Liste ist noch leer.",
+                        color = TextSecondary,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
             }
         }

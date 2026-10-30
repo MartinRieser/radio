@@ -38,19 +38,6 @@ class HistoryAndFavoritesRepository(context: Context) {
         loadAllFavorites()
     }
 
-    private fun stationKey(station: Station): String {
-        val uuid = station.stationuuid?.lowercase()?.trim() ?: ""
-        val url = station.getStreamUrl().lowercase().trim()
-        val cleanName = station.name.lowercase().split("(")[0].replace("fm", "").replace("radio", "").replace("hq", "").replace("orf", "").replace("|", "").trim()
-
-        return when {
-            cleanName.isNotBlank() -> "name:$cleanName"
-            uuid.isNotBlank() && uuid.length > 10 -> "uuid:$uuid"
-            else -> "url:$url"
-        }
-    }
-
-    // --- FAVORITES ("Hart wie Herz") ---
     private fun loadFavoritesList(prefKey: String, targetFavoriteType: Int): List<Station> {
         val json = prefs.getString(prefKey, null) ?: return emptyList()
         return try {
@@ -74,7 +61,13 @@ class HistoryAndFavoritesRepository(context: Context) {
     }
 
     private fun updateAllFavorites() {
-        _allFavorites.value = CuratedStations.deduplicateAndOptimize(_favorites1.value + _favorites2.value + _favorites3.value)
+        val combined = mutableListOf<Station>()
+        for (station in (_favorites1.value + _favorites2.value + _favorites3.value)) {
+            if (combined.none { it.isSameStation(station) }) {
+                combined.add(station)
+            }
+        }
+        _allFavorites.value = combined
     }
 
     /**
@@ -85,10 +78,9 @@ class HistoryAndFavoritesRepository(context: Context) {
      * 3 = Liste 3 (⭐ Stern)
      */
     fun getFavoriteType(station: Station): Int {
-        val key = stationKey(station)
-        if (_favorites1.value.any { stationKey(it) == key }) return 1
-        if (_favorites2.value.any { stationKey(it) == key }) return 2
-        if (_favorites3.value.any { stationKey(it) == key }) return 3
+        if (_favorites1.value.any { it.isSameStation(station) }) return 1
+        if (_favorites2.value.any { it.isSameStation(station) }) return 2
+        if (_favorites3.value.any { it.isSameStation(station) }) return 3
         return 0
     }
 
@@ -104,15 +96,13 @@ class HistoryAndFavoritesRepository(context: Context) {
     }
 
     fun setFavoriteType(station: Station, type: Int) {
-        val key = stationKey(station)
-
         val list1 = _favorites1.value.toMutableList()
         val list2 = _favorites2.value.toMutableList()
         val list3 = _favorites3.value.toMutableList()
 
-        list1.removeAll { stationKey(it) == key }
-        list2.removeAll { stationKey(it) == key }
-        list3.removeAll { stationKey(it) == key }
+        list1.removeAll { it.isSameStation(station) }
+        list2.removeAll { it.isSameStation(station) }
+        list3.removeAll { it.isSameStation(station) }
 
         when (type) {
             1 -> list1.add(0, station.copy(isFavorite = true, favoriteType = 1))

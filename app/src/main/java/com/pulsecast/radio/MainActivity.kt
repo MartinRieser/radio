@@ -1,9 +1,15 @@
 package com.pulsecast.radio
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,8 +27,9 @@ class MainActivity : ComponentActivity() {
 
     private val requestNotificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        // Notification permission granted or denied
+    ) { _ ->
+        // After notification permission dialog completes, ensure battery optimization is disabled for standby streaming
+        checkBatteryOptimizationExemption()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +37,9 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-        // Request notification permission on Android 13+ for foreground playback controls
-        checkNotificationPermission()
+        // Request notification permission on Android 13+ for foreground playback controls,
+        // and battery optimization exemption so playback never stops in phone standby.
+        checkNotificationAndStandbyPermissions()
 
         setContent {
             PulseCastTheme {
@@ -116,11 +124,26 @@ class MainActivity : ComponentActivity() {
         return super.dispatchKeyEvent(event)
     }
 
-    private fun checkNotificationPermission() {
+    private fun checkNotificationAndStandbyPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permission = Manifest.permission.POST_NOTIFICATIONS
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 requestNotificationPermissionLauncher.launch(permission)
+                return
+            }
+        }
+        checkBatteryOptimizationExemption()
+    }
+
+    @SuppressLint("BatteryLife")
+    private fun checkBatteryOptimizationExemption() {
+        runCatching {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as? PowerManager ?: return
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
             }
         }
     }

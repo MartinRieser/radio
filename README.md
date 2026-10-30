@@ -1,38 +1,44 @@
 # PulseCast – Native Android Radio App
 
-Eine moderne, native Android-Radio-App mit **Kotlin**, **Jetpack Compose** und **AndroidX Media3 (ExoPlayer)** für hochqualitatives, unterbrechungsfreies Internetradio im Hintergrund und auf dem Sperrbildschirm.
+[![Build Android APK & GitHub Release](https://github.com/MartinRieser/radio/actions/workflows/build-apk.yml/badge.svg)](https://github.com/MartinRieser/radio/actions/workflows/build-apk.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Android_8.0+_(API_26+)-brightgreen.svg)](https://android.com)
+
+Eine moderne, native Android-Radio-App entwickelt mit **Kotlin**, **Jetpack Compose** und **AndroidX Media3 (ExoPlayer)** für unterbrechungsfreies, erstklassiges Internetradio im Alltag, im Auto und im Hintergrund.
 
 ---
 
-## 🚀 Kernfunktionen
+## ✨ Highlights & Kernfunktionen
 
-1. **Modernste Audio-Engine (AndroidX Media3 & ExoPlayer)**:
-   - Robuste Wiedergabe von MP3, AAC, OGG, HLS (`.m3u8`) und Shoutcast/Icecast-Streams.
-   - **Hintergrund-Wiedergabe & Foreground Service**: Der Stream reißt nicht ab, wenn der Bildschirm ausgeschaltet oder andere Apps genutzt werden.
-   - **Sperrbildschirm & Benachrichtigungs-Steuerung**: Volle Integration in die Android-Mediensteuerung (Play/Pause, Vorheriger, Nächster).
-   - **Automatisches Audio-Focus-Management**: Pausiert bei eingehenden Anrufen und dämpft („ducking“) bei Navigationsansagen.
-   - **Headphones Becoming Noisy**: Pausiert automatisch beim Abziehen von Kopfhörern oder Trennen von Bluetooth.
-   - **ICY Live-Metadaten**: Zeigt den aktuellen Songtitel und Interpreten in Echtzeit an.
+### 1. 🛑 Direkte Play/Stop-Steuerung (Keine Hintergrund-Pufferung)
+- **Echte Live-Radio-Kontrolle**: Ist ein Stream aktiv, zeigen die Senderkarte, die Mini-Player-Leiste und der Automodus sofort den **Stop-Button** (`Icons.Default.Stop`). Ist kein Stream aktiv, erscheint der **Play-Button** (`Icons.Default.PlayArrow`).
+- **Keine Datenverschwendung durch Pause-Pufferung**: Ein Antippen von Stop beendet die Netzwerkverbindung unmittelbar und verwirft Zwischenpuffer. Beim erneuten Starten verbindet sich PulseCast direkt frisch mit der aktuellen Live-Kante des Senders – ohne Verzögerung und ohne unbemerktes Weiterpuffernd im Hintergrund.
 
-2. **Wiedergabeverlauf (> 1 Minute Regel)**:
-   - Ein Sender wird **nur dann** im Verlauf gespeichert, wenn die Abspielzeit mindestens **1 Minute (60 Sekunden)** beträgt.
-   - Kürzere Abspielzeiten werden streng ignoriert.
-   - **Unbegrenzte Kapazität** – keine Beschränkung der Senderanzahl.
-   - Zuletzt gehörte Sender stehen ganz oben mit relativer Zeitangabe (*„vor 5 Min.“*, *„Gestern“*).
-   - Eigene Schaltfläche zum Leeren des Verlaufs.
+### 2. 💎 Drei separate Favoritenlisten (Herz, Diamant, Stern)
+- **Organisierte Favoriten**: Sender können flexibel in bis zu drei separaten Listen verwaltet werden:
+  - ❤️ **Favoriten 1 (Herz)**
+  - 💎 **Favoriten 2 (Diamant)**
+  - ⭐ **Favoriten 3 (Stern)**
+- **Intuitive Zuweisung**: Über das Menü an jeder Senderkarte lässt sich mit einem Fingertipp zwischen den Listen wechseln oder ein Sender entfernen.
+- **Schnellfilter & Zähler**: Filter-Chips mit Live-Zählern (z. B. `❤️ Herz (20)`, `💎 Diamant (5)`) erlauben blitzschnellen Zugriff auf die gewünschte Sammlung.
 
-3. **Pre-Roll Werbe-Erkennung**:
-   - Automatische Erkennung von Werbenetzwerken (AdsWizz, TargetSpot, StreamTheWorld) vs. werbefreien öffentlich-rechtlichen & Community-Sendern (SomaFM, ORF, SRG SSR, SWR, BR, WDR, BBC, FIP).
-   - Badges: `🛡️ Werbefrei` vs `⚠️ Pre-Roll`.
+### 3. 🚗 Automodus & Android Auto
+- **Große Bedienelemente (Car Drive Mode)**: Speziell für sichere Bedienung im Fahrzeug mit extragroßen Schaltflächen, senderübergreifender Favoritenauswahl und integrierter Geschwindigkeitsanzeige (`km/h`).
+- **Native Android Auto Unterstützung**: Vollständige Integration als Android Auto Audio-App über `MediaLibraryService` (`RadioPlaybackService`) inklusive durchsuchbarer Senderlisten und Fahrzeugdisplay-Cover-Art.
+- **Lenkrad- & Bluetooth-Steuerung**: Hardware-Tasten (Nächster/Vorheriger Sender, Play/Pause/Mute, Headset-Hooks) werden auf Senderweiterschaltung und Stream-Steuerung gemappt.
 
-4. **Kategorien & Sender-Verzeichnis**:
-   - **Featured**: 19 handverlesene europäische & weltweite Top-Sender (offline sofort verfügbar).
-   - **Trending / Top Click**: Die beliebtesten weltweiten Sender über die Radio-Browser-API.
-   - **Genre-Tabs**: Chillout, Pop, Rock, Jazz, Electronic.
-   - **Live-Suche**: Schnelle Echtzeit-Suche nach Sendernamen, Genres und Ländern.
+### 4. 🔋 Zuverlässiger Standby-Betrieb
+- **Unterbrechungsfreier Hintergrundbetrieb**: Dank `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `WAKE_LOCK` und `WIFI_MODE_FULL_LOW_LATENCY` läuft der Stream auch bei ausgeschaltetem Bildschirm stabil weiter.
+- **Ausnahme von der Akku-Optimierung**: Erkennt moderne Android Doze-Modi und bittet um Deaktivierung der Akku-Einschränkungen, damit der Stream nicht vom System gekillt wird.
+- **Automatische Wiederverbindung**: Bei Netzwechseln (z. B. Wechsel von WLAN auf Mobilfunk) stellt PulseCast die Verbindung automatisch wieder her.
 
-5. **Sleep Timer**:
-   - Schlummerfunktion für 15, 30, 45, 60 oder 90 Minuten mit Countdown-Anzeige.
+### 5. 📻 Riesiges Senderverzeichnis & Live-Metadaten
+- **Kuratierte Sender**: Handverlesene Top-Sender aus Deutschland, Österreich, der Schweiz und weltweit mit geprüften HTTPS-Streams und Bitraten bis 320 kbps.
+- **Radio-Browser API Integration**: Globale Suche nach Sendernamen, Genres und Ländern mit automatischer Deduplizierung.
+- **ICY Live-Metadaten**: Formatierte Anzeige von aktuellem Titel und Interpret in Echtzeit.
+
+### 6. 🔄 Integrierter In-App Updater
+- PulseCast prüft automatisch auf neue Releases auf GitHub und ermöglicht den direkten Download und die Installation neuer APK-Versionen direkt aus der App heraus.
 
 ---
 
@@ -40,68 +46,73 @@ Eine moderne, native Android-Radio-App mit **Kotlin**, **Jetpack Compose** und *
 
 ```
 app/src/main/java/com/pulsecast/radio/
-├── MainActivity.kt               # Entry-Activity & Permission Request (POST_NOTIFICATIONS)
-├── PulseCastApp.kt               # Application-Klasse (Notification-Channels)
+├── MainActivity.kt               # Entry-Activity, Edge-to-Edge & Berechtigungs-Management
+├── PulseCastApp.kt               # Application-Klasse & Media-Notification-Channel
 ├── model/
-│   └── Station.kt                # Sender-Datenmodell & Hilfsmethoden
+│   └── Station.kt                # Sender-Modell, URL-Validierung, Deduplizierung & Flags
 ├── data/
-│   ├── CuratedStations.kt        # Handverlesene Sender aus assets/curated_stations.json
-│   ├── RadioBrowserApi.kt        # Retrofit-API für das Radio-Browser-Netzwerk
-│   ├── ApiClient.kt              # HTTP-Client mit Spiegelserver-Rotation
-│   └── HistoryAndFavoritesRepository.kt # Persistierung von Favoriten & 60s-Verlauf
+│   ├── CuratedStations.kt        # Lokale kuratierte Sender-Datenbank (curated_stations.json)
+│   ├── RadioBrowserApi.kt        # Retrofit-Schnittstelle zur Radio-Browser API
+│   ├── ApiClient.kt              # HTTP-Client mit resilienter Server-Rotation
+│   └── HistoryAndFavoritesRepository.kt # Persistenz der 3 Favoritenlisten
 ├── playback/
-│   ├── RadioPlaybackService.kt   # MediaSessionService (Media3 + ExoPlayer im Hintergrund)
-│   └── PlaybackController.kt     # Verbindung zur UI, Live-Timer & 60s-Verlaufstracker
+│   ├── RadioPlaybackService.kt   # MediaLibraryService mit ForwardingPlayer & Bluetooth/Car Controls
+│   ├── PlaybackController.kt     # Client-Controller für UI-Interaktion & Live-Timer
+│   ├── RadioPlaybackBridge.kt    # Schnittstelle für Car-Mode & Service-Synchronisation
+│   └── RadioMetadataFormatter.kt # Bereinigung & Formatierung von ICY-Metadaten
+├── updater/
+│   └── AppUpdateManager.kt       # GitHub Release Check & In-App APK Download
 └── ui/
-    ├── theme/                    # PulseCast Neon-Dark-Theme (Material 3)
+    ├── theme/                    # Material 3 Neon-Dark Theme & Typografie
     ├── components/
-    │   ├── StationCard.kt        # Senderkarte mit Equalizer-Animation & Badges
-    │   ├── PlayerBar.kt          # Feste Mini-Player-Leiste am unteren Bildschirmrand
-    │   └── SleepTimerDialog.kt   # Dialog zur Auswahl des Sleep-Timers
-    ├── viewmodel/
-    │   └── MainViewModel.kt      # Zentraler StateHolder für Compose
-    └── screens/
-        └── HomeScreen.kt         # Hauptbildschirm mit Suche, Pills & Senderliste
+    │   ├── StationCard.kt        # Senderkarte mit Play/Stop-Logik & Favoriten-Popup
+    │   ├── PlayerBar.kt          # Schlanke Mini-Player-Leiste mit Live-Status
+    │   └── AppUpdateDialog.kt    # Update-Benachrichtigung & Download-Dialog
+    ├── screens/
+    │   ├── HomeScreen.kt         # Hauptansicht (Suche, Favoriten-Tabs, Senderliste)
+    │   └── CarDriveModeScreen.kt # Kontraststarke Großtasten-Ansicht fürs Auto
+    └── viewmodel/
+        └── MainViewModel.kt      # StateHolder & Business Logic für die UI
 ```
 
 ---
 
-## 📱 Projekt in Android Studio öffnen & bauen
+## 🚀 Bauen & Installieren
 
-1. Starten Sie **Android Studio**.
-2. Wählen Sie **File > Open** und wählen Sie das geklonte Projektverzeichnis `radio` aus.
-3. Android Studio erkennt das Gradle-Projekt automatisch und lädt die Abhängigkeiten herunter.
-4. Schließen Sie Ihr Android-Smartphone per USB an (mit aktiviertem **USB-Debugging**) oder starten Sie einen Emulator.
-5. Drücken Sie den grünen **Play-Button (Run 'app')** in Android Studio.
+### Voraussetzungen
+- Android SDK 35
+- JDK 17
+- Gradle 9+ (über den mitgelieferten Gradle Wrapper `gradlew`)
 
----
-
-## 📦 APK bauen ohne Android Studio (Kommandozeile)
-
-Wenn Java / JDK auf Ihrem Rechner installiert ist:
-
+### 1. APK über die Kommandozeile bauen
 ```bash
-# Debug-APK erstellen:
+# Debug APK erstellen:
 ./gradlew assembleDebug
 
-# Die fertige APK liegt unter:
+# Die generierte APK befindet sich unter:
 # app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Installation auf dem Smartphone (Sideloading ohne Play Store):
+### 2. Auf verbundenem Android-Smartphone installieren
+```bash
+# Per ADB direkt auf das Gerät aufspielen:
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 
-1. **Per USB (ADB)**:
-   ```bash
-   adb install -r app/build/outputs/apk/debug/app-debug.apk
-   ```
-2. **Per Smartphone-Download**:
-   - Starten Sie am PC einen lokalen Server:
-     ```bash
-     python -m http.server 8088
-     ```
-   - Öffnen Sie am Smartphone-Browser: `http://<IP-Ihres-PCs>:8088/app/build/outputs/apk/debug/app-debug.apk`.
-   - Datei antippen und installieren.
+# Alternativ das beiliegende Windows-Skript verwenden:
+update_and_install.bat
+```
 
+### 3. Automatische GitHub Actions Builds
+Jeder Push auf den Branch `android-native` oder `main` baut über `.github/workflows/build-apk.yml` automatisch die APK und erstellt ein GitHub Release mit Download-Link.
+
+---
+
+## 🧪 Tests ausführen
+
+```bash
+# Unit-Tests starten:
+./gradlew testDebugUnitTest
+```
 
 ---
 

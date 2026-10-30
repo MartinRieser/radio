@@ -14,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -37,12 +36,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    // 3 Favorite lists ("Hart", "Diamant", "Stern")
+    // 3 Favorite lists ("Herz", "Diamant", "Stern")
     val favorites1 = repository.favorites1
     val favorites2 = repository.favorites2
     val favorites3 = repository.favorites3
     val allFavorites = repository.allFavorites
-    val favorites = repository.allFavorites // Alias
+    val favorites = repository.allFavorites
 
     private var searchJob: Job? = null
 
@@ -65,6 +64,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     init {
+        // Register callbacks for Bluetooth steering wheel / Car Media buttons
+        RadioPlaybackBridge.onPlayNext = { playNext() }
+        RadioPlaybackBridge.onPlayPrevious = { playPrevious() }
+
+        // Keep RadioPlaybackBridge station list continuously in sync with selected list
+        viewModelScope.launch {
+            _stations.collect { list ->
+                RadioPlaybackBridge.updateStationList(list)
+            }
+        }
+
+        // Keep RadioPlaybackBridge current station continuously in sync
+        viewModelScope.launch {
+            playbackController.currentStation.collect { station ->
+                RadioPlaybackBridge.updateCurrentStation(station)
+            }
+        }
+
         loadCategory("featured")
         checkForAppUpdate()
     }
@@ -128,16 +145,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         CuratedStations.load(getApplication())
                     }
                     "favorites", "favorites_1" -> {
-                        CuratedStations.deduplicateAndOptimize(repository.favorites1.value)
+                        repository.favorites1.value
                     }
                     "favorites_2" -> {
-                        CuratedStations.deduplicateAndOptimize(repository.favorites2.value)
+                        repository.favorites2.value
                     }
                     "favorites_3" -> {
-                        CuratedStations.deduplicateAndOptimize(repository.favorites3.value)
+                        repository.favorites3.value
                     }
                     else -> {
-                        // Tag based
                         val apiStations = ApiClient.getApi().getStationsByTag(category, 50)
                         CuratedStations.deduplicateAndOptimize(apiStations)
                     }
@@ -166,31 +182,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val q = query.lowercase().trim()
             val matches = when (_activeCategory.value) {
                 "favorites", "favorites_1" -> {
-                    CuratedStations.deduplicateAndOptimize(
-                        repository.favorites1.value.filter {
-                            it.name.lowercase().contains(q) ||
-                            (it.tags?.lowercase()?.contains(q) == true) ||
-                            (it.country?.lowercase()?.contains(q) == true)
-                        }
-                    )
+                    repository.favorites1.value.filter {
+                        it.name.lowercase().contains(q) ||
+                        (it.tags?.lowercase()?.contains(q) == true) ||
+                        (it.country?.lowercase()?.contains(q) == true)
+                    }
                 }
                 "favorites_2" -> {
-                    CuratedStations.deduplicateAndOptimize(
-                        repository.favorites2.value.filter {
-                            it.name.lowercase().contains(q) ||
-                            (it.tags?.lowercase()?.contains(q) == true) ||
-                            (it.country?.lowercase()?.contains(q) == true)
-                        }
-                    )
+                    repository.favorites2.value.filter {
+                        it.name.lowercase().contains(q) ||
+                        (it.tags?.lowercase()?.contains(q) == true) ||
+                        (it.country?.lowercase()?.contains(q) == true)
+                    }
                 }
                 "favorites_3" -> {
-                    CuratedStations.deduplicateAndOptimize(
-                        repository.favorites3.value.filter {
-                            it.name.lowercase().contains(q) ||
-                            (it.tags?.lowercase()?.contains(q) == true) ||
-                            (it.country?.lowercase()?.contains(q) == true)
-                        }
-                    )
+                    repository.favorites3.value.filter {
+                        it.name.lowercase().contains(q) ||
+                        (it.tags?.lowercase()?.contains(q) == true) ||
+                        (it.country?.lowercase()?.contains(q) == true)
+                    }
                 }
                 else -> {
                     val curated = CuratedStations.load(getApplication())
@@ -218,28 +228,66 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Standard radio player behavior when tapping a station card:
+     * - If it's a different station, start playing it immediately.
+     * - If it's already the active station and streaming, stop the stream.
+     * - If it's the active station but stopped, start playing it.
+     */
+    fun onStationCardClick(station: Station) {
+        val current = playbackController.currentStation.value
+        val isStreaming = playbackController.isPlaying.value || playbackController.isBuffering.value
+        if (current != null && station.isSameStation(current)) {
+            if (isStreaming) {
+                playbackController.stopStream()
+            } else {
+                playbackController.playStation(station)
+            }
+        } else {
+            playbackController.playStation(station)
+        }
+    }
+
     fun playStation(station: Station) {
         playbackController.playStation(station)
     }
 
     fun togglePlayPause() {
-        playbackController.togglePlayPause()
+        playbackController.togglePlayStop()
+    }
+
+    fun stopStream() {
+        playbackController.stopStream()
+    }
+
+    fun stopPlayback() {
+        playbackController.stop()
+    }
+
+    /**
+     * Resolves the currently active station list so Next / Previous always
+     * step through the currently selected list (e.g. Favoriten 1, 2, 3, Genre, or Entdecken).
+     */
+    private fun getActiveStationList(): List<Station> {
+        val currentList = _stations.value
+        if (currentList.isNotEmpty()) return currentList
+        return filterMaxBitrate(CuratedStations.load(getApplication()))
     }
 
     fun playNext() {
-        val list = _stations.value
+        val list = getActiveStationList()
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
-        val currentIndex = list.indexOfFirst { it.stationuuid == current?.stationuuid || it.getStreamUrl() == current?.getStreamUrl() }
+        val currentIndex = list.indexOfFirst { it.isSameStation(current) }
         val nextIndex = if (currentIndex >= 0) (currentIndex + 1) % list.size else 0
         playStation(list[nextIndex])
     }
 
     fun playPrevious() {
-        val list = _stations.value
+        val list = getActiveStationList()
         if (list.isEmpty()) return
         val current = playbackController.currentStation.value
-        val currentIndex = list.indexOfFirst { it.stationuuid == current?.stationuuid || it.getStreamUrl() == current?.getStreamUrl() }
+        val currentIndex = list.indexOfFirst { it.isSameStation(current) }
         val prevIndex = if (currentIndex > 0) currentIndex - 1 else list.size - 1
         playStation(list[prevIndex])
     }
@@ -265,6 +313,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
+        if (RadioPlaybackBridge.onPlayNext != null) {
+            RadioPlaybackBridge.onPlayNext = null
+            RadioPlaybackBridge.onPlayPrevious = null
+        }
         carDriveModeManager.unregister()
         playbackController.release()
     }

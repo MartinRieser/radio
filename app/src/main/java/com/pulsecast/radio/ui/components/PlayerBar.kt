@@ -3,8 +3,8 @@ package com.pulsecast.radio.ui.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,17 +19,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.Diamond
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pulsecast.radio.model.Station
+import com.pulsecast.radio.ui.theme.AccentFav
 import com.pulsecast.radio.ui.theme.AccentPrimary
 import com.pulsecast.radio.ui.theme.BgMain
 import com.pulsecast.radio.ui.theme.BgSurface
@@ -59,10 +68,14 @@ fun PlayerBar(
     isBuffering: Boolean,
     liveSeconds: Int,
     trackTitle: String,
+    favoriteType: Int = 0,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
-    onPrevClick: () -> Unit
+    onPrevClick: () -> Unit,
+    onSetFavoriteType: (Int) -> Unit = {}
 ) {
+    var showFavMenu by remember { mutableStateOf(false) }
+
     AnimatedVisibility(
         visible = station != null,
         enter = slideInVertically(initialOffsetY = { it }),
@@ -78,11 +91,11 @@ fun PlayerBar(
         ) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(18.dp),
                 color = BgSurface,
                 tonalElevation = 8.dp,
-                shadowElevation = 12.dp,
-                border = androidx.compose.foundation.BorderStroke(1.dp, BorderAccent)
+                shadowElevation = 14.dp,
+                border = BorderStroke(1.dp, BorderAccent)
             ) {
                 Row(
                     modifier = Modifier
@@ -90,7 +103,7 @@ fun PlayerBar(
                         .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val iconUrl = androidx.compose.runtime.remember(station.favicon, station.getStreamUrl()) {
+                    val iconUrl = remember(station.favicon, station.getStreamUrl()) {
                         val fav = station.favicon?.trim() ?: ""
                         if (fav.isNotBlank() && !fav.contains("favicon.ico")) {
                             if (fav.startsWith("http://")) fav.replace("http://", "https://") else fav
@@ -141,7 +154,7 @@ fun PlayerBar(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
-                    // Station Info & Track Title
+                    // Station Info & Track Title / Playback Status
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
@@ -156,9 +169,9 @@ fun PlayerBar(
 
                         Spacer(modifier = Modifier.height(2.dp))
 
-                        if (trackTitle.isNotBlank()) {
+                        if (isPlaying && trackTitle.isNotBlank()) {
                             Text(
-                                text = trackTitle,
+                                text = "🎵 $trackTitle",
                                 color = AccentPrimary,
                                 fontSize = 12.sp,
                                 maxLines = 1,
@@ -169,20 +182,29 @@ fun PlayerBar(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                // Live Status Dot
+                                val dotColor = when {
+                                    isBuffering -> Color(0xFFF59E0B)
+                                    isPlaying -> Color(0xFF10B981)
+                                    else -> TextMuted
+                                }
                                 Box(
                                     modifier = Modifier
                                         .size(6.dp)
                                         .clip(CircleShape)
-                                        .background(if (isPlaying) Color(0xFF10B981) else TextMuted)
+                                        .background(dotColor)
                                 )
                                 val formattedTime = String.format(
                                     "%02d:%02d",
                                     (liveSeconds % 3600) / 60,
                                     liveSeconds % 60
                                 )
+                                val statusText = when {
+                                    isBuffering -> "Verbinde…"
+                                    isPlaying -> "LIVE • $formattedTime"
+                                    else -> "Gestoppt"
+                                }
                                 Text(
-                                    text = if (isBuffering) "BUFFERING..." else "LIVE $formattedTime",
+                                    text = statusText,
                                     color = if (isBuffering) Color(0xFFF59E0B) else TextSecondary,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium
@@ -191,50 +213,84 @@ fun PlayerBar(
                         }
                     }
 
-                    // Controls: Prev, Play/Pause, Next
+                    // Standard Player Controls: Favorite, Prev, Play/Pause, Next
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
-                        IconButton(onClick = onPrevClick, modifier = Modifier.size(36.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.SkipPrevious,
-                                contentDescription = "Vorheriger Sender",
-                                tint = TextSecondary,
-                                modifier = Modifier.size(22.dp)
+                        val (favIcon, favColor, favDesc) = when (favoriteType) {
+                            1 -> Triple(Icons.Default.Favorite, AccentFav, "Favorit Liste 1 (Herz)")
+                            2 -> Triple(Icons.Default.Diamond, Color(0xFF06B6D4), "Favorit Liste 2 (Diamant)")
+                            3 -> Triple(Icons.Default.Star, Color(0xFFFBBF24), "Favorit Liste 3 (Stern)")
+                            else -> Triple(Icons.Default.FavoriteBorder, TextSecondary, "Zu Favoriten hinzufügen")
+                        }
+
+                        Box {
+                            IconButton(
+                                onClick = { showFavMenu = true },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = favIcon,
+                                    contentDescription = favDesc,
+                                    tint = favColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            FavoriteListPickerMenu(
+                                expanded = showFavMenu,
+                                currentFavType = favoriteType,
+                                onDismiss = { showFavMenu = false },
+                                onSelectType = { newType ->
+                                    showFavMenu = false
+                                    onSetFavoriteType(newType)
+                                }
                             )
                         }
 
-                        Box(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .clip(CircleShape)
-                                .background(AccentPrimary)
-                                .clickable(onClick = onPlayPauseClick),
-                            contentAlignment = Alignment.Center
+                        // Previous Station
+                        IconButton(onClick = onPrevClick, modifier = Modifier.size(38.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.SkipPrevious,
+                                contentDescription = "Vorheriger Sender",
+                                tint = TextPrimary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        // Play / Pause Button
+                        Surface(
+                            onClick = onPlayPauseClick,
+                            shape = CircleShape,
+                            color = AccentPrimary,
+                            modifier = Modifier.size(44.dp)
                         ) {
-                            if (isBuffering) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = BgMain,
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                    contentDescription = if (isPlaying) "Pause" else "Abspielen",
-                                    tint = BgMain,
-                                    modifier = Modifier.size(24.dp)
-                                )
+                            Box(contentAlignment = Alignment.Center) {
+                                if (isBuffering) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = BgMain,
+                                        strokeWidth = 2.5.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                        contentDescription = if (isPlaying) "Stoppen" else "Abspielen",
+                                        tint = BgMain,
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                }
                             }
                         }
 
-                        IconButton(onClick = onNextClick, modifier = Modifier.size(36.dp)) {
+                        // Next Station
+                        IconButton(onClick = onNextClick, modifier = Modifier.size(38.dp)) {
                             Icon(
                                 imageVector = Icons.Default.SkipNext,
                                 contentDescription = "Nächster Sender",
-                                tint = TextSecondary,
-                                modifier = Modifier.size(22.dp)
+                                tint = TextPrimary,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }

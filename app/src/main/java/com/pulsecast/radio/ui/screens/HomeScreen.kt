@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,12 +29,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -46,9 +43,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +52,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pulsecast.radio.model.Station
@@ -80,7 +77,6 @@ fun HomeScreen(viewModel: MainViewModel) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val stations by viewModel.stations.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
 
     val favorites1 by viewModel.favorites1.collectAsState()
     val favorites2 by viewModel.favorites2.collectAsState()
@@ -102,22 +98,34 @@ fun HomeScreen(viewModel: MainViewModel) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    val currentStationFavType = remember(currentStation, favorites1, favorites2, favorites3) {
+        val st = currentStation ?: return@remember 0
+        when {
+            favorites1.any { it.isSameStation(st) } -> 1
+            favorites2.any { it.isSameStation(st) } -> 2
+            favorites3.any { it.isSameStation(st) } -> 3
+            else -> 0
+        }
+    }
+
     if (isCarModeActive) {
         CarDriveModeScreen(
             currentStation = currentStation,
             isPlaying = isPlaying,
             isBuffering = isBuffering,
             trackTitle = trackTitle,
+            activeCategory = activeCategory,
             favorites1 = favorites1,
             favorites2 = favorites2,
             favorites3 = favorites3,
-            featuredStations = stations,
+            activeStations = stations,
             speedKmh = currentSpeedKmh,
             reason = carConnectionReason,
             onExitClick = { viewModel.exitCarMode() },
             onPlayPauseClick = { viewModel.togglePlayPause() },
             onNextClick = { viewModel.playNext() },
             onPrevClick = { viewModel.playPrevious() },
+            onSelectCategory = { viewModel.selectCategory(it) },
             onSelectStation = { viewModel.playStation(it) }
         )
     } else {
@@ -131,23 +139,25 @@ fun HomeScreen(viewModel: MainViewModel) {
                     isBuffering = isBuffering,
                     liveSeconds = liveSeconds,
                     trackTitle = trackTitle,
+                    favoriteType = currentStationFavType,
                     onPlayPauseClick = { viewModel.togglePlayPause() },
                     onNextClick = { viewModel.playNext() },
-                    onPrevClick = { viewModel.playPrevious() }
+                    onPrevClick = { viewModel.playPrevious() },
+                    onSetFavoriteType = { newType ->
+                        currentStation?.let { viewModel.setFavoriteType(it, newType) }
+                    }
                 )
             }
         ) { paddingValues ->
             if (isLandscape) {
-                // Landscape Layout: 2-Column Split View
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
-                    // Left Column: Controls & Category Navigation
                     Column(
                         modifier = Modifier
-                            .width(310.dp)
+                            .width(300.dp)
                             .fillMaxHeight()
                             .verticalScroll(rememberScrollState())
                             .padding(bottom = 8.dp)
@@ -157,12 +167,10 @@ fun HomeScreen(viewModel: MainViewModel) {
                             onCarModeClick = { viewModel.toggleCarMode() }
                         )
 
-                        SearchAndFilterBar(
+                        SearchBarView(
                             query = searchQuery,
-                            activeCategory = activeCategory,
                             onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                            onClear = { viewModel.clearSearch() },
-                            onSelectCategory = { viewModel.selectCategory(it) }
+                            onClear = { viewModel.clearSearch() }
                         )
 
                         Spacer(modifier = Modifier.height(6.dp))
@@ -182,7 +190,6 @@ fun HomeScreen(viewModel: MainViewModel) {
                         thickness = 1.dp
                     )
 
-                    // Right Column: Station List
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -196,18 +203,20 @@ fun HomeScreen(viewModel: MainViewModel) {
                         StationListContent(
                             isLoading = isLoading,
                             stations = stations,
+                            favorites1 = favorites1,
+                            favorites2 = favorites2,
+                            favorites3 = favorites3,
                             activeCategory = activeCategory,
                             searchQuery = searchQuery,
                             currentStation = currentStation,
                             isPlaying = isPlaying,
-                            onPlayStation = { viewModel.playStation(it) },
-                            getFavoriteType = { viewModel.getFavoriteType(it) },
-                            onFavoriteCycle = { viewModel.cycleFavorite(it) }
+                            isBuffering = isBuffering,
+                            onStationClick = { viewModel.onStationCardClick(it) },
+                            onSetFavoriteType = { station, type -> viewModel.setFavoriteType(station, type) }
                         )
                     }
                 }
             } else {
-                // Portrait Layout: Single Column View
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -219,16 +228,14 @@ fun HomeScreen(viewModel: MainViewModel) {
                         onCarModeClick = { viewModel.toggleCarMode() }
                     )
 
-                    // 2. Search & Genre Filter Bar
-                    SearchAndFilterBar(
+                    // 2. Search Bar
+                    SearchBarView(
                         query = searchQuery,
-                        activeCategory = activeCategory,
                         onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                        onClear = { viewModel.clearSearch() },
-                        onSelectCategory = { viewModel.selectCategory(it) }
+                        onClear = { viewModel.clearSearch() }
                     )
 
-                    // 3. Category Tabs
+                    // 3. Scrollable Category & Genre Chips
                     CategoryTabs(
                         activeCategory = activeCategory,
                         fav1Count = favorites1.size,
@@ -252,13 +259,16 @@ fun HomeScreen(viewModel: MainViewModel) {
                         StationListContent(
                             isLoading = isLoading,
                             stations = stations,
+                            favorites1 = favorites1,
+                            favorites2 = favorites2,
+                            favorites3 = favorites3,
                             activeCategory = activeCategory,
                             searchQuery = searchQuery,
                             currentStation = currentStation,
                             isPlaying = isPlaying,
-                            onPlayStation = { viewModel.playStation(it) },
-                            getFavoriteType = { viewModel.getFavoriteType(it) },
-                            onFavoriteCycle = { viewModel.cycleFavorite(it) }
+                            isBuffering = isBuffering,
+                            onStationClick = { viewModel.onStationCardClick(it) },
+                            onSetFavoriteType = { station, type -> viewModel.setFavoriteType(station, type) }
                         )
                     }
                 }
@@ -292,7 +302,6 @@ private fun HeaderView(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left: Branding
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -324,39 +333,29 @@ private fun HeaderView(
             }
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Center/Right: Giant Full-Width Auto Drive Mode Button
         Surface(
             onClick = onCarModeClick,
-            shape = RoundedCornerShape(22.dp),
-            color = if (isCarModeActive) Color(0xFF10B981) else Color(0xFF10B981).copy(alpha = 0.22f),
-            border = BorderStroke(1.5.dp, if (isCarModeActive) Color(0xFF34D399) else Color(0xFF059669)),
-            modifier = Modifier
-                .weight(1f)
-                .height(44.dp)
+            shape = RoundedCornerShape(20.dp),
+            color = if (isCarModeActive) Color(0xFF10B981) else Color(0xFF10B981).copy(alpha = 0.18f),
+            border = BorderStroke(1.dp, if (isCarModeActive) Color(0xFF34D399) else Color(0xFF059669))
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.DirectionsCar,
                     contentDescription = "Automodus",
                     tint = if (isCarModeActive) BgMain else Color(0xFF34D399),
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = if (isCarModeActive) "AUTOMODUS AKTIV" else "AUTOMODUS",
+                    text = "Automodus",
                     color = if (isCarModeActive) BgMain else Color(0xFF34D399),
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    maxLines = 1
                 )
             }
         }
@@ -364,130 +363,74 @@ private fun HeaderView(
 }
 
 @Composable
-private fun SearchAndFilterBar(
+private fun SearchBarView(
     query: String,
-    activeCategory: String,
     onQueryChange: (String) -> Unit,
-    onClear: () -> Unit,
-    onSelectCategory: (String) -> Unit
+    onClear: () -> Unit
 ) {
-    val genres = listOf(
-        "pop" to "Pop & Hits",
-        "rock" to "Rock & Metal",
-        "electronic" to "Electronic & Dance",
-        "chillout" to "Chillout & Ambient",
-        "jazz" to "Jazz & Blues",
-        "classical" to "Klassik & Mosaik",
-        "hiphop" to "Hip-Hop & Rap",
-        "alternative" to "Alternative & Indie",
-        "retro" to "80s & 90s Oldies"
-    )
-
-    var genreMenuExpanded by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Search Box
-        OutlinedTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            placeholder = {
-                Text(
-                    text = "Sender oder Genre suchen…",
-                    color = TextMuted,
-                    fontSize = 13.sp
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    tint = TextMuted,
-                    modifier = Modifier.size(18.dp)
-                )
-            },
-            trailingIcon = {
-                if (query.isNotEmpty()) {
-                    IconButton(onClick = onClear) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Löschen",
-                            tint = TextMuted,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(14.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = BgSurfaceCard,
-                unfocusedContainerColor = BgSurfaceCard,
-                disabledContainerColor = BgSurfaceCard,
-                focusedBorderColor = AccentPrimary,
-                unfocusedBorderColor = BorderSubtle,
-                focusedTextColor = TextPrimary,
-                unfocusedTextColor = TextPrimary
-            ),
-            modifier = Modifier.weight(1f)
-        )
-
-        // Genre Filter Dropdown Button
-        Box {
-            Surface(
-                onClick = { genreMenuExpanded = true },
-                shape = RoundedCornerShape(14.dp),
-                color = BgSurfaceCard,
-                border = BorderStroke(1.dp, BorderSubtle)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = {
+            Text(
+                text = "Sender, Land oder Genre suchen…",
+                color = TextMuted,
+                fontSize = 13.sp
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = TextMuted,
+                modifier = Modifier.size(18.dp)
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = onClear) {
                     Icon(
-                        imageVector = Icons.Default.FilterList,
-                        contentDescription = "Genre Filter",
-                        tint = AccentPrimary,
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Suche löschen",
+                        tint = TextMuted,
                         modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Genre",
-                        color = TextPrimary,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
                 }
             }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(14.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = BgSurfaceCard,
+            unfocusedContainerColor = BgSurfaceCard,
+            disabledContainerColor = BgSurfaceCard,
+            focusedBorderColor = AccentPrimary,
+            unfocusedBorderColor = BorderSubtle,
+            focusedTextColor = TextPrimary,
+            unfocusedTextColor = TextPrimary
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    )
+}
 
-            DropdownMenu(
-                expanded = genreMenuExpanded,
-                onDismissRequest = { genreMenuExpanded = false },
-                modifier = Modifier.background(BgSurfaceCard)
-            ) {
-                genres.forEach { (tag, label) ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = label,
-                                color = if (activeCategory == tag) AccentPrimary else TextPrimary,
-                                fontWeight = if (activeCategory == tag) FontWeight.Bold else FontWeight.Normal
-                            )
-                        },
-                        onClick = {
-                            genreMenuExpanded = false
-                            onSelectCategory(tag)
-                        }
-                    )
-                }
-            }
-        }
-    }
+private fun buildCategoryList(fav1Count: Int, fav2Count: Int, fav3Count: Int): List<Pair<String, String>> {
+    return listOf(
+        "featured" to "📻 Entdecken",
+        "favorites_1" to "❤️ Herz ($fav1Count)",
+        "favorites_2" to "💎 Diamant ($fav2Count)",
+        "favorites_3" to "⭐ Stern ($fav3Count)",
+        "pop" to "🎵 Pop & Hits",
+        "rock" to "🎸 Rock & Metal",
+        "electronic" to "⚡ Dance & Electronic",
+        "chillout" to "🌙 Chillout",
+        "jazz" to "🎷 Jazz & Blues",
+        "classical" to "🎻 Klassik",
+        "hiphop" to "🎤 Hip-Hop",
+        "alternative" to "🌿 Indie",
+        "retro" to "🕰️ 80s & 90s"
+    )
 }
 
 @Composable
@@ -498,21 +441,18 @@ private fun CategoryTabs(
     fav3Count: Int,
     onSelectCategory: (String) -> Unit
 ) {
-    val tabs = listOf(
-        "featured" to "📻 Entdecken",
-        "favorites_1" to "❤️ Hart ($fav1Count)",
-        "favorites_2" to "💎 Diamant ($fav2Count)",
-        "favorites_3" to "⭐ Stern ($fav3Count)"
-    )
+    val tabs = remember(fav1Count, fav2Count, fav3Count) {
+        buildCategoryList(fav1Count, fav2Count, fav3Count)
+    }
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(tabs) { (id, label) ->
+        items(tabs, key = { it.first }) { (id, label) ->
             val isSelected = activeCategory == id || (id == "favorites_1" && activeCategory == "favorites")
             Surface(
                 onClick = { onSelectCategory(id) },
@@ -543,17 +483,9 @@ private fun CategoryListLandscape(
     fav3Count: Int,
     onSelectCategory: (String) -> Unit
 ) {
-    val categories = listOf(
-        "featured" to "📻 Entdecken",
-        "favorites_1" to "❤️ Hart ($fav1Count)",
-        "favorites_2" to "💎 Diamant ($fav2Count)",
-        "favorites_3" to "⭐ Stern ($fav3Count)",
-        "pop" to "🎵 Pop & Hits",
-        "rock" to "🎸 Rock & Metal",
-        "electronic" to "⚡ Electronic & Dance",
-        "chillout" to "🌙 Chillout & Ambient",
-        "alternative" to "🎷 Alternative & Indie"
-    )
+    val categories = remember(fav1Count, fav2Count, fav3Count) {
+        buildCategoryList(fav1Count, fav2Count, fav3Count)
+    }
 
     Column(
         modifier = Modifier
@@ -592,10 +524,19 @@ private fun SectionHeader(
 ) {
     val title = when (activeCategory) {
         "featured" -> "📻 Entdecken"
-        "favorites", "favorites_1" -> "❤️ Hart"
-        "favorites_2" -> "💎 Diamant-Favoriten"
-        "favorites_3" -> "⭐ Stern-Favoriten"
+        "favorites", "favorites_1" -> "❤️ Favoriten 1 (Herz)"
+        "favorites_2" -> "💎 Favoriten 2 (Diamant)"
+        "favorites_3" -> "⭐ Favoriten 3 (Stern)"
         "search" -> "🔍 Suchergebnisse"
+        "pop" -> "🎵 Pop & Hits"
+        "rock" -> "🎸 Rock & Metal"
+        "electronic" -> "⚡ Dance & Electronic"
+        "chillout" -> "🌙 Chillout & Ambient"
+        "jazz" -> "🎷 Jazz & Blues"
+        "classical" -> "🎻 Klassik"
+        "hiphop" -> "🎤 Hip-Hop & Rap"
+        "alternative" -> "🌿 Alternative & Indie"
+        "retro" -> "🕰️ 80s & 90s Oldies"
         else -> "🏷️ $activeCategory"
     }
 
@@ -634,13 +575,16 @@ private fun SectionHeader(
 private fun StationListContent(
     isLoading: Boolean,
     stations: List<Station>,
+    favorites1: List<Station>,
+    favorites2: List<Station>,
+    favorites3: List<Station>,
     activeCategory: String,
     searchQuery: String,
     currentStation: Station?,
     isPlaying: Boolean,
-    onPlayStation: (Station) -> Unit,
-    getFavoriteType: (Station) -> Int,
-    onFavoriteCycle: (Station) -> Unit
+    isBuffering: Boolean,
+    onStationClick: (Station) -> Unit,
+    onSetFavoriteType: (Station, Int) -> Unit
 ) {
     if (isLoading) {
         Box(
@@ -656,13 +600,19 @@ private fun StationListContent(
         ) {
             val emptyMessage = when {
                 searchQuery.isNotBlank() -> "Keine Sender für „$searchQuery“ gefunden."
-                activeCategory.startsWith("favorites") -> "Noch keine Favoriten in dieser Liste gespeichert.\nTippe auf das Symbol bei einem Sender!"
+                activeCategory in listOf("favorites", "favorites_1") ->
+                    "Noch keine Sender in „❤️ Herz“ gespeichert.\nTippe bei einem Sender rechts auf das Herz-Symbol und wähle „❤️ Favoriten 1“."
+                activeCategory == "favorites_2" ->
+                    "Noch keine Sender in „💎 Diamant“ gespeichert.\nTippe bei einem Sender rechts auf das Herz-Symbol und wähle „💎 Favoriten 2“."
+                activeCategory == "favorites_3" ->
+                    "Noch keine Sender in „⭐ Stern“ gespeichert.\nTippe bei einem Sender rechts auf das Herz-Symbol und wähle „⭐ Favoriten 3“."
                 else -> "Keine Sender in dieser Kategorie gefunden."
             }
             Text(
                 text = emptyMessage,
                 color = TextMuted,
                 fontSize = 14.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(24.dp)
             )
         }
@@ -670,22 +620,30 @@ private fun StationListContent(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
             items(
                 items = stations,
-                key = { it.stationuuid ?: it.getStreamUrl() }
+                key = { it.stationuuid?.takeIf { u -> u.isNotBlank() } ?: it.getStreamUrl() }
             ) { station ->
-                val favType = getFavoriteType(station)
-                val isCurrent = currentStation?.stationuuid == station.stationuuid || (currentStation != null && currentStation.getStreamUrl() == station.getStreamUrl())
+                val favType = remember(station, favorites1, favorites2, favorites3) {
+                    when {
+                        favorites1.any { it.isSameStation(station) } -> 1
+                        favorites2.any { it.isSameStation(station) } -> 2
+                        favorites3.any { it.isSameStation(station) } -> 3
+                        else -> 0
+                    }
+                }
+                val isCurrent = station.isSameStation(currentStation)
 
                 StationCard(
                     station = station,
                     isActive = isCurrent,
                     isPlaying = isPlaying,
+                    isBuffering = isCurrent && isBuffering,
                     favoriteType = favType,
-                    onCardClick = { onPlayStation(station) },
-                    onFavoriteClick = { onFavoriteCycle(station) }
+                    onCardClick = { onStationClick(station) },
+                    onSetFavoriteType = { newType -> onSetFavoriteType(station, newType) }
                 )
             }
         }

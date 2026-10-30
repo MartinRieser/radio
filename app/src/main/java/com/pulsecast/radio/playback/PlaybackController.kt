@@ -53,8 +53,8 @@ class PlaybackController(
 
     init {
         // Wire playback bridge for Bluetooth / Car controls
-        RadioPlaybackBridge.onToggleMute = { togglePlayPause() }
-        RadioPlaybackBridge.onStopStream = { stop() }
+        RadioPlaybackBridge.onToggleMute = { togglePlayStop() }
+        RadioPlaybackBridge.onStopStream = { stopStream() }
         RadioPlaybackBridge.onStartStream = {
             val current = _currentStation.value ?: RadioPlaybackBridge.currentStationList.value.firstOrNull()
             if (current != null) {
@@ -65,6 +65,8 @@ class PlaybackController(
         connectToService()
     }
 
+    private var pendingStationToPlay: Station? = null
+
     private fun connectToService() {
         val sessionToken = SessionToken(context, ComponentName(context, RadioPlaybackService::class.java))
         controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
@@ -72,6 +74,11 @@ class PlaybackController(
             try {
                 mediaController = controllerFuture?.get()
                 setupPlayerListener()
+                val pending = pendingStationToPlay
+                if (pending != null) {
+                    pendingStationToPlay = null
+                    playStation(pending)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -83,6 +90,7 @@ class PlaybackController(
             override fun onIsPlayingChanged(playing: Boolean) {
                 _isPlaying.value = playing
                 if (playing) {
+                    _isBuffering.value = false
                     startTimer()
                 } else {
                     stopTimer()
@@ -90,9 +98,17 @@ class PlaybackController(
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
-                _isBuffering.value = (playbackState == Player.STATE_BUFFERING)
-                if (playbackState == Player.STATE_READY) {
-                    _isBuffering.value = false
+                when (playbackState) {
+                    Player.STATE_BUFFERING -> {
+                        _isBuffering.value = true
+                    }
+                    Player.STATE_READY -> {
+                        _isBuffering.value = false
+                    }
+                    Player.STATE_IDLE, Player.STATE_ENDED -> {
+                        _isBuffering.value = false
+                        _isPlaying.value = false
+                    }
                 }
             }
 
@@ -100,13 +116,13 @@ class PlaybackController(
                 super.onMediaItemTransition(mediaItem, reason)
                 val mediaId = mediaItem?.mediaId ?: return
                 val current = _currentStation.value
-                if (current?.stationuuid != mediaId && current?.getStreamUrl() != mediaId) {
+                if (current == null || !current.matchesIdOrUrl(mediaId)) {
                     val matching = RadioPlaybackBridge.currentStationList.value.firstOrNull {
-                        it.stationuuid == mediaId || it.getStreamUrl() == mediaId
-                    } ?: repository.favorites.value.firstOrNull {
-                        it.stationuuid == mediaId || it.getStreamUrl() == mediaId
+                        it.matchesIdOrUrl(mediaId)
+                    } ?: repository.allFavorites.value.firstOrNull {
+                        it.matchesIdOrUrl(mediaId)
                     } ?: CuratedStations.load(context).firstOrNull {
-                        it.stationuuid == mediaId || it.getStreamUrl() == mediaId
+                        it.matchesIdOrUrl(mediaId)
                     }
                     if (matching != null) {
                         _currentStation.value = matching
@@ -127,7 +143,6 @@ class PlaybackController(
     }
 
     fun playStation(station: Station) {
-        val controller = mediaController ?: return
         val streamUrl = station.getStreamUrl()
         if (streamUrl.isBlank()) return
 
@@ -135,6 +150,13 @@ class PlaybackController(
         RadioPlaybackBridge.updateCurrentStation(station)
         _trackTitle.value = ""
         _liveSeconds.value = 0
+        _isBuffering.value = true
+
+        val controller = mediaController
+        if (controller == null) {
+            pendingStationToPlay = station
+            return
+        }
 
         val formatted = RadioMetadataFormatter.format(null, station)
         val mediaMetadata = MediaMetadata.Builder()
@@ -151,7 +173,7 @@ class PlaybackController(
         val parsedUri = Uri.parse(streamUrl)
         val mediaItem = MediaItem.Builder()
             .setUri(parsedUri)
-            .setMediaId(station.stationuuid ?: streamUrl)
+            .setMediaId(station.stationuuid?.takeIf { it.isNotBlank() } ?: streamUrl)
             .setRequestMetadata(
                 MediaItem.RequestMetadata.Builder()
                     .setMediaUri(parsedUri)
@@ -166,16 +188,29 @@ class PlaybackController(
     }
 
     /**
-     * Toggles live streaming play/stop:
-     * When active, completely stops the live stream to save mobile data.
-     * When stopped/paused, reconnects and starts fresh on the live radio edge.
+     * Stops live streaming (releases network connection and stops buffering,
+     * while keeping the current station in the player bar for instant playback).
      */
-    fun togglePlayPause() {
+    fun stopStream() {
+        mediaController?.stop()
+        _isPlaying.value = false
+        _isBuffering.value = false
+        stopTimer()
+    }
+
+    fun pause() {
+        stopStream()
+    }
+
+    /**
+     * Toggles live streaming play/stop:
+     * When streaming or buffering, stops the live stream to save mobile data (no pause buffering).
+     * When stopped, reconnects and starts fresh on the live radio edge.
+     */
+    fun togglePlayStop() {
         val controller = mediaController ?: return
-        if (controller.isPlaying) {
-            controller.stop()
-            _isPlaying.value = false
-            stopTimer()
+        if (_isPlaying.value || _isBuffering.value || controller.isPlaying) {
+            stopStream()
         } else {
             val station = _currentStation.value ?: RadioPlaybackBridge.currentStationList.value.firstOrNull()
             if (station != null) {
@@ -187,9 +222,19 @@ class PlaybackController(
         }
     }
 
+    fun togglePlayPause() = togglePlayStop()
+
+    /**
+     * Completely stops playback and dismisses the active station / player bar.
+     */
     fun stop() {
         mediaController?.stop()
+        _currentStation.value = null
         _isPlaying.value = false
+        _isBuffering.value = false
+        _trackTitle.value = ""
+        _liveSeconds.value = 0
+        RadioPlaybackBridge.updateCurrentStation(null)
         stopTimer()
     }
 

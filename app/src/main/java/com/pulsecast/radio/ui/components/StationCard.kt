@@ -8,7 +8,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,18 +21,29 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Diamond
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,11 +58,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.pulsecast.radio.data.HistoryAndFavoritesRepository
 import com.pulsecast.radio.model.Station
 import com.pulsecast.radio.ui.theme.AccentFav
-import com.pulsecast.radio.ui.theme.AccentHistory
 import com.pulsecast.radio.ui.theme.AccentPrimary
+import com.pulsecast.radio.ui.theme.BgSurface
 import com.pulsecast.radio.ui.theme.BgSurfaceCard
 import com.pulsecast.radio.ui.theme.BorderSubtle
 import com.pulsecast.radio.ui.theme.TextMuted
@@ -64,21 +73,31 @@ fun StationCard(
     station: Station,
     isActive: Boolean,
     isPlaying: Boolean,
+    isBuffering: Boolean = false,
     favoriteType: Int = 0,
     isFavorite: Boolean = favoriteType > 0,
     onCardClick: () -> Unit,
-    onFavoriteClick: () -> Unit
+    onSetFavoriteType: (Int) -> Unit = {},
+    onFavoriteClick: () -> Unit = {}
 ) {
+    var showFavMenu by remember { mutableStateOf(false) }
+
     val border = if (isActive) {
         BorderStroke(1.5.dp, Brush.horizontalGradient(listOf(AccentPrimary, Color(0xFF7000FF))))
     } else {
         BorderStroke(1.dp, BorderSubtle)
     }
 
+    val cardBg = if (isActive) {
+        Color(0xFF1A2438)
+    } else {
+        BgSurfaceCard
+    }
+
     Card(
         onClick = onCardClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = BgSurfaceCard),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
         border = border,
         shape = RoundedCornerShape(14.dp)
     ) {
@@ -88,7 +107,7 @@ fun StationCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val iconUrl = androidx.compose.runtime.remember(station.favicon, station.getStreamUrl()) {
+            val iconUrl = remember(station.favicon, station.getStreamUrl()) {
                 val fav = station.favicon?.trim() ?: ""
                 if (fav.isNotBlank() && !fav.contains("favicon.ico")) {
                     if (fav.startsWith("http://")) fav.replace("http://", "https://") else fav
@@ -105,7 +124,7 @@ fun StationCard(
                 }
             }
 
-            // Station Icon / Favicon
+            // Station Icon / Favicon with Play/Pause/Equalizer status
             Box(
                 modifier = Modifier
                     .size(52.dp)
@@ -137,7 +156,6 @@ fun StationCard(
                 }
 
                 if (isActive && isPlaying) {
-                    // Mini Equalizer Indicator
                     EqualizerIndicator()
                 }
             }
@@ -150,9 +168,9 @@ fun StationCard(
             ) {
                 Text(
                     text = station.name,
-                    color = TextPrimary,
+                    color = if (isActive) AccentPrimary else TextPrimary,
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = if (isActive) FontWeight.Bold else FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -163,7 +181,6 @@ fun StationCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // Country & Flag
                     Text(
                         text = "${station.getCountryFlag()} ${station.country ?: "Global"}",
                         color = TextSecondary,
@@ -171,7 +188,6 @@ fun StationCard(
                         maxLines = 1
                     )
 
-                    // Genre Tags
                     val tags = station.tags?.split(",")?.take(2)?.joinToString(", ") { it.trim() }
                     if (!tags.isNullOrBlank()) {
                         Text(text = "•", color = TextMuted, fontSize = 10.sp)
@@ -184,7 +200,6 @@ fun StationCard(
                         )
                     }
 
-                    // Bitrate (if > 0 and <= 320)
                     if (station.bitrate in 1..320) {
                         Text(text = "•", color = TextMuted, fontSize = 10.sp)
                         Text(
@@ -197,26 +212,136 @@ fun StationCard(
                 }
             }
 
+            // Play / Stop Button: If stream is active show Stop button, otherwise show Play button
+            val isStreamActive = isActive && (isPlaying || isBuffering)
+            IconButton(
+                onClick = onCardClick,
+                modifier = Modifier.size(40.dp)
+            ) {
+                if (isActive && isBuffering) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = AccentPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = if (isStreamActive) Icons.Default.Stop else Icons.Default.PlayArrow,
+                        contentDescription = if (isStreamActive) "Stoppen" else "Abspielen",
+                        tint = if (isStreamActive || isActive) AccentPrimary else TextSecondary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+
             val effectiveFavType = if (favoriteType in 1..3) favoriteType else if (isFavorite) 1 else 0
             val (favIcon, favColor, favDesc) = when (effectiveFavType) {
-                1 -> Triple(Icons.Default.Favorite, AccentFav, "Favorit Liste 1 (Herz) - Tippen für Liste 2")
-                2 -> Triple(Icons.Default.Diamond, Color(0xFF06B6D4), "Favorit Liste 2 (Diamant) - Tippen für Liste 3")
-                3 -> Triple(Icons.Default.Star, Color(0xFFFBBF24), "Favorit Liste 3 (Stern) - Tippen zum Entfernen")
+                1 -> Triple(Icons.Default.Favorite, AccentFav, "Favorit Liste 1 (Herz)")
+                2 -> Triple(Icons.Default.Diamond, Color(0xFF06B6D4), "Favorit Liste 2 (Diamant)")
+                3 -> Triple(Icons.Default.Star, Color(0xFFFBBF24), "Favorit Liste 3 (Stern)")
                 else -> Triple(Icons.Default.FavoriteBorder, TextMuted, "Zu Favoriten hinzufügen")
             }
 
-            // Favorite Button (1x Herz -> 2x Diamant -> 3x Stern -> Entfernen)
-            IconButton(
-                onClick = onFavoriteClick,
-                modifier = Modifier.size(44.dp)
-            ) {
-                Icon(
-                    imageVector = favIcon,
-                    contentDescription = favDesc,
-                    tint = favColor,
-                    modifier = Modifier.size(24.dp)
+            // Favorite Button with direct Favorite List Picker Popup
+            Box {
+                IconButton(
+                    onClick = { showFavMenu = true },
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Icon(
+                        imageVector = favIcon,
+                        contentDescription = favDesc,
+                        tint = favColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                FavoriteListPickerMenu(
+                    expanded = showFavMenu,
+                    currentFavType = effectiveFavType,
+                    onDismiss = { showFavMenu = false },
+                    onSelectType = { newType ->
+                        showFavMenu = false
+                        onSetFavoriteType(newType)
+                    }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun FavoriteListPickerMenu(
+    expanded: Boolean,
+    currentFavType: Int,
+    onDismiss: () -> Unit,
+    onSelectType: (Int) -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        modifier = Modifier.background(BgSurface)
+    ) {
+        val options = listOf(
+            Triple(1, "❤️ Favoriten 1 (Herz)", AccentFav),
+            Triple(2, "💎 Favoriten 2 (Diamant)", Color(0xFF06B6D4)),
+            Triple(3, "⭐ Favoriten 3 (Stern)", Color(0xFFFBBF24))
+        )
+
+        options.forEach { (type, label, color) ->
+            val isSelected = currentFavType == type
+            DropdownMenuItem(
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = label,
+                            color = if (isSelected) color else TextPrimary,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            fontSize = 14.sp
+                        )
+                    }
+                },
+                trailingIcon = {
+                    if (isSelected) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Aktiv",
+                            tint = color,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                },
+                onClick = {
+                    // Tapping the already active list removes it; tapping another list assigns it
+                    onSelectType(if (isSelected) 0 else type)
+                }
+            )
+        }
+
+        if (currentFavType > 0) {
+            HorizontalDivider(color = BorderSubtle)
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "Aus Favoriten entfernen",
+                        color = Color(0xFFEF4444),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                onClick = { onSelectType(0) }
+            )
         }
     }
 }
